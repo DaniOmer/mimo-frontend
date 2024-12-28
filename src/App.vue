@@ -1,15 +1,20 @@
 <script setup lang="ts">
-import HelloWorld from './components/HelloWorld.vue'
+import HelloWorld from "./components/HelloWorld.vue";
 </script>
 
 <template>
   <div>
     <a href="https://vite.dev" target="_blank">
-      <img src="/vite.svg" class="logo" alt="Vite logo" />
+      <img src="/vite.svg" class="text-sm" alt="Vite logo" />
+      <p class="text-5xl">HelloWorld</p>
     </a>
-    <a href="https://vuejs.org/" target="_blank">
-      <img src="./assets/vue.svg" class="logo vue" alt="Vue logo" />
-    </a>
+    <!-- <a href="https://vuejs.org/" target="_blank">
+      <img
+        src="./assets/vue.svg"
+        class="text-5xl hidden font-bold underline"
+        alt="Vue logo"
+      />
+    </a> -->
   </div>
   <HelloWorld msg="Vite + Vue" />
 </template>
