@@ -24,7 +24,6 @@ export const useAuthStore = defineStore("auth", {
       this.user = data.value;
       this.error = error.value;
       this.loading = loading.value;
-      console.log("AUTH STORE : ", this.loading);
     },
 
     cancelRequest() {
