@@ -18,11 +18,13 @@ export const useAuthStore = defineStore("auth", {
       if (!this.controller) {
         this.controller = new AbortController();
       }
+      this.loading = true;
       await execute(() => createUser(user, this.controller!.signal));
 
       this.user = data.value;
       this.error = error.value;
       this.loading = loading.value;
+      console.log("AUTH STORE : ", this.loading);
     },
 
     cancelRequest() {

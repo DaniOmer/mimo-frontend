@@ -2,6 +2,7 @@ import { RouteRecordRaw } from "vue-router";
 
 import AuthLayout from "../../layouts/AuthLayout.vue";
 import RegisterView from "../../views/auth/RegisterView.vue";
+import RegisterConfirmationView from "../../views/auth/RegisterConfirmationView.vue";
 
 export const authRoutes: RouteRecordRaw[] = [
   {
@@ -9,6 +10,11 @@ export const authRoutes: RouteRecordRaw[] = [
     component: AuthLayout,
     children: [
       { path: "/register", name: "register", component: RegisterView },
+      {
+        path: "/register/confirmation",
+        name: "registerConfirmation",
+        component: RegisterConfirmationView,
+      },
     ],
   },
 ];

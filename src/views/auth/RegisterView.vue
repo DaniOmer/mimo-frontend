@@ -9,12 +9,12 @@
         </p>
       </div>
       <div>
+        <p v-if="error" class="text-red-600">{{ error }}</p>
         <RegisterForm
           :initialFormData="formData"
           :loading="loading"
           @submit="handleFormSubmit"
         />
-        <p v-if="error" class="text-red-600">{{ error }}</p>
       </div>
     </div>
   </div>
@@ -22,15 +22,20 @@
 
 <script setup lang="ts">
 import { ref, toRefs } from "vue";
+import { useRouter } from "vue-router";
 
+import { useToast } from "vue-toast-notification";
+import "vue-toast-notification/dist/theme-sugar.css";
+
+import { useAuthStore } from "../../stores";
 import RegisterForm from "../../forms/modules/auth/RegisterForm.vue";
 import { IRegisterFormData } from "../../forms/modules/auth/RegisterForm.vue";
-import { useAuthStore } from "../../stores";
-import { useRouter } from "vue-router";
 
 const router = useRouter();
 const authStore = useAuthStore();
 const { error, loading, user } = toRefs(authStore);
+
+const $toast = useToast();
 
 const formData = ref({
   firstName: "",
@@ -45,7 +50,11 @@ const handleFormSubmit = async (data: IRegisterFormData) => {
   const { confirmPassword, ...userData } = data;
   await authStore.register(userData);
   if (user.value) {
-    router.push({ name: "homepage" });
+    $toast.success("Votre compte a été crée avec succès!", {
+      position: "top",
+      duration: 3000,
+    });
+    router.push({ name: "registerConfirmation" });
   }
 };
 </script>
