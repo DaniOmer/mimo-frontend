@@ -21,8 +21,6 @@ export interface IUserCreate {
   password: string;
   avatar?: string;
   isTermsOfSale: boolean;
-  authType: AuthType;
-  roles: string[];
 }
 
 export interface IUserCreateResponse {

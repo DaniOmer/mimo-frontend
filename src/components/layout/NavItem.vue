@@ -31,7 +31,7 @@ const resolvedTo = computed(() => {
 const computedClasses = computed(() =>
   [
     "list-none text-primary text-sm py-2 px-4 uppercase cursor-pointer",
-    props.isActive ? "font-bold underline" : "hover:text-tertiary",
+    props.isActive ? "font-bold underline" : "hover:text-quaternary",
   ].join(" ")
 );
 </script>

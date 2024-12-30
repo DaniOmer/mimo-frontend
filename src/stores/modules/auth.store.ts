@@ -8,16 +8,26 @@ export const useAuthStore = defineStore("auth", {
     user: null as IUserCreateResponse | null,
     error: null as any | null,
     loading: false,
+    controller: null as AbortController | null,
   }),
   actions: {
     async register(user: IUserCreate) {
       const { execute, loading, error, data } =
         useApiRequest<IUserCreateResponse>();
-      await execute(() => createUser(user));
+
+      if (!this.controller) {
+        this.controller = new AbortController();
+      }
+      await execute(() => createUser(user, this.controller!.signal));
 
       this.user = data.value;
       this.error = error.value;
       this.loading = loading.value;
+    },
+
+    cancelRequest() {
+      const { cancel } = useApiRequest<IUserCreateResponse>();
+      cancel();
     },
   },
 });

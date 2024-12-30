@@ -1,7 +1,7 @@
 <template>
   <button
     :type="type"
-    class="w-full font-medium rounded-md border text-sm px-5 py-2.5 text-center"
+    class="w-full rounded-md border text-sm px-5 py-2.5 text-center text-white bg-primary hover:bg-transparent hover:border-primary hover:text-primary transition ease-in delay-75"
     :disabled="loading"
   >
     <span v-if="!loading">{{ label }}</span>
