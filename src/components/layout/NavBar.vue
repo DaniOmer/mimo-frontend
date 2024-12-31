@@ -7,7 +7,7 @@
           <ul class="flex gap-x-2">
             <NavItem :to="{ name: 'homepage' }">Tous</NavItem>
             <NavItem :to="{ name: 'homepage' }">Nouveautés</NavItem>
-            <NavItem :to="{ name: 'homepage' }">Collections</NavItem>
+            <NavItem :to="{ name: 'catalog' }">Collections</NavItem>
           </ul>
         </div>
 
