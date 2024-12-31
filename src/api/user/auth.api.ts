@@ -1,10 +1,21 @@
 import { httpClientPublic } from "../../pluggins";
-import { IUserCreate, AuthType } from "./user.types";
+import { IUserCreate, IEmailVerify, AuthType } from "./user.types";
 
 const ROUTE_PREFIX = "/auth";
-export const createUser = async (data: IUserCreate, signal: AbortSignal) => {
+export const registerUser = async (data: IUserCreate, signal: AbortSignal) => {
   const response = await httpClientPublic.post(
     `${ROUTE_PREFIX}/register/${AuthType.Basic}`,
+    data,
+    {
+      signal,
+    }
+  );
+  return response.data.data;
+};
+
+export const verifyEmail = async (data: IEmailVerify, signal: AbortSignal) => {
+  const response = await httpClientPublic.post(
+    `${ROUTE_PREFIX}/email/confirm`,
     data,
     {
       signal,

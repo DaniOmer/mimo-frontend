@@ -37,3 +37,7 @@ export interface IUserCreateResponse {
   isDisabled: boolean;
   authType: AuthType;
 }
+
+export interface IEmailVerify {
+  token: string;
+}

@@ -2,18 +2,20 @@ import { ref } from "vue";
 
 export function useApiRequest<T = any>() {
   const data = ref<T | null>(null);
-  const loading = ref(false);
+  const status = ref<"idle" | "pending" | "success" | "failed">("idle");
   const error = ref<string | null>(null);
   let controller: AbortController | null = null;
 
   const execute = async (action: () => Promise<T>): Promise<T | null> => {
-    loading.value = true;
+    status.value = "pending";
     error.value = null;
     controller = new AbortController();
 
     try {
+      await new Promise((resolve) => setTimeout(resolve, 5000));
       const result = await action();
       data.value = result;
+      status.value = "success";
       return result;
     } catch (err: any) {
       if (err.name === "AbortError") {
@@ -24,11 +26,10 @@ export function useApiRequest<T = any>() {
           err?.response?.data?.message ||
           err.message ||
           "An unexpected error occurred.";
+        status.value = "failed";
         console.error("API ERROR THROW IN COMPOSABLE :", err);
         return null;
       }
-    } finally {
-      loading.value = false;
     }
   };
 
@@ -40,7 +41,7 @@ export function useApiRequest<T = any>() {
 
   return {
     data,
-    loading,
+    status,
     error,
     execute,
     cancel,

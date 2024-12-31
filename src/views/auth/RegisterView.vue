@@ -12,7 +12,7 @@
         <p v-if="error" class="text-red-600">{{ error }}</p>
         <RegisterForm
           :initialFormData="formData"
-          :loading="loading"
+          :loading="status === 'pending'"
           @submit="handleFormSubmit"
         />
       </div>
@@ -33,7 +33,7 @@ import { IRegisterFormData } from "../../forms/modules/auth/RegisterForm.vue";
 
 const router = useRouter();
 const authStore = useAuthStore();
-const { error, loading, user } = toRefs(authStore);
+const { error, status, user } = toRefs(authStore);
 
 const $toast = useToast();
 
