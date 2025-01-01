@@ -19,10 +19,10 @@ export const authRoutes: RouteRecordRaw[] = [
       },
       { path: "login", name: "login", component: LoginView },
       {
-        path: "email-validation/:token",
+        path: "email-validation",
         name: "verifyEmail",
         component: RegisterEmailConfirmationView,
-        props: true,
+        props: (route) => ({ token: route.query.token }),
       },
     ],
   },
