@@ -20,8 +20,33 @@
 
       <ul class="flex justify-between items-center">
         <NavItem :to="{ name: 'homepage' }">Panier (0)</NavItem>
-        <NavItem :to="{ name: 'register' }">Inscription</NavItem>
-        <NavItem :to="{ name: 'login' }">Connexion</NavItem>
+        <div
+          v-if="!authStore.isAuthenticated"
+          class="flex justify-between items-center"
+        >
+          <NavItem :to="{ name: 'register' }">Inscription</NavItem>
+          <NavItem :to="{ name: 'login' }">Connexion</NavItem>
+        </div>
+        <div v-else>
+          <button
+            class="text-primary text-sm py-2 px-4 uppercase cursor-pointer"
+          >
+            Compte
+          </button>
+          <button
+            class="text-primary text-sm py-2 px-4 uppercase cursor-pointer"
+            @click.prevent="authStore.logout"
+          >
+            Déconnexion
+          </button>
+        </div>
+        <!-- <div v-else-if="user" class="flex justify-center items-center gap-2">
+          <Avatar :user="user" />
+          <div class="text-xs">
+            <p>{{ user.firstName }} {{ user.lastName }}</p>
+            <p>{{ user.email }}</p>
+          </div>
+        </div> -->
       </ul>
     </nav>
   </header>
@@ -29,4 +54,7 @@
 
 <script setup lang="ts">
 import NavItem from "./NavItem.vue";
+import { useAuthStore } from "../../stores";
+
+const authStore = useAuthStore();
 </script>
