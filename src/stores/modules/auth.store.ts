@@ -89,6 +89,7 @@ export const useAuthStore = defineStore("auth", {
     resetStatus() {
       this.error = null;
       this.status = "idle";
+      this.loading = loading.value;
     },
 
     cancelRequest() {

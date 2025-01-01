@@ -39,18 +39,18 @@
 
 <script setup lang="ts">
 import { RouterLink } from "vue-router";
-// import { useAuthStore } from "../../stores";
-// // import { onMounted } from "vue";
-// import { useRouter } from "vue-router";
+import { useAuthStore } from "../../stores";
+import { onMounted } from "vue";
+import { useRouter } from "vue-router";
 
-// const router = useRouter();
-// const authStore = useAuthStore();
+const router = useRouter();
+const authStore = useAuthStore();
 
-// onMounted(() => {
-//   if (authStore.user) {
-//     authStore.user = null;
-//   } else {
-//     router.push({ name: "homepage" });
-//   }
-// });
+onMounted(() => {
+  if (authStore.user) {
+    authStore.user = null;
+  } else {
+    router.push({ name: "homepage" });
+  }
+});
 </script>
