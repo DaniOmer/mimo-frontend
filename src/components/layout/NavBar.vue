@@ -1,37 +1,30 @@
 <!-- src/components/Navbar.vue -->
 <template>
-  <div class="h-[60px]">
-    <nav class="flex justify-between py-2">
-      <div class="flex justify-between items-center lg:w-1/2">
-        <div>
-          <ul class="flex gap-x-2">
-            <NavItem :to="{ name: 'homepage' }">Tous</NavItem>
-            <NavItem :to="{ name: 'homepage' }">Nouveautés</NavItem>
-            <NavItem :to="{ name: 'homepage' }">Collections</NavItem>
-          </ul>
-        </div>
+  <header class="h-[60px] py-2">
+    <nav class="flex justify-between items-center">
+      <ul class="flex justify-between items-center">
+        <NavItem :to="{ name: 'homepage' }">Tous</NavItem>
+        <NavItem :to="{ name: 'homepage' }">Nouveautés</NavItem>
+        <NavItem :to="{ name: 'homepage' }">Collections</NavItem>
+      </ul>
 
-        <div>
-          <a href="/">
-            <p
-              class="text-2xl text-quaternary font-tertiary font-bold uppercase tracking-widest"
-            >
-              Mimo
-            </p>
-          </a>
-        </div>
-      </div>
+      <ul class="flex justify-between items-center">
+        <NavItem :to="{ name: 'homepage' }">
+          <p
+            class="text-2xl text-quaternary font-tertiary font-bold uppercase tracking-widest"
+          >
+            Mimo
+          </p>
+        </NavItem>
+      </ul>
 
-      <div class="flex gap-x-10">
+      <ul class="flex justify-between items-center">
         <NavItem :to="{ name: 'homepage' }">Panier (0)</NavItem>
-
-        <div class="flex">
-          <NavItem :to="{ name: 'register' }">Inscription</NavItem>
-          <NavItem :to="{ name: 'homepage' }">Connexion</NavItem>
-        </div>
-      </div>
+        <NavItem :to="{ name: 'register' }">Inscription</NavItem>
+        <NavItem :to="{ name: 'homepage' }">Connexion</NavItem>
+      </ul>
     </nav>
-  </div>
+  </header>
 </template>
 
 <script setup lang="ts">

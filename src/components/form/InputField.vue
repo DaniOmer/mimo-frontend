@@ -1,9 +1,9 @@
 <template>
-  <div class="w-full">
+  <div class="w-full mt-3">
     <label
       v-if="label"
       :for="name"
-      class="block text-sm font-medium text-gray-700"
+      class="block text-sm font-medium text-primary"
     >
       {{ label }}
     </label>
@@ -12,7 +12,7 @@
       v-model="model"
       :type="type"
       :placeholder="placeholder"
-      class="mt-1 block w-full rounded-md border px-3 py-2 border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+      class="block w-full rounded-md border mt-1 px-3 py-2 border-tertiary shadow-sm focus:outline-quaternary sm:text-sm"
       :class="{
         'border-red-500 focus:ring-red-500 focus:border-red-500': error,
       }"
