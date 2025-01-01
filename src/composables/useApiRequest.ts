@@ -12,7 +12,7 @@ export function useApiRequest<T = any>() {
     controller = new AbortController();
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 5000));
+      await new Promise((resolve) => setTimeout(resolve, 2000));
       const result = await action();
       data.value = result;
       status.value = "success";

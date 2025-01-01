@@ -21,7 +21,7 @@
       <ul class="flex justify-between items-center">
         <NavItem :to="{ name: 'homepage' }">Panier (0)</NavItem>
         <NavItem :to="{ name: 'register' }">Inscription</NavItem>
-        <NavItem :to="{ name: 'homepage' }">Connexion</NavItem>
+        <NavItem :to="{ name: 'login' }">Connexion</NavItem>
       </ul>
     </nav>
   </header>

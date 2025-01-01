@@ -52,7 +52,7 @@
 
 <script setup lang="ts">
 import { RouterLink } from "vue-router";
-import { toRefs, onMounted } from "vue";
+import { toRefs, onMounted, onUnmounted } from "vue";
 import { useAuthStore } from "../../stores";
 
 const authStore = useAuthStore();
@@ -68,5 +68,9 @@ onMounted(async () => {
   } catch (err) {
     console.error("Erreur lors de la vérification :", err);
   }
+});
+
+onUnmounted(() => {
+  authStore.resetStatus();
 });
 </script>

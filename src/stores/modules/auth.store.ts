@@ -4,17 +4,23 @@ import {
   registerUser,
   verifyEmail,
   IUserCreate,
-  IUserCreateResponse,
+  IUser,
+  IUserLogin,
+  loginUser,
 } from "../../api";
 
 export const useAuthStore = defineStore("auth", {
   state: () => ({
-    user: null as IUserCreateResponse | null,
+    user: null as IUser | null,
     token: null as string | null,
     error: null as any | null,
     status: "idle" as "idle" | "pending" | "success" | "failed",
     controller: null as AbortController | null,
   }),
+
+  persist: {
+    pick: ["user", "token"],
+  },
 
   getters: {
     isAuthenticated: (state) => !!state.token,
@@ -22,9 +28,8 @@ export const useAuthStore = defineStore("auth", {
   },
 
   actions: {
-    async register(user: IUserCreate) {
-      const { execute, status, error, data } =
-        useApiRequest<IUserCreateResponse>();
+    async register(userData: IUserCreate) {
+      const { execute, status, error, data } = useApiRequest<IUser>();
       this.error = null;
 
       if (!this.controller) {
@@ -32,7 +37,7 @@ export const useAuthStore = defineStore("auth", {
       }
 
       this.status = "pending";
-      await execute(() => registerUser(user, this.controller!.signal));
+      await execute(() => registerUser(userData, this.controller!.signal));
 
       this.user = data.value;
       this.error = error.value;
@@ -54,6 +59,26 @@ export const useAuthStore = defineStore("auth", {
       this.status = status.value;
     },
 
+    async login(userData: IUserLogin) {
+      const { execute, status, error, data } = useApiRequest<{
+        token: string;
+        user: IUser;
+      }>();
+      this.error = null;
+
+      if (!this.controller) {
+        this.controller = new AbortController();
+      }
+
+      this.status = "pending";
+      await execute(() => loginUser(userData, this.controller!.signal));
+
+      this.token = data.value?.token || null;
+      this.user = data.value?.user;
+      this.error = error.value;
+      this.status = status.value;
+    },
+
     logout() {
       this.user = null;
       this.token = null;
@@ -61,8 +86,13 @@ export const useAuthStore = defineStore("auth", {
       this.status = "idle";
     },
 
+    resetStatus() {
+      this.error = null;
+      this.status = "idle";
+    },
+
     cancelRequest() {
-      const { cancel } = useApiRequest<IUserCreateResponse>();
+      const { cancel } = useApiRequest<void>();
       cancel();
     },
   },
