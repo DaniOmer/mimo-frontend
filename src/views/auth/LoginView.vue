@@ -43,7 +43,7 @@ import { ILoginFormData } from "../../forms/modules/auth/LoginForm.vue";
 
 const router = useRouter();
 const authStore = useAuthStore();
-const { error, status, user } = toRefs(authStore);
+const { error, status } = toRefs(authStore);
 const $toast = useToast();
 
 const formData = ref({
@@ -53,9 +53,9 @@ const formData = ref({
 
 const handleFormSubmit = async (data: ILoginFormData) => {
   await authStore.login(data);
-  if (user.value) {
-    $toast.success("Votre compte a été crée avec succès!", {
-      position: "top",
+  if (authStore.isAuthenticated) {
+    $toast.success("Connexion réussie", {
+      position: "top-right",
       duration: 3000,
     });
     router.push({ name: "homepage" });

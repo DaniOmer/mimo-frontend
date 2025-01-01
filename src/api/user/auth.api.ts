@@ -20,6 +20,7 @@ export const registerUser = async (data: IUserCreate, signal: AbortSignal) => {
 
 export const loginUser = async (data: IUserLogin, signal: AbortSignal) => {
   try {
+    console.log("FROM LOGIN USER ", "STARTING");
     const response = await httpClientPublic.post(
       `${ROUTE_PREFIX}/login/${AuthType.Basic}`,
       data,
@@ -28,8 +29,8 @@ export const loginUser = async (data: IUserLogin, signal: AbortSignal) => {
       }
     );
     return {
-      token: response.data.data.token,
-      user: response.data.data.user,
+      token: response.data.token,
+      user: response.data.data,
     };
   } catch (error) {
     console.log("ERROR ON USER LOGIN : ", error);

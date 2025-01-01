@@ -72,9 +72,9 @@ export const useAuthStore = defineStore("auth", {
 
       this.status = "pending";
       await execute(() => loginUser(userData, this.controller!.signal));
-
+      console.log("AUTH STORE : ", data.value);
       this.token = data.value?.token || null;
-      this.user = data.value?.user;
+      this.user = data.value?.user as IUser;
       this.error = error.value;
       this.status = status.value;
     },
