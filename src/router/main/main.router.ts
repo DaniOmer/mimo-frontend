@@ -3,6 +3,7 @@ import { RouteRecordRaw } from "vue-router";
 import MainLayout from "../../layouts/MainLayout.vue";
 import HomeView from "../../views/main/HomeView.vue";
 import UserPersonalInfosView from "../../views/main/UserPersonalInfosView.vue";
+import UserAddressView from "../../views/main/UserAddressView.vue";
 
 export const publicRoutes: RouteRecordRaw[] = [
   {
@@ -18,6 +19,11 @@ export const publicRoutes: RouteRecordRaw[] = [
         path: "personnal-infos",
         name: "userPersonnalInfos",
         component: UserPersonalInfosView,
+      },
+      {
+        path: "address",
+        name: "userAddress",
+        component: UserAddressView,
       },
     ],
   },
