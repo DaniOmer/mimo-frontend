@@ -74,10 +74,8 @@
                 <input
                   type="checkbox"
                   class="cursor-pointer accent-primary"
-                  :checked="
-                    selectedKeys.includes(getItemKey(rowData, rowIndex))
-                  "
-                  @change="toggleRowSelect(rowData, rowIndex)"
+                  :checked="selectedKeys.includes(getItemKey(rowData, rowIndex))"
+                  @change="() => toggleRowSelect(rowData, rowIndex)"
                   @click.stop
                 />
               </td>
@@ -241,8 +239,13 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, computed } from "vue";
+import { defineComponent } from "vue";
 import type { TableColumn } from "../types/TableColumn";
+
+import { useSorting } from "../composables/table/useSorting";
+import { usePagination } from "../composables/table/usePagination";
+import { useSelection } from "../composables/table/useSelection";
+import { useActions } from "../composables/table/useActions";
 
 interface TableItem {
   _id: string;
@@ -250,7 +253,7 @@ interface TableItem {
 }
 
 export default defineComponent({
-  name: "CustomedTable",
+  name: "Table",
 
   props: {
     columns: {
@@ -302,161 +305,40 @@ export default defineComponent({
   emits: ["row-click", "sort-change", "page-change", "selection-change"],
 
   setup(props, { emit }) {
-    const sortKey = ref<string>("");
-    const sortOrder = ref<"asc" | "desc">("asc");
-
-    function handleSort(columnKey: string) {
-      if (!props.enableSort) return;
-      if (sortKey.value === columnKey) {
-        sortOrder.value = sortOrder.value === "asc" ? "desc" : "asc";
-      } else {
-        sortKey.value = columnKey;
-        sortOrder.value = "asc";
-      }
-      emit("sort-change", {
-        sortKey: sortKey.value,
-        sortOrder: sortOrder.value,
-      });
-    }
-
-    const sortedItems = computed(() => {
-      if (!props.enableSort || !sortKey.value) {
-        return props.items;
-      }
-      const clone = [...props.items];
-      clone.sort((a, b) => {
-        const valA = a[sortKey.value];
-        const valB = b[sortKey.value];
-        if (valA === valB) return 0;
-        if (sortOrder.value === "asc") {
-          return valA < valB ? -1 : 1;
-        }
-        return valA > valB ? -1 : 1;
-      });
-      return clone;
-    });
-
-    const currentPage = ref<number>(props.defaultPage);
-
-    const totalItems = computed(() => sortedItems.value.length);
-    const totalPagesComputed = computed(() => {
-      if (!props.enablePagination || props.pageSize <= 0) return 1;
-      return Math.ceil(totalItems.value / props.pageSize);
-    });
-
-    const paginatedItems = computed(() => {
-      if (!props.enablePagination) return sortedItems.value;
-      const startIndex = (currentPage.value - 1) * props.pageSize;
-      return sortedItems.value.slice(startIndex, startIndex + props.pageSize);
-    });
-
-    const shouldShowPagination = computed(
-      () => props.enablePagination && totalPagesComputed.value > 1
-    );
-
-    function goToPage(page: number) {
-      if (page < 1 || page > totalPagesComputed.value) return;
-      currentPage.value = page;
-      emit("page-change", { page, pageSize: props.pageSize });
-    }
-
-    const pagesArray = computed(() => {
-      const arr: number[] = [];
-      for (let i = 1; i <= totalPagesComputed.value; i++) {
-        arr.push(i);
-      }
-      return arr;
-    });
-
-    const startIndex = computed(() => (currentPage.value - 1) * props.pageSize);
-    const endIndex = computed(
-      () => startIndex.value + paginatedItems.value.length
-    );
-
-    const selectedKeys = ref<string[]>([]);
-
-    function getItemKey(rowData: TableItem, idx: number) {
-      return props.itemKey ? rowData[props.itemKey] : String(idx);
-    }
-
-    function toggleSelectAll(e: Event) {
-      const isChecked = (e.target as HTMLInputElement).checked;
-      if (isChecked) {
-        const keysOnPage = paginatedItems.value.map((itm, i) =>
-          getItemKey(itm, i)
-        );
-        selectedKeys.value = [
-          ...new Set([...selectedKeys.value, ...keysOnPage]),
-        ];
-      } else {
-        const keysOnPage = paginatedItems.value.map((itm, i) =>
-          getItemKey(itm, i)
-        );
-        selectedKeys.value = selectedKeys.value.filter(
-          (k) => !keysOnPage.includes(k)
-        );
-      }
-      emit("selection-change", selectedKeys.value);
-    }
-
-    function toggleRowSelect(rowData: TableItem, idx: number) {
-      const key = getItemKey(rowData, idx);
-      if (selectedKeys.value.includes(key)) {
-        selectedKeys.value = selectedKeys.value.filter((k) => k !== key);
-      } else {
-        selectedKeys.value.push(key);
-      }
-      emit("selection-change", selectedKeys.value);
-    }
-
-    const allSelected = computed(() => {
-      if (!paginatedItems.value.length) return false;
-      const keysOnPage = paginatedItems.value.map((itm, i) =>
-        getItemKey(itm, i)
-      );
-      return keysOnPage.every((k) => selectedKeys.value.includes(k));
-    });
+    const { sortKey, sortOrder, handleSort, sortedItems } = useSorting(props, emit);
+    const {
+      currentPage,
+      totalItems,
+      totalPagesComputed,
+      paginatedItems,
+      shouldShowPagination,
+      goToPage,
+      pagesArray,
+      startIndex,
+      endIndex,
+    } = usePagination(props, emit, sortedItems);
+    const {
+      selectedKeys,
+      toggleSelectAll,
+      toggleRowSelect,
+      allSelected,
+      getItemKey,
+    } = useSelection(props, emit, paginatedItems);
+    const {
+      openActionData,
+      menuPosition,
+      openActionMenu,
+      closeActionMenu,
+      handleActionClick,
+      itemUniqueKey,
+    } = useActions(props, emit);
 
     function onRowClick(rowData: TableItem) {
       emit("row-click", rowData);
     }
 
-    const openActionData = ref<TableItem | null>(null);
-    const menuPosition = ref<{ x: number; y: number }>({ x: 0, y: 0 });
-
-    function openActionMenu(rowData: TableItem, evt: MouseEvent) {
-      const OFFSET_LEFT = 150;
-      const xPos = evt.clientX - OFFSET_LEFT;
-      let finalX = xPos < 0 ? 0 : xPos;
-
-      const menuWidth = 200;
-      if (finalX + menuWidth > window.innerWidth) {
-        finalX = window.innerWidth - menuWidth;
-      }
-      menuPosition.value = {
-        x: finalX,
-        y: evt.clientY,
-      };
-      openActionData.value = rowData;
-    }
-
-    function closeActionMenu() {
-      openActionData.value = null;
-    }
-
-    function handleActionClick(
-      act: { onClick: (item: any) => void },
-      row: TableItem
-    ) {
-      act.onClick(row);
-      closeActionMenu();
-    }
-
-    function itemUniqueKey(rowData: TableItem, idx: number) {
-      return props.itemKey ? rowData[props.itemKey] : String(idx);
-    }
-
     return {
+      ...props,
       sortKey,
       sortOrder,
       handleSort,
@@ -471,10 +353,10 @@ export default defineComponent({
       startIndex,
       endIndex,
       selectedKeys,
-      getItemKey,
       toggleSelectAll,
       toggleRowSelect,
       allSelected,
+      getItemKey,
       onRowClick,
       openActionData,
       menuPosition,
@@ -486,3 +368,4 @@ export default defineComponent({
   },
 });
 </script>
+
