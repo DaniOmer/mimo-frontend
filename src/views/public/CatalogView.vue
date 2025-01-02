@@ -5,7 +5,7 @@
       <ProductCard
         v-for="product in products"
         :key="product._id"
-        :image="product.images?.[0]"
+        :image="product.images[0]?.url"
         :title="product.name"
         :description="product.description"
         @click="goToProductDetails(product._id)"
@@ -23,22 +23,18 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import { fetchProducts } from "../../api/product/product.api";
 import { IProduct } from "../../api/product/product.types";
 import ProductCard from "../../components/ProductCard.vue";
 import { useApiRequest } from "../../composables/useApiRequest";
+import { useProductStore } from "../../stores/modules/product.store";
 
-const products = ref<IProduct[]>([]);
-const { loading, error, execute } = useApiRequest<IProduct[]>();
+const productStore = useProductStore();
+const products = ref(productStore.products);
+const { loading, error } = useApiRequest<IProduct[]>();
 const router = useRouter();
 
 const loadProducts = async () => {
-  const response = await execute(fetchProducts);
-  if (response && response.data) {
-    products.value = response.data;
-  } else {
-    products.value = [];
-  }
+  await productStore.loadProducts();
 };
 
 const goToProductDetails = (productId: string) => {
