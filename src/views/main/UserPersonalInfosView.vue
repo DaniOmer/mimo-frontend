@@ -83,6 +83,7 @@
 <script setup lang="ts">
 import { LockClosedIcon, UserIcon } from "@heroicons/vue/24/outline";
 import { toRefs, computed, ref } from "vue";
+import { useToast } from "vue-toast-notification";
 
 import { useUserStore } from "../../stores";
 import { useModal } from "../../composables/useModal";
@@ -95,6 +96,7 @@ import { IPasswordChange } from "../../api";
 import { IUser } from "../../api";
 
 const userStore = useUserStore();
+const $toast = useToast();
 const { user, error, status } = toRefs(userStore);
 
 const firstName = computed(() => userStore.user?.firstName || "");
@@ -129,6 +131,10 @@ const handleFormSubmit = async (data: IPersonalInfosFormData) => {
 
     if (status.value === "success") {
       closePersonalInfoModal();
+      $toast.success("Vos informations ont été mis à jours avec succès.", {
+        position: "top-right",
+        duration: 3000,
+      });
     } else {
       console.error("Mise à jour échouée:", error.value);
     }
@@ -144,6 +150,10 @@ const handlePasswordFormSubmit = async (data: IPasswordChange) => {
 
     if (status.value === "success") {
       closePasswordModal();
+      $toast.success("Vos mot de passe a été mis à jour avec succès.", {
+        position: "top-right",
+        duration: 3000,
+      });
     } else {
       console.error("Changement de mot de passe échoué:", error.value);
     }

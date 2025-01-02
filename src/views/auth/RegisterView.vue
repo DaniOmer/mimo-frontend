@@ -43,7 +43,7 @@ import { IRegisterFormData } from "../../forms/modules/auth/RegisterForm.vue";
 
 const router = useRouter();
 const authStore = useAuthStore();
-const { error, status, user } = toRefs(authStore);
+const { error, status } = toRefs(authStore);
 
 const $toast = useToast();
 
@@ -59,7 +59,7 @@ const formData = ref({
 const handleFormSubmit = async (data: IRegisterFormData) => {
   const { confirmPassword, ...userData } = data;
   await authStore.register(userData);
-  if (user.value) {
+  if (authStore.status === "success") {
     $toast.success("Votre compte a été crée avec succès!", {
       position: "top",
       duration: 3000,
