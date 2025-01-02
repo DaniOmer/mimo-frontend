@@ -16,6 +16,7 @@
         :error="errors.lastName"
       />
     </div>
+    <p v-if="submitError" class="text-red-600">{{ submitError }}</p>
     <BaseButton label="Sauvegarder" type="submit" :loading="loading" />
   </form>
 </template>
@@ -35,9 +36,14 @@ export interface IPersonalInfosFormData {
 const props = defineProps<{
   initialFormData: IPersonalInfosFormData;
   loading?: boolean;
+  submitError?: string;
 }>();
 
-const localFormData = reactive({ ...props.initialFormData });
+const localFormData = reactive({
+  firstName: props.initialFormData.firstName,
+  lastName: props.initialFormData.lastName,
+});
+
 const emit = defineEmits(["submit"]);
 const { errors, validate } = useFormValidation(personnalInfosSchema);
 

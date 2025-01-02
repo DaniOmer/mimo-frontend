@@ -18,6 +18,7 @@
         :error="errors.password"
       />
     </div>
+    <span>LOADING {{ loading }}</span>
     <p v-if="submitError" class="text-red-600">{{ submitError }}</p>
     <BaseButton label="Se connecter" type="submit" :loading="loading" />
   </form>

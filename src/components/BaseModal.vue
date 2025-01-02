@@ -8,7 +8,7 @@
   >
     <transition name="modal" appear>
       <div
-        class="bg-white overflow-y-auto overflow-x-hidden w-full max-w-2xl max-h-full transition-all ease-in delay-200 shadow-md drop-shadow-md min-h-96"
+        class="bg-white overflow-y-auto overflow-x-hidden w-full max-w-2xl max-h-full transition-all ease-in delay-200 shadow-md drop-shadow-md min-h-96 pb-10"
       >
         <div
           class="flex justify-end items-center border-b border-slate-300 py-2.5 px-2"
