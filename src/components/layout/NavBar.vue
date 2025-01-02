@@ -1,8 +1,7 @@
-<!-- src/components/Navbar.vue -->
 <template>
   <header class="h-[60px] py-2">
-    <nav class="flex justify-between items-center">
-      <ul class="flex justify-between items-center">
+    <nav class="flex justify-between items-center container mx-auto">
+      <ul class="flex justify-between items-center gap-x-3">
         <NavItem :to="{ name: 'homepage' }">Tous</NavItem>
         <NavItem :to="{ name: 'homepage' }">Nouveautés</NavItem>
         <NavItem :to="{ name: 'homepage' }">Collections</NavItem>
@@ -18,43 +17,40 @@
         </NavItem>
       </ul>
 
-      <ul class="flex justify-between items-center">
+      <ul class="flex justify-between items-center gap-x-3">
         <NavItem :to="{ name: 'homepage' }">Panier (0)</NavItem>
         <div
           v-if="!authStore.isAuthenticated"
-          class="flex justify-between items-center"
+          class="flex justify-between items-center gap-x-3"
         >
           <NavItem :to="{ name: 'register' }">Inscription</NavItem>
           <NavItem :to="{ name: 'login' }">Connexion</NavItem>
         </div>
-        <div v-else>
+        <div v-else class="flex">
+          <NavItem :to="{ name: 'userPersonnalInfos' }">COMPTE</NavItem>
           <button
             class="text-primary text-sm py-2 px-4 uppercase cursor-pointer"
-          >
-            Compte
-          </button>
-          <button
-            class="text-primary text-sm py-2 px-4 uppercase cursor-pointer"
-            @click.prevent="authStore.logout"
+            @click.prevent="handleLogout"
           >
             Déconnexion
           </button>
         </div>
-        <!-- <div v-else-if="user" class="flex justify-center items-center gap-2">
-          <Avatar :user="user" />
-          <div class="text-xs">
-            <p>{{ user.firstName }} {{ user.lastName }}</p>
-            <p>{{ user.email }}</p>
-          </div>
-        </div> -->
       </ul>
     </nav>
   </header>
 </template>
 
 <script setup lang="ts">
+import { useRouter } from "vue-router";
+
 import NavItem from "./NavItem.vue";
 import { useAuthStore } from "../../stores";
 
+const router = useRouter();
 const authStore = useAuthStore();
+
+const handleLogout = () => {
+  authStore.logout();
+  router.push({ name: "homepage" });
+};
 </script>

@@ -1,8 +1,9 @@
 <template>
   <button
     :type="type"
-    class="w-full rounded-md border text-sm px-5 py-2.5 text-center text-white bg-primary hover:bg-transparent hover:border-primary hover:text-primary transition ease-in delay-75"
+    :class="computedClasses"
     :disabled="loading"
+    @click="handleClick"
   >
     <span v-if="!loading">{{ label }}</span>
     <span v-else class="flex items-center justify-center space-x-2">
@@ -32,7 +33,9 @@
 </template>
 
 <script setup lang="ts">
-defineProps({
+import { computed } from "vue";
+
+const props = defineProps({
   label: {
     type: String,
     required: true,
@@ -45,5 +48,23 @@ defineProps({
     type: Boolean,
     default: false,
   },
+  classes: {
+    type: String,
+    default: "",
+  },
 });
+
+const emit = defineEmits(["click"]);
+const handleClick = () => {
+  emit("click");
+};
+
+const computedClasses = computed(() =>
+  [
+    "border text-sm px-5 py-2.5 text-center transition ease-in delay-75",
+    props.classes
+      ? props.classes
+      : "w-full rounded-md text-white bg-primary hover:bg-transparent hover:border-primary hover:text-primary",
+  ].join(" ")
+);
 </script>
