@@ -46,3 +46,8 @@ export interface IUserLogin {
 export interface IEmailVerify {
   token: string;
 }
+
+export interface IPasswordChange {
+  oldPassword: string;
+  newPassword: string;
+}

@@ -23,10 +23,13 @@
             classes="text-primary border-primary hover:bg-primary hover:text-white w-40 h-fit"
             label="Modifier"
             type="button"
-            @click="open"
+            @click="openPersonalInfoModal"
           />
         </div>
-        <BaseModal :isOpen="isOpen" :close="close">
+        <BaseModal
+          :isOpen="isPersonalInfoModalOpen"
+          :close="closePersonalInfoModal"
+        >
           <template v-slot:header>
             <h2 class="text-lg font-semibold">
               Mettre à jour mes données personnelles
@@ -57,7 +60,21 @@
           classes="text-primary border-primary hover:bg-primary hover:text-white w-40"
           label="Modifier"
           type="button"
+          @click="openPasswordModal"
         />
+        <BaseModal :isOpen="isPasswordModalOpen" :close="closePasswordModal">
+          <template v-slot:header>
+            <h2 class="text-lg font-semibold">Changer le mot de passe</h2>
+          </template>
+          <template v-slot:body>
+            <ChangePasswordForm
+              :initialFormData="changePasswordFormData"
+              :loading="userStore.isLoading"
+              :submit-error="error"
+              @submit="handlePasswordFormSubmit"
+            />
+          </template>
+        </BaseModal>
       </div>
     </div>
   </div>
@@ -65,7 +82,7 @@
 
 <script setup lang="ts">
 import { LockClosedIcon, UserIcon } from "@heroicons/vue/24/outline";
-import { toRefs, computed } from "vue";
+import { toRefs, computed, ref } from "vue";
 
 import { useUserStore } from "../../stores";
 import { useModal } from "../../composables/useModal";
@@ -73,6 +90,8 @@ import BaseModal from "../../components/BaseModal.vue";
 import BaseButton from "../../components/form/BaseButton.vue";
 import PersonalInfosForm from "../../forms/modules/user/PersonalInfosForm.vue";
 import { IPersonalInfosFormData } from "../../forms/modules/user/PersonalInfosForm.vue";
+import ChangePasswordForm from "../../forms/modules/user/ChangePasswordForm.vue";
+import { IPasswordChange } from "../../api";
 import { IUser } from "../../api";
 
 const userStore = useUserStore();
@@ -81,7 +100,23 @@ const { user, error, status } = toRefs(userStore);
 const firstName = computed(() => userStore.user?.firstName || "");
 const lastName = computed(() => userStore.user?.lastName || "");
 
-const { isOpen, open, close } = useModal();
+const changePasswordFormData = ref({
+  oldPassword: "",
+  newPassword: "",
+  confirmPassword: "",
+});
+
+const {
+  isOpen: isPersonalInfoModalOpen,
+  open: openPersonalInfoModal,
+  close: closePersonalInfoModal,
+} = useModal();
+
+const {
+  isOpen: isPasswordModalOpen,
+  open: openPasswordModal,
+  close: closePasswordModal,
+} = useModal();
 
 const handleFormSubmit = async (data: IPersonalInfosFormData) => {
   try {
@@ -93,9 +128,24 @@ const handleFormSubmit = async (data: IPersonalInfosFormData) => {
     await userStore.updateProfile(updates as IUser);
 
     if (status.value === "success") {
-      close();
+      closePersonalInfoModal();
     } else {
       console.error("Mise à jour échouée:", error.value);
+    }
+  } catch (err) {
+    console.error("Erreur lors de la soumission:", err);
+    error.value = err;
+  }
+};
+
+const handlePasswordFormSubmit = async (data: IPasswordChange) => {
+  try {
+    await userStore.changePassword(data);
+
+    if (status.value === "success") {
+      closePasswordModal();
+    } else {
+      console.error("Changement de mot de passe échoué:", error.value);
     }
   } catch (err) {
     console.error("Erreur lors de la soumission:", err);

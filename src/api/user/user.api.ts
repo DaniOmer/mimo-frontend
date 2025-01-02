@@ -1,5 +1,5 @@
 import { httpClientPrivate } from "../../pluggins";
-import { IUser } from "./user.types";
+import { IUser, IPasswordChange } from "./user.types";
 
 const ROUTE_PREFIX = "/users";
 export const fetchUser = async (id: string, signal: AbortSignal) => {
@@ -26,6 +26,25 @@ export const updateUser = async (data: IUser, signal: AbortSignal) => {
     return response.data.data;
   } catch (error) {
     console.log("ERROR ON USER UPDATE : ", error);
+    throw error;
+  }
+};
+
+export const updatePassword = async (
+  data: IPasswordChange,
+  signal: AbortSignal
+) => {
+  try {
+    const response = await httpClientPrivate.put(
+      `${ROUTE_PREFIX}/password/update`,
+      data,
+      {
+        signal,
+      }
+    );
+    return response.data.data;
+  } catch (error) {
+    console.log("ERROR ON PASSWORD UPDATE : ", error);
     throw error;
   }
 };
