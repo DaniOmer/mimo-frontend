@@ -24,7 +24,7 @@
             irréversible.
           </slot>
         </div>
-
+        <p v-if="submitError" class="text-red-600">{{ submitError }}</p>
         <div class="flex justify-end space-x-3">
           <BaseButton
             label="Annuler"
@@ -51,9 +51,10 @@ import BaseButton from "./form/BaseButton.vue";
 
 defineProps<{
   isOpen: boolean;
+  loading?: boolean;
+  submitError?: string;
   close: () => void;
   confirm: () => void;
-  loading?: boolean;
 }>();
 </script>
 

@@ -44,6 +44,7 @@
         :close="closeDeleteAddress"
         :confirm="handleDeleteAddress"
         :loading="addressStore.isDeleteAddressLoading"
+        :submitError="deleteAddressState.error"
       />
     </div>
   </div>
@@ -62,7 +63,8 @@ import { IAddress } from "../../api";
 import DeleteModal from "../../components/DeleteModal.vue";
 
 const addressStore = useAddressStore();
-const { addresses, getAddressesState } = toRefs(addressStore);
+const { addresses, getAddressesState, deleteAddressState } =
+  toRefs(addressStore);
 
 const {
   isOpen: isAddModalOpen,
