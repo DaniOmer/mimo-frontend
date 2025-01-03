@@ -16,16 +16,28 @@
         :close="close"
         :handle-form-submit="handleAddressFormSubmit"
       />
+      <AddressCard
+        v-for="(address, index) in addresses"
+        :key="index"
+        :address="address"
+      />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { onMounted, ref, toRefs } from "vue";
 import { PlusCircleIcon } from "@heroicons/vue/24/outline";
+import { useToast } from "vue-toast-notification";
+
+import { IAddress } from "../../api";
 import { useModal } from "../../composables/useModal";
 import AddressModal from "../../components/AddressModal.vue";
-import { IAddress } from "../../api";
+import { useAddressStore } from "../../stores/modules/address.store";
+import AddressCard from "../../components/AddressCard.vue";
+
+const addressStore = useAddressStore();
+const { addresses, error } = toRefs(addressStore);
 
 const initalData = ref({
   firstName: "",
@@ -41,9 +53,20 @@ const initalData = ref({
   isDefault: false,
 });
 
+const $toast = useToast();
 const { isOpen, open, close } = useModal();
 
 const handleAddressFormSubmit = (data: IAddress) => {
   console.log("Address form submitted:", data);
 };
+
+onMounted(() => {
+  addressStore.getAddresses();
+  if (error.value) {
+    $toast.error(error.value, {
+      position: "top-right",
+      duration: 4000,
+    });
+  }
+});
 </script>
