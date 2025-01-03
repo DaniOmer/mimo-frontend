@@ -37,7 +37,7 @@
           nombreuses offres.
         </p>
         <div class="mt-10 flex justify-center">
-          <RouterLink :to="{ name: 'homepage' }">
+          <RouterLink :to="{ name: 'login' }">
             <span
               class="px-4 py-2 text-sm border border-primary rounded-md bg-transparent hover:bg-primary hover:text-white transition ease-in-out delay-75"
             >

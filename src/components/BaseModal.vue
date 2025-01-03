@@ -7,19 +7,19 @@
   >
     <transition name="modal" appear>
       <div
-        class="bg-white overflow-y-auto overflow-x-hidden w-full max-w-2xl max-h-full transition-all ease-in delay-200 shadow-md drop-shadow-md min-h-96 pb-10"
+        class="bg-white relative overflow-y-hidden w-full max-w-3xl max-h-[75vh] transition-all ease-in delay-200 shadow-md drop-shadow-md min-h-96 pb-10 rounded-sm"
       >
         <div
-          class="flex justify-end items-center border-b border-slate-300 py-2.5 px-2"
+          class="flex justify-end items-center border-b border-slate-300 py-2.5 px-2 absolute top-0 left-0 right-0 bg-white z-10"
         >
           <button type="button" class="btn-close" @click="close">
             <XMarkIcon class="w-7 h-7 text-primary" />
           </button>
         </div>
 
-        <div class="mx-4">
+        <div class="px-6 overflow-y-auto h-[75vh] py-10">
           <div
-            class="flex justify-between items-center font-semibold mt-2 mb-6 text-xl"
+            class="flex justify-between items-center font-semibold mt-8 mb-4 text-xl"
           >
             <slot name="header"> This is the default title! </slot>
           </div>

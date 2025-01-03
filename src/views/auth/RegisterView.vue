@@ -61,7 +61,7 @@ const handleFormSubmit = async (data: IRegisterFormData) => {
   await authStore.register(userData);
   if (authStore.status === "success") {
     $toast.success("Votre compte a été crée avec succès!", {
-      position: "top",
+      position: "top-right",
       duration: 3000,
     });
     router.push({ name: "registerConfirmation" });
