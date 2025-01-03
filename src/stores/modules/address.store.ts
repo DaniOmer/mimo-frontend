@@ -56,9 +56,7 @@ export const useAddressStore = defineStore("address", {
       await execute(() => addAddress(addressData, this.controller!.signal));
 
       if (status.value === "success" && data.value) {
-        this.addresses
-          ? this.addresses.push(data.value)
-          : (this.addresses = [data.value]);
+        this.getAddresses();
         this.addAddressState.status = "success";
       } else {
         this.addAddressState.error = error.value;

@@ -65,7 +65,7 @@ const handleAddressFormSubmit = async (
     close();
     $toast.success("Votre nouvelle adresse a bienn été ajouté", {
       position: "top-right",
-      duration: 3000,
+      duration: 4000,
     });
   } else if (addAddressState.value.error) {
     $toast.error(addAddressState.value.error.toString(), {
