@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="filter-select">
     <multiselect
       v-model="localValue"
       :options="options"
@@ -74,10 +74,12 @@ const onInput = (selected: Option | Option[]) => {
       ? selected.map((opt) => opt.value)
       : []
     : (selected as Option | null)?.value || null;
-
-  console.log('Émission de la nouvelle valeur depuis FilterSelect:', newValue);
   emit('update:modelValue', newValue);
 };
 </script>
 
-
+<style scoped>
+.filter-select {
+  min-width: 200px; 
+}
+</style>

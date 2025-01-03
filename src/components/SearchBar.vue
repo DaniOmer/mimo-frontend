@@ -7,7 +7,7 @@
       class="w-full p-2 pr-16 pl-10 rounded border border-gray-300 focus:outline-none focus:ring-1 focus:ring-tertiary"
     />
     
-    <SearchIcon
+    <MagnifyingGlassIcon
       width="20"
       height="20"
       class="w-5 h-5 text-gray-400 absolute left-3 top-1/2 transform -translate-y-1/2"
@@ -25,7 +25,7 @@
 
 <script setup lang="ts">
 import { ref, watch, defineProps, defineEmits } from 'vue';
-import { SearchIcon } from '@heroicons/vue/outline';
+import { MagnifyingGlassIcon } from '@heroicons/vue/24/outline';
 
 const props = defineProps({
   modelValue: {
