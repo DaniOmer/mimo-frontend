@@ -100,6 +100,22 @@
         </div>
       </template>
 
+      <template #profile="{ item }">
+        <div class="flex items-center">
+          <img
+            v-if="item.avatar"
+            :src="item.avatar"
+            alt="Avatar de l'utilisateur"
+            class="w-8 h-8 rounded-full object-cover"
+          />
+          <!-- Remplacez PencilSquareIcon par une icône par défaut appropriée -->
+          <UserIcon
+            v-else
+            class="w-8 h-8 text-gray-400"
+          />
+        </div>
+      </template>
+
       <template #status="{ item }">
         <span
           :class="[
@@ -187,10 +203,12 @@ import {
   TrashIcon,
   NoSymbolIcon,
   CheckCircleIcon,
+  UserIcon,
 } from "@heroicons/vue/24/solid";
 
 import { IRole, IUser } from "../../api";
 import { useToast } from "vue-toast-notification";
+import { formatDateTime } from "../../utils/date.ts";
 
 interface Option {
   label: string;
@@ -218,6 +236,7 @@ const statusOptions = ref<Option[]>([
 ]);
 
 const columns = [
+  { key: "profile", label: "Profil", sortable: false },
   { key: "firstName", label: "Prénom", sortable: true },
   { key: "lastName", label: "Nom", sortable: true },
   { key: "email", label: "Email", sortable: true },
@@ -228,6 +247,7 @@ const columns = [
     sortable: true,
     align: "center" as "center",
   },
+  { key: "createdAt", label: "Date Création", sortable: true, format: (value: string) => formatDateTime(new Date(value), false), align: "center" as "center"},
 ];
 
 onMounted(async () => {
