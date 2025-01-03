@@ -32,3 +32,38 @@ export const addAddress = async (
     throw error;
   }
 };
+
+export const updateAddress = async (
+  addressId: string,
+  addressData: Omit<IAddress, "_id" | "user">,
+  signal: AbortSignal
+) => {
+  try {
+    const response = await httpClientPrivate.put(
+      `${ROUTE_PREFIX}/${addressId}`,
+      addressData,
+      {
+        signal,
+      }
+    );
+    return response.data.data;
+  } catch (error) {
+    console.log("ERROR ON UPDATING ADDRESS : ", error);
+    throw error;
+  }
+};
+
+export const deleteAddress = async (addressId: string, signal: AbortSignal) => {
+  try {
+    const response = await httpClientPrivate.put(
+      `${ROUTE_PREFIX}/${addressId}`,
+      {
+        signal,
+      }
+    );
+    return response.data.data;
+  } catch (error) {
+    console.log("ERROR ON UPDATING ADDRESS : ", error);
+    throw error;
+  }
+};

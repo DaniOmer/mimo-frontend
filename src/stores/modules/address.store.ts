@@ -1,6 +1,10 @@
 import { defineStore } from "pinia";
 import { useApiRequest } from "../../composables";
-import { addAddress, getUserAddresses } from "../../api/address/address.api";
+import {
+  addAddress,
+  updateAddress,
+  getUserAddresses,
+} from "../../api/address/address.api";
 import { IAddress } from "../../api";
 
 export const useAddressStore = defineStore("address", {
@@ -54,6 +58,31 @@ export const useAddressStore = defineStore("address", {
       }
 
       await execute(() => addAddress(addressData, this.controller!.signal));
+
+      if (status.value === "success" && data.value) {
+        this.getAddresses();
+        this.addAddressState.status = "success";
+      } else {
+        this.addAddressState.error = error.value;
+        this.addAddressState.status = "failed";
+      }
+    },
+
+    async updateAddress(
+      addressData: Omit<IAddress, "_id" | "user">,
+      addressId: string
+    ) {
+      const { execute, status, error, data } = useApiRequest<IAddress>();
+      this.addAddressState.status = "pending";
+      this.addAddressState.error = null;
+
+      if (!this.controller) {
+        this.controller = new AbortController();
+      }
+      await execute(() =>
+        updateAddress(addressId, addressData, this.controller!.signal)
+      );
+      console.log("DONE");
 
       if (status.value === "success" && data.value) {
         this.getAddresses();
