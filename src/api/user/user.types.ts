@@ -47,6 +47,24 @@ export interface IEmailVerify {
   token: string;
 }
 
+export interface IuserInvitation {
+  firstName: string;
+  lastName: string;
+  email: string;
+  roleId: string;
+} 
+
+export interface IuserFromInvitation {
+  tokenHash: string;
+  password: string;
+  isTermsOfSale: boolean;
+}
+
+export interface IPasswordUpdate {
+  oldPassword: string;
+  newPassword: string;
+}
+
 export interface IPasswordChange {
   oldPassword: string;
   newPassword: string;
