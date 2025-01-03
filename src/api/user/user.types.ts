@@ -21,11 +21,9 @@ export interface IUserCreate {
   password: string;
   avatar?: string;
   isTermsOfSale: boolean;
-  authType: AuthType;
-  roles: string[];
 }
 
-export interface IUserCreateResponse {
+export interface IUser {
   _id: string;
   firstName: string;
   lastName: string;
@@ -38,4 +36,18 @@ export interface IUserCreateResponse {
   isVerified: boolean;
   isDisabled: boolean;
   authType: AuthType;
+}
+
+export interface IUserLogin {
+  email: string;
+  password: string;
+}
+
+export interface IEmailVerify {
+  token: string;
+}
+
+export interface IPasswordChange {
+  oldPassword: string;
+  newPassword: string;
 }

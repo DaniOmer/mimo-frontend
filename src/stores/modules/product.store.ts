@@ -43,7 +43,7 @@ export const useProductStore = defineStore("product", {
     },
 
     async loadProductWithVariants(productId: string) {
-      const { execute, loading, error, data } = useApiRequest();
+      const { execute, error, data } = useApiRequest();
       await execute(() => fetchProductWithVariants(productId));
     
       if (data.value) {
@@ -55,7 +55,6 @@ export const useProductStore = defineStore("product", {
       }
     
       this.error = error.value;
-      this.loading = loading.value;
     }    
   },
 });

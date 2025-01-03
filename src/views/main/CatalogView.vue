@@ -14,9 +14,6 @@
     <div v-if="error" class="text-red-500 text-center mt-4">
       Erreur lors du chargement des produits : {{ error }}
     </div>
-    <div v-else-if="loading" class="text-center mt-4">
-      Chargement des produits...
-    </div>
   </div>
 </template>
 
@@ -30,7 +27,7 @@ import { useProductStore } from "../../stores/modules/product.store";
 
 const productStore = useProductStore();
 const products = ref(productStore.products);
-const { loading, error } = useApiRequest<IProduct[]>();
+const { error } = useApiRequest<IProduct[]>();
 const router = useRouter();
 
 const loadProducts = async () => {
