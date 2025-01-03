@@ -8,7 +8,7 @@
           <NavItem :to="{ name: 'userPersonnalInfos' }"
             >Données personnelles</NavItem
           >
-          <NavItem :to="{ name: 'homepage' }">Adresses</NavItem>
+          <NavItem :to="{ name: 'userAddress' }">Adresses</NavItem>
           <NavItem :to="{ name: 'homepage' }">Newsletter</NavItem>
         </ul>
       </div>
