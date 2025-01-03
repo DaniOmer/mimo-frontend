@@ -37,7 +37,7 @@ import { useAddressStore } from "../../stores/modules/address.store";
 import AddressCard from "../../components/AddressCard.vue";
 
 const addressStore = useAddressStore();
-const { addresses, error } = toRefs(addressStore);
+const { addresses, getAddressesState, addAddressState } = toRefs(addressStore);
 
 const initalData = ref({
   firstName: "",
@@ -56,14 +56,30 @@ const initalData = ref({
 const $toast = useToast();
 const { isOpen, open, close } = useModal();
 
-const handleAddressFormSubmit = (data: IAddress) => {
-  console.log("Address form submitted:", data);
+const handleAddressFormSubmit = async (
+  data: Omit<IAddress, "_id" | "user">
+) => {
+  await addressStore.addAddress(data);
+
+  if (addAddressState.value.status === "success") {
+    close();
+    $toast.success("Votre nouvelle adresse a bienn été ajouté", {
+      position: "top-right",
+      duration: 3000,
+    });
+  } else if (addAddressState.value.error) {
+    $toast.error(addAddressState.value.error.toString(), {
+      position: "top-right",
+      duration: 4000,
+    });
+    return;
+  }
 };
 
-onMounted(() => {
-  addressStore.getAddresses();
-  if (error.value) {
-    $toast.error(error.value, {
+onMounted(async () => {
+  await addressStore.getAddresses();
+  if (getAddressesState.value.error) {
+    $toast.error(getAddressesState.value.error.toString(), {
       position: "top-right",
       duration: 4000,
     });

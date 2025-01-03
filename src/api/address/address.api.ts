@@ -10,6 +10,7 @@ export const getUserAddresses = async (signal: AbortSignal) => {
     return response.data.data;
   } catch (error) {
     console.log("ERROR ON FETCHING ADDRESSES : ", error);
+    throw error;
   }
 };
 
@@ -28,5 +29,6 @@ export const addAddress = async (
     return response.data.data;
   } catch (error) {
     console.log("ERROR ON ADDING NEW ADDRESS : ", error);
+    throw error;
   }
 };

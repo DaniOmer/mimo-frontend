@@ -1,5 +1,5 @@
 <template>
-  <div class="border py-8 px-6 flex flex-col justify-between">
+  <div class="border py-8 px-6 flex flex-col justify-between h-96">
     <h1 class="font-medium text-2xl mb-4">
       {{ address.firstName }} {{ address.lastName }}
     </h1>

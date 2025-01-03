@@ -14,7 +14,11 @@ export const addressSchema = z
       .max(50, "Le nom ne peut pas dépasser 50 caractères.")
       .trim()
       .toLowerCase(),
-    streetNumber: z.string(),
+    streetNumber: z.string().regex(/^\d+[a-zA-Z\- ]*$/, {
+      message:
+        "Le numéro de rue doit commencer par un ou plusieurs chiffres et peut contenir des lettres ou des caractères spéciaux comme des espaces ou des tirets.",
+    }),
+
     street: z
       .string()
       .min(2, "La rue doit comporter au moins 2 caractères.")

@@ -26,6 +26,7 @@ export function useApiRequest<T = any>() {
           err?.response?.data?.message ||
           err.message ||
           "An unexpected error occurred.";
+        console.log("MESSAGE FROM COMPOSABLE", error.value);
         status.value = "failed";
         console.error("API ERROR THROW IN COMPOSABLE :", err);
         return null;

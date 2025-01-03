@@ -82,8 +82,6 @@ export const useAuthStore = defineStore("auth", {
       this.status = status.value;
 
       const userStore = useUserStore();
-      console.log("LOGIN DATA", data.value);
-      console.log("USER ID : ", data.value?.user._id);
       await userStore.fetchProfile(data.value?.user._id as string);
     },
 
