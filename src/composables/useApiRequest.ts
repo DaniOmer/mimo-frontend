@@ -2,7 +2,7 @@ import { ref } from "vue";
 
 export function useApiRequest<T = any>() {
   const data = ref<T | null>(null);
-  const status = ref<"idle" | "pending" | "success" | "failed">("idle");
+  const status = ref<"pending" | "success" | "failed">("pending");
   const error = ref<string | null>(null);
   let controller: AbortController | null = null;
 
@@ -12,7 +12,7 @@ export function useApiRequest<T = any>() {
     controller = new AbortController();
 
     try {
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      // await new Promise((resolve) => setTimeout(resolve, 2000)); //USE FOR DEBUG ONLY
       const result = await action();
       data.value = result;
       status.value = "success";

@@ -9,7 +9,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
+<<<<<<< HEAD
     "@heroicons/vue": "^1.0.6",
+=======
+    "@heroicons/vue": "^2.2.0",
+>>>>>>> dev
     "@pinia/colada": "^0.13.1",
     "@vee-validate/zod": "^4.15.0",
     "axios": "^1.7.9",
