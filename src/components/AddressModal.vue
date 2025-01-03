@@ -7,6 +7,7 @@
       <AddressForm
         :initialFormData="initialFormData"
         @submit="handleFormSubmit"
+        :loading="loading"
       />
     </template>
   </BaseModal>

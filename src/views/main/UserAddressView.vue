@@ -17,7 +17,7 @@
         :key="index"
         :address="address"
         @click:update="prepareUpdateAddress"
-        @click:delete="handleDeleteAddress"
+        @click:delete="prepareDeleateAddress"
       />
 
       <!-- MODAL FOR ADD ADDRESS -->
@@ -26,6 +26,7 @@
         :isOpen="isAddModalOpen"
         :close="closeAddAddress"
         :handleFormSubmit="handleAddAddress"
+        :loading="addressStore.isAddAddressLoading"
       />
 
       <!-- MODAL FOR UPDATE ADDRESS -->
@@ -34,6 +35,15 @@
         :isOpen="isUpdateModalOpen"
         :close="closeUpdateAddress"
         :handleFormSubmit="handleUpdateAddress"
+        :loading="addressStore.isUpdateAddressLoading"
+      />
+
+      <!-- MODAL FOR DELETE ADDRESS -->
+      <DeleteModal
+        :isOpen="isDeleteModalOpen"
+        :close="closeDeleteAddress"
+        :confirm="handleDeleteAddress"
+        :loading="addressStore.isDeleteAddressLoading"
       />
     </div>
   </div>
@@ -49,6 +59,7 @@ import AddressCard from "../../components/AddressCard.vue";
 import { useModal } from "../../composables/useModal";
 import { useAddressStore } from "../../stores/modules/address.store";
 import { IAddress } from "../../api";
+import DeleteModal from "../../components/DeleteModal.vue";
 
 const addressStore = useAddressStore();
 const { addresses, getAddressesState } = toRefs(addressStore);
@@ -62,6 +73,11 @@ const {
   isOpen: isUpdateModalOpen,
   open: openUpdateAddress,
   close: closeUpdateAddress,
+} = useModal();
+const {
+  isOpen: isDeleteModalOpen,
+  open: openDeleteAddress,
+  close: closeDeleteAddress,
 } = useModal();
 
 const formData = ref({
@@ -78,11 +94,18 @@ const formData = ref({
   isDefault: false,
 });
 
+const selectedAddress = ref<IAddress | null>(null);
+
 const $toast = useToast();
 
 const prepareUpdateAddress = (address: IAddress) => {
   formData.value = { ...address, state: address.state || "" };
   openUpdateAddress();
+};
+
+const prepareDeleateAddress = (address: IAddress) => {
+  selectedAddress.value = address;
+  openDeleteAddress();
 };
 
 const handleAddAddress = async (data: Omit<IAddress, "_id" | "user">) => {
@@ -91,13 +114,13 @@ const handleAddAddress = async (data: Omit<IAddress, "_id" | "user">) => {
 };
 
 const handleUpdateAddress = async (data: IAddress) => {
-  console.log(data);
   await addressStore.updateAddress(data, data._id);
-  handleResponse(addressStore.addAddressState, closeUpdateAddress);
+  handleResponse(addressStore.updateAddressState, closeUpdateAddress);
 };
 
-const handleDeleteAddress = async (address: IAddress) => {
-  console.log("WANT TO DELETE: " + address);
+const handleDeleteAddress = async () => {
+  await addressStore.deleteAddress(selectedAddress.value?._id as string);
+  handleResponse(addressStore.deleteAddressState, closeDeleteAddress);
 };
 
 const handleResponse = (state: any, closeModal?: () => void) => {

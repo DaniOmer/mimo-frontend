@@ -55,7 +55,7 @@ export const updateAddress = async (
 
 export const deleteAddress = async (addressId: string, signal: AbortSignal) => {
   try {
-    const response = await httpClientPrivate.put(
+    const response = await httpClientPrivate.delete(
       `${ROUTE_PREFIX}/${addressId}`,
       {
         signal,
