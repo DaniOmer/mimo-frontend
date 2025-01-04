@@ -1,8 +1,8 @@
 <template>
-  <Modal :visible="visible" @close="onClose" :title="'Modifier l\'Utilisateur'">
+  <Modal :visible="visible" @close="onClose" :title="'Inviter un Utilisateur'">
     <form @submit.prevent="handleSubmit" class="space-y-4">
       <InputField
-        v-model="localUserData.firstName"
+        v-model="localInviteData.firstName"
         name="firstName"
         label="Prénom"
         placeholder="Saisir le prénom"
@@ -10,7 +10,7 @@
       />
 
       <InputField
-        v-model="localUserData.lastName"
+        v-model="localInviteData.lastName"
         name="lastName"
         label="Nom"
         placeholder="Saisir le nom"
@@ -18,7 +18,7 @@
       />
 
       <InputField
-        v-model="localUserData.email"
+        v-model="localInviteData.email"
         name="email"
         label="Email"
         type="email"
@@ -29,7 +29,7 @@
       <div class="w-full mt-3">
         <label class="block text-sm font-medium text-primary"> Rôle </label>
         <FilterSelect
-          v-model="localUserData.role"
+          v-model="localInviteData.role"
           :options="roles"
           placeholder="Sélectionner un rôle"
           :isMultiple="false"
@@ -45,14 +45,14 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, watch } from "vue";
+import { reactive } from "vue";
 import { defineProps, defineEmits } from "vue";
-import { useFormValidation } from "../../../composables/useFormValidation";
-import InputField from "../../../components/form/InputField.vue";
-import BaseButton from "../../../components/form/BaseButton.vue";
-import Modal from "../../../components/Modal.vue";
-import FilterSelect from "../../../components/FilterSelect.vue";
-import { editUserSchema } from "../../schema/editUserSchema";
+import { useFormValidation } from "../../../../composables/useFormValidation";
+import InputField from "../../../../components/form/InputField.vue";
+import BaseButton from "../../../../components/form/BaseButton.vue";
+import Modal from "../../../../components/Modal.vue";
+import FilterSelect from "../../../../components/FilterSelect.vue";
+import { inviteUserSchema } from "../../../schema/inviteUserSchema";
 
 interface RoleOption {
   label: string;
@@ -61,11 +61,11 @@ interface RoleOption {
 
 const props = defineProps<{
   visible: boolean;
-  userData: {
-    firstName: string;
-    lastName: string;
+  initialData: {
     email: string;
     role: string;
+    firstName: string;
+    lastName: string;
   };
   roles: RoleOption[];
   submitLabel?: string;
@@ -75,32 +75,28 @@ const props = defineProps<{
 const emit = defineEmits<{
   (
     e: "submit",
-    data: { firstName: string; lastName: string; email: string; role: string }
+    data: { email: string; role: string; firstName: string; lastName: string }
   ): void;
   (e: "close"): void;
 }>();
 
-const localUserData = reactive({
-  ...props.userData,
-  role: props.userData.role || props.roles[0]?.value || '', 
+const localInviteData = reactive({
+  ...props.initialData,
+  role: props.initialData.role || props.roles[0]?.value || '', 
 });
 
-const { errors, validate } = useFormValidation(editUserSchema);
+const { errors, validate } = useFormValidation(inviteUserSchema);
 
 function handleSubmit() {
-  if (!validate(localUserData)) {
+  if (!validate(localInviteData)) {
     return;
   }
-  emit("submit", { ...localUserData });
+  emit("submit", { ...localInviteData });
 }
 
 function onClose() {
   emit("close");
 }
 
-const submitLabel = props.submitLabel || "Enregistrer";
-
-watch(() => localUserData.role, (newValue) => {
-  console.log("Rôle sélectionné :", newValue);
-});
+const submitLabel = props.submitLabel || "Inviter";
 </script>
