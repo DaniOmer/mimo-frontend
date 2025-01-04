@@ -1,8 +1,8 @@
 <template>
   <div
-    class="card-product bg-white rounded-lg shadow-md overflow-hidden border border-gray-200 transition-transform transform hover:scale-105"
+    class="card-product bg-white rounded-lg shadow-sm overflow-hidden border border-gray-200 hover:shadow-md transition-all transform hover:-translate-y-1"
   >
-    <div class="aspect-square">
+    <div class="h-36">
       <img
         :src="image"
         :alt="title"

@@ -24,13 +24,6 @@ export interface IProductImage {
   order?: number;
 }
 
-export interface ICategory {
-  _id: string;
-  name: string;
-  description?: string;
-  parentId?: string;  
-}
-
 export interface IProductFeature {
   _id: string;
   name: string; 
