@@ -19,7 +19,7 @@
 
         <div class="mx-4">
           <div
-            class="flex justify-between items-center font-semibold mt-2 mb-6 text-xl"
+            class="flex justify-center items-center font-semibold mt-2 mb-6 text-xl"
           >
             <slot name="header"> This is the default title! </slot>
           </div>

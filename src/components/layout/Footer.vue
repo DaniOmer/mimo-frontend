@@ -20,11 +20,30 @@
           <a href="#" class="hover:underline me-4 md:me-6">CGV</a>
         </li>
         <li>
-          <a href="#" class="hover:underline">Contact</a>
+          <a href="#" class="hover:underline me-4 md:me-6">Contact</a>
+        </li>
+        <li>
+          <a href="#" class="hover:underline" @click.prevent="showCookieModal"
+            >Cookies</a
+          >
         </li>
       </ul>
     </div>
+    <CookieModal :isOpen="isModalVisible" :close="closeCookieModal" />
   </footer>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { ref } from "vue";
+import CookieModal from "../../components/CookieModal.vue";
+
+const isModalVisible = ref(false);
+
+function showCookieModal() {
+  isModalVisible.value = true;
+}
+
+function closeCookieModal() {
+  isModalVisible.value = false;
+}
+</script>
