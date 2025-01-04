@@ -67,18 +67,18 @@
         </div>
       </template>
 
-      <template #row-actions="{ item }">
+      <template #row-actions="{ item, closeActionMenu }">
         <div class="flex flex-col px-2 gap-2 items-start">
           <button
             class="flex items-center text-blue-500 hover:text-blue-700"
-            @click.stop="openEditModal(item)"
+            @click.stop="openEditModal(item); closeActionMenu()"
           >
             <PencilSquareIcon class="w-4 h-4 mr-1" /> Editer
           </button>
 
           <button
             class="flex items-center text-red-500 hover:text-red-700"
-            @click.stop="confirmDelete(item)"
+            @click.stop="confirmDelete(item); closeActionMenu()"
           >
             <TrashIcon class="w-4 h-4 mr-1" /> Supprimer
           </button>
@@ -86,7 +86,7 @@
           <button
             v-if="!item.isDisabled"
             class="flex items-center text-yellow-500 hover:text-yellow-700"
-            @click.stop="confirmDeactivate(item)"
+            @click.stop="confirmDeactivate(item); closeActionMenu()"
           >
             <NoSymbolIcon class="w-4 h-4 mr-1" /> Désactiver
           </button>
@@ -194,8 +194,8 @@ import SearchBar from "../../components/SearchBar.vue";
 import FilterSelect from "../../components/FilterSelect.vue";
 import Table from "../../components/Table.vue";
 import ConfirmationDialog from "../../components/ConfirmationDialog.vue";
-import EditUserFormModal from "../../forms/modules/admin/EditUserFormModal.vue";
-import InviteUserModal from "../../forms/modules/admin/InviteUserFormModal.vue";
+import EditUserFormModal from "../../forms/modules/admin/userAdmin/EditUserFormModal.vue";
+import InviteUserModal from "../../forms/modules/admin/userAdmin/InviteUserFormModal.vue";
 import Loader from "../../components/BaseLoader.vue";
 
 import {

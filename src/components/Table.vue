@@ -217,6 +217,7 @@
           <slot
             name="row-actions"
             :item="openActionData"
+            :closeActionMenu="closeActionMenu"
             v-if="$slots['row-actions']"
           />
           <!-- Sinon, on affiche actions[] -->

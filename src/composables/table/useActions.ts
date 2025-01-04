@@ -28,9 +28,12 @@ export function useActions(props: any, emit: any) {
     act: { onClick: (item: any) => void },
     row: any
   ) {
-    act.onClick(row);
-    closeActionMenu();
+    if (act && act.onClick) {
+      act.onClick(row); 
+    }
+    closeActionMenu(); 
   }
+  
 
   function itemUniqueKey(rowData: any, idx: number) {
     return props.itemKey ? rowData[props.itemKey] : String(idx);
