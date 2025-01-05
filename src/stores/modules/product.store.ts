@@ -3,18 +3,14 @@ import {
   fetchAllProducts,
   searchProducts,
   fetchProductById,
-  IProduct,
   IProductFeature,
-  IProductVariant, 
+  IProductWithVariants,
 } from "../../api/";
 import { useCategoryStore } from "./category.store";
 import { useColorStore } from "./color.store";
 import { useSizeStore } from "./size.store";
 import { useProductFeatureStore } from "./productFeature.store";
 
-interface IProductWithVariants extends IProduct {
-  variants: IProductVariant[];
-}
 
 export const useProductStore = defineStore("product", {
   state: () => ({
