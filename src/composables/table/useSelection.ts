@@ -1,48 +1,34 @@
-import { ref, computed } from "vue";
+import { ref, computed, Ref } from "vue";
 
-export function useSelection(props: any, emit: any, paginatedItems: any) {
-  const selectedKeys = ref<string[]>([]);
+export function useSelection(props: any, emit: any, paginatedItems: Ref<any[]>) {
+  const selectedKeys: Ref<string[]> = ref([]);
 
-  function getItemKey(rowData: any, idx: number) {
-    return props.itemKey ? rowData[props.itemKey] : String(idx);
-  }
-
-  function toggleSelectAll(e: Event) {
-    const isChecked = (e.target as HTMLInputElement).checked;
-    if (isChecked) {
-      const keysOnPage = paginatedItems.value.map((itm: any, i: number) =>
-        getItemKey(itm, i)
-      );
-      selectedKeys.value = [
-        ...new Set([...selectedKeys.value, ...keysOnPage]),
-      ];
+  function toggleSelectAll() {
+    if (allSelected.value) {
+      selectedKeys.value = [];
     } else {
-      const keysOnPage = paginatedItems.value.map((itm: any, i: number) =>
-        getItemKey(itm, i)
-      );
-      selectedKeys.value = selectedKeys.value.filter(
-        (k: string) => !keysOnPage.includes(k)
-      );
+      selectedKeys.value = paginatedItems.value.map((item: any) => String(item[props.itemKey]));
     }
     emit("selection-change", selectedKeys.value);
   }
 
-  function toggleRowSelect(rowData: any, idx: number) {
-    const key = getItemKey(rowData, idx);
-    if (selectedKeys.value.includes(key)) {
-      selectedKeys.value = selectedKeys.value.filter((k: string) => k !== key);
+  function toggleRowSelect(item: any, index: number) {
+    const key = getItemKey(item, index);
+    const idx = selectedKeys.value.indexOf(key);
+    if (idx > -1) {
+      selectedKeys.value.splice(idx, 1);
     } else {
       selectedKeys.value.push(key);
     }
     emit("selection-change", selectedKeys.value);
   }
 
+  function getItemKey(item: any, index: number): string {
+    return String(item[props.itemKey]) || String(index);
+  }
+
   const allSelected = computed(() => {
-    if (!paginatedItems.value.length) return false;
-    const keysOnPage = paginatedItems.value.map((itm: any, i: number) =>
-      getItemKey(itm, i)
-    );
-    return keysOnPage.every((k: string) => selectedKeys.value.includes(k));
+    return paginatedItems.value.length > 0 && paginatedItems.value.every((item: any) => selectedKeys.value.includes(String(item[props.itemKey])));
   });
 
   return {
