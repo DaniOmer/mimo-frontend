@@ -6,6 +6,7 @@ import LoginView from "../../views/auth/LoginView.vue";
 import RegisterConfirmationView from "../../views/auth/RegisterConfirmationView.vue";
 import RegisterEmailConfirmationView from "../../views/auth/RegisterEmailConfirmationView.vue";
 import { guestGuard } from "../../middlewares/guestGuard";
+import CreateUserFromInvitationView from "../../views/auth/createUserFromInvitationView.vue";
 
 export const authRoutes: RouteRecordRaw[] = [
   {
@@ -35,5 +36,11 @@ export const authRoutes: RouteRecordRaw[] = [
         props: (route) => ({ token: route.query.token }),
       },
     ],
+  },
+  {
+    path: "/users/register",
+    name: "userRegister",
+    beforeEnter: guestGuard,
+    component: CreateUserFromInvitationView, 
   },
 ];

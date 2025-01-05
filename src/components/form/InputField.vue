@@ -9,7 +9,7 @@
     </label>
     <input
       :id="name"
-      v-model="model"
+      v-model="internalValue"
       :type="type"
       :placeholder="placeholder"
       class="block w-full rounded-md border mt-1 px-3 py-2 border-tertiary shadow-sm focus:outline-quaternary sm:text-sm"
@@ -22,13 +22,14 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps } from "vue";
+import { ref, watch } from "vue";
+import { PropType } from "vue";
 
-const model = defineModel();
-
-defineProps({
+const props = defineProps({
   modelValue: {
-    type: String,
+    type: [String, Number, Boolean, null, undefined] as PropType<
+      string | number | boolean | null | undefined
+    >,
     required: true,
   },
   name: {
@@ -52,4 +53,24 @@ defineProps({
     required: false,
   },
 });
+
+const emit = defineEmits<{
+  (e: "update:modelValue", value: string | number | boolean | null | undefined): void;
+}>();
+
+const internalValue = ref(props.modelValue);
+
+watch(
+  () => props.modelValue,
+  (newValue) => {
+    internalValue.value = newValue;
+  }
+);
+
+watch(
+  internalValue,
+  (newValue) => {
+    emit("update:modelValue", newValue);
+  }
+);
 </script>
