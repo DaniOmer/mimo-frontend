@@ -27,11 +27,6 @@
       :pageSize="10"
       :enableActions="true"
     >
-      <template #table-title>
-        <div class="flex justify-between items-center">
-          <h2 class="text-lg font-semibold">Liste des catégories</h2>
-        </div>
-      </template>
 
       <template #table-controls>
         <div class="flex flex-wrap gap-4 items-center justify-between">

@@ -2,6 +2,10 @@
   <div class="p-6">
     <h1 class="text-2xl font-bold mb-6">Administration des couleurs</h1>
 
+    <p class="mt-4 mb-4 text-sm">
+        Vous pouvez gérer les couleurs disponibles pour les produits.
+    </p>
+
     <div
       v-if="colorStore.error"
       class="mb-4 p-4 bg-red-100 text-red-700 rounded"

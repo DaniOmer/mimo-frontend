@@ -3,9 +3,6 @@
     <div
       class="px-4 py-3 border-b border-gray-200 flex items-center justify-between"
     >
-      <slot name="table-title">
-        <h2 class="font-semibold text-lg">Table Title</h2>
-      </slot>
       <slot name="table-controls" />
     </div>
 

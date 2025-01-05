@@ -4,6 +4,10 @@
       Administration des caractéristiques produits
     </h1>
 
+    <p class="mt-4 mb-4 text-sm">
+        Vous pouvez gérer les caractéristiques des produits.
+    </p>
+
     <div
       v-if="productFeatureStore.error"
       class="mb-4 p-4 bg-red-100 text-red-700 rounded"
