@@ -1,33 +1,42 @@
-import { IProductImage } from './productImage.types';
-import { IProductVariant } from './productVariant.types';
 export interface IProduct {
   _id: string;
   name: string;
+  description: string;
+  priceEtx: number;
+  priceVat: number;
+  priceRange?: string;
+  stripeId: string;
+  isActive: boolean;
+  hasVariants?: boolean;
+  variants?: any[];
+  inventory?: any[];
+  images: IProductImage[] | string[];
+  categoryIds: string[];
+  featureIds: string[];
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface IProductImage {
+  _id: string;
+  product_id: string;
+  url: string;
+  isPrimary?: boolean;
+  altText?: string;
+  resolution?: string;
+  type?: string;
+  order?: number;
+}
+
+export interface ICategory {
+  _id: string;
+  name: string;
   description?: string;
-  priceEtx?: number;
-  priceVat?: number;
-  stripeId?: string;
-  isActive?: boolean;
-  images?: IProductImage[];
-  categoryIds?: string[];
-  featureIds?: string[];
-  createdAt?: string;
-  updatedAt?: string;
-  hasVariants: boolean;
+  parentId?: string;  
 }
 
-export interface IFilters {
-  name?: string;
-  categoryIds?: string[];
-  colorIds?: string[];
-  sizeIds?: string[];
-  minPrice?: number;
-  maxPrice?: number;
+export interface IProductFeature {
+  _id: string;
+  name: string; 
+  description?: string; 
 }
-
-export interface IProductWithVariants extends IProduct {
-  variants: IProductVariant[];
-}
-
-
-

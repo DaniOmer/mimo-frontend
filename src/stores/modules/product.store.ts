@@ -1,141 +1,150 @@
 import { defineStore } from "pinia";
+import { useApiRequest } from "../../composables";
 import {
-  fetchAllProducts,
-  searchProducts,
-  fetchProductById,
-  IProductFeature,
-  IProductWithVariants,
-} from "../../api/";
-import { useCategoryStore } from "./category.store";
-import { useColorStore } from "./color.store";
-import { useSizeStore } from "./size.store";
-import { useProductFeatureStore } from "./productFeature.store";
-
+  fetchActiveProducts,
+  fetchProductWithVariants,
+  fetchProductFilters,
+} from "../../api/product/product.api";
+import { IProduct } from "../../api/product/product.types";
+import { IProductVariant } from "../../api/product/productVariant.types";
 
 export const useProductStore = defineStore("product", {
   state: () => ({
-    products: [] as IProductWithVariants[],
-    product: null as IProductWithVariants | null,
-    categories: [] as { _id: string; name: string }[],
-    colors: [] as { _id: string; name: string; hexCode: string }[],
-    sizes: [] as { _id: string; name: string }[],
-    productFeatures: [] as IProductFeature[],
-    filters: {
-      name: "",
-      categoryIds: [] as string[],
-      colorIds: [] as string[],
-      sizeIds: [] as string[],
-      minPrice: null as number | null,
-      maxPrice: null as number | null,
-    },
-    loading: false,
-    error: null as string | null,
+    products: [] as IProduct[],
+    productsWithPriceInfo: [] as any[],
+    selectedProduct: null as IProduct | null,
+    filters: null as any | null,
+    variants: [] as IProductVariant[],
+    error: null as any | null,
+    status: "idle" as "idle" | "pending" | "success" | "failed",
+    controller: null as AbortController | null,
   }),
 
-  getters: {
-    filteredProducts(state) {
-      return state.products.filter((product) => {
-        const matchesName =
-          !state.filters.name ||
-          product.name.toLowerCase().includes(state.filters.name.toLowerCase());
-        const matchesCategory =
-          !state.filters.categoryIds.length ||
-          product.categoryIds?.some((id) =>
-            state.filters.categoryIds.includes(id)
-          );
-        const matchesColor =
-          !state.filters.colorIds.length ||
-          product.featureIds?.some((id) => state.filters.colorIds.includes(id));
-        const matchesSize =
-          !state.filters.sizeIds.length ||
-          product.variants?.some((variant) =>
-            state.filters.sizeIds.includes(variant.sizeId)
-          );
-        const matchesMinPrice =
-          state.filters.minPrice === null ||
-          product.variants?.some((variant) => variant.priceVat >= state.filters.minPrice!);
-        const matchesMaxPrice =
-          state.filters.maxPrice === null ||
-          product.variants?.some((variant) => variant.priceVat <= state.filters.maxPrice!);
-        return (
-          matchesName &&
-          matchesCategory &&
-          matchesColor &&
-          matchesSize &&
-          matchesMinPrice &&
-          matchesMaxPrice
-        );
-      });
-    },
+  persist: {
+    pick: ["products", "selectedProduct", "filters"],
   },
 
+  getters: {
+    isLoading: (state) => state.status === "pending",
+
+    getProductsWithPriceInfo(state) {
+      return state.productsWithPriceInfo;
+    },
+
+    uniqueCategories(state) {
+      return (
+        state.selectedProduct?.categoryIds?.map(
+          (category: any) => category.name
+        ) || []
+      );
+    },
+    uniqueFeatures(state) {
+      return (
+        state.selectedProduct?.featureIds?.map(
+          (feature: any) => feature.name
+        ) || []
+      );
+    },
+    uniqueSizes(state) {
+      return state.variants
+        ? [...new Set(state.variants.map((variant) => variant.sizeId.name))]
+        : [];
+    },
+    uniqueColors(state) {
+      return state.variants
+        ? state.variants.map((variant) => ({
+            name: variant.colorId.name,
+            hexCode: variant.colorId.hexCode,
+          }))
+        : [];
+    },
+  },
   actions: {
-    async loadInitialData() {
-      this.loading = true;
+    async getFilters() {
+      const { execute, error, data, status } = useApiRequest();
+      this.error = error.value;
+      this.status = status.value;
 
-      const categoryStore = useCategoryStore();
-      const colorStore = useColorStore();
-      const sizeStore = useSizeStore();
-      const featureStore = useProductFeatureStore();
+      if (!this.controller) {
+        this.controller = new AbortController();
+      }
 
-      try {
-        await Promise.all([
-          categoryStore.fetchCategories(),
-          colorStore.fetchColors(),
-          sizeStore.fetchSizes(),
-          featureStore.fetchProductFeatures(),
-        ]);
+      await execute(() => fetchProductFilters(this.controller!.signal));
 
-        const products = await fetchAllProducts();
-        this.products = products as IProductWithVariants[];
+      this.error = error.value;
+      this.status = status.value;
+      this.filters = data.value;
+    },
 
-        this.categories = categoryStore.categories;
-        this.colors = colorStore.colors;
-        this.sizes = sizeStore.sizes;
-        this.productFeatures = featureStore.productFeatures;
-      } catch (err) {
-        this.error = "Échec du chargement des données initiales.";
-        console.error(err);
-      } finally {
-        this.loading = false;
+    async getActiveProducts() {
+      const { execute, error, data, status } = useApiRequest<IProduct[]>();
+      this.error = error.value;
+      this.status = status.value;
+
+      if (!this.controller) {
+        this.controller = new AbortController();
+      }
+
+      await execute(() => fetchActiveProducts(this.controller!.signal));
+
+      if (status.value === "success" && data.value) {
+        this.products = data.value;
+        this.status = "success";
+      } else {
+        this.error = error.value;
+        this.status = "failed";
       }
     },
 
-    async fetchProductById(productId: string) {
-      this.loading = true;
-      try {
-        const product = await fetchProductById(productId);
-        this.product = product as IProductWithVariants;
-      } catch (err) {
-        this.error = `Échec de la récupération du produit avec l'ID ${productId}`;
-      } finally {
-        this.loading = false;
+    async getProductDetails(productId: string) {
+      const { execute, status, error, data } = useApiRequest();
+
+      this.error = error.value;
+      this.status = status.value;
+
+      if (!this.controller) {
+        this.controller = new AbortController();
       }
+      await execute(() =>
+        fetchProductWithVariants(productId, this.controller!.signal)
+      );
+
+      if (data.value) {
+        this.selectedProduct = data.value.data.product;
+        this.variants = data.value.data.variants;
+      } else {
+        this.selectedProduct = null;
+        this.variants = [];
+      }
+
+      this.selectedProduct = data.value;
+      this.error = error.value;
+      this.status = status.value;
     },
 
-    async applyFilters(filters: {
-      name?: string;
-      categoryIds?: string[];
-      colorIds?: string[];
-      sizeIds?: string[];
-      minPrice?: number;
-      maxPrice?: number;
-    }) {
-      this.filters = { ...this.filters, ...filters };
+    transformProducts() {
+      this.productsWithPriceInfo = this.products.map((product) => {
+        if (product.variants?.length) {
+          const prices = product.variants.map((variant) => variant.priceVat);
+          const minPrice = Math.min(...prices);
+          const maxPrice = Math.max(...prices);
+          return {
+            ...product,
+            priceRange: `${minPrice} - ${maxPrice}`,
+            hasVariants: true,
+          };
+        } else {
+          return {
+            ...product,
+            priceVat: product.priceVat,
+            hasVariants: false,
+          };
+        }
+      });
+    },
 
-      try {
-        const adjustedFilters = {
-          ...this.filters,
-          minPrice: this.filters.minPrice ?? undefined,
-          maxPrice: this.filters.maxPrice ?? undefined,
-        };
-
-        const products = await searchProducts(adjustedFilters);
-        this.products = products as IProductWithVariants[];
-      } catch (err) {
-        this.error = "Échec de l'application des filtres.";
-        console.error(err);
-      }
+    resetSelectedProduct() {
+      this.selectedProduct = null;
     },
   },
 });
