@@ -16,9 +16,7 @@ export const useCategoryStore = defineStore('category', {
   }),
 
   actions: {
-    /**
-     * Récupère toutes les catégories depuis l'API et les stocke dans l'état.
-     */
+
     async fetchCategories(signal?: AbortSignal) {
       this.loading = true;
       this.error = null;
@@ -31,10 +29,6 @@ export const useCategoryStore = defineStore('category', {
       }
     },
 
-    /**
-     * Crée une nouvelle catégorie via l'API et l'ajoute à l'état.
-     * @param data Les données de la nouvelle catégorie.
-     */
     async createCategory(data: Partial<ICategory>, signal?: AbortSignal) {
       this.loading = true;
       this.error = null;
@@ -48,11 +42,6 @@ export const useCategoryStore = defineStore('category', {
       }
     },
 
-    /**
-     * Met à jour une catégorie existante via l'API et met à jour l'état.
-     * @param id L'ID de la catégorie à mettre à jour.
-     * @param data Les données mises à jour de la catégorie.
-     */
     async updateCategory(id: string, data: Partial<ICategory>, signal?: AbortSignal) {
       this.loading = true;
       this.error = null;
@@ -69,10 +58,6 @@ export const useCategoryStore = defineStore('category', {
       }
     },
 
-    /**
-     * Supprime une catégorie via l'API et met à jour l'état.
-     * @param id L'ID de la catégorie à supprimer.
-     */
     async deleteCategory(id: string, signal?: AbortSignal) {
       this.loading = true;
       this.error = null;
@@ -86,11 +71,6 @@ export const useCategoryStore = defineStore('category', {
       }
     },
 
-    /**
-     * Récupère une catégorie spécifique par son ID.
-     * @param id L'ID de la catégorie.
-     * @returns La catégorie correspondante.
-     */
     async getCategoryById(id: string, signal?: AbortSignal): Promise<ICategory | null> {
       this.loading = true;
       this.error = null;
