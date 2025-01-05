@@ -12,6 +12,7 @@ import { useUserStore } from "./user.store";
 
 export const useAuthStore = defineStore("auth", {
   state: () => ({
+    user: null as IUser | null,
     token: null as string | null,
     error: null as any | null,
     status: "idle" as "idle" | "pending" | "success" | "failed",
@@ -32,7 +33,7 @@ export const useAuthStore = defineStore("auth", {
 
   actions: {
     async register(userData: IUserCreate) {
-      const { execute, status, error } = useApiRequest<IUser>();
+      const { execute, status, error, data } = useApiRequest<IUser>();
       this.error = null;
 
       if (!this.controller) {
@@ -42,6 +43,7 @@ export const useAuthStore = defineStore("auth", {
       this.status = status.value;
       await execute(() => registerUser(userData, this.controller!.signal));
 
+      this.user = data.value;
       this.error = error.value;
       this.status = status.value;
     },
@@ -80,8 +82,6 @@ export const useAuthStore = defineStore("auth", {
       this.status = status.value;
 
       const userStore = useUserStore();
-      console.log("LOGIN DATA", data.value);
-      console.log("USER ID : ", data.value?.user._id);
       await userStore.fetchProfile(data.value?.user._id as string);
     },
 
@@ -96,7 +96,6 @@ export const useAuthStore = defineStore("auth", {
     resetStatus() {
       this.error = null;
       this.status = "idle";
-      this.loading = loading.value;
     },
 
     cancelRequest() {
