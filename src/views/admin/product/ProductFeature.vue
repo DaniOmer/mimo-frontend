@@ -1,19 +1,21 @@
 <template>
   <div class="p-6">
-    <h1 class="text-2xl font-bold mb-6">Administration des catégories</h1>
+    <h1 class="text-2xl font-bold mb-6">
+      Administration des caractéristiques produits
+    </h1>
 
     <div
-      v-if="categoryStore.error"
+      v-if="productFeatureStore.error"
       class="mb-4 p-4 bg-red-100 text-red-700 rounded"
     >
       {{
-        categoryStore.error ||
-        "Une erreur est survenue lors de la récupération des catégories."
+        productFeatureStore.error ||
+        "Une erreur est survenue lors de la récupération des caractéristiques produits."
       }}
     </div>
 
     <div
-      v-if="categoryStore.loading"
+      v-if="productFeatureStore.loading"
       class="flex justify-center items-center mb-4"
     >
       <Loader :visible="true" class="w-6 h-6 text-primary animate-spin" />
@@ -21,7 +23,7 @@
 
     <Table
       :columns="columns"
-      :items="filteredCategories"
+      :items="filteredProductFeatures"
       :enableSort="true"
       :enablePagination="true"
       :pageSize="10"
@@ -29,7 +31,9 @@
     >
       <template #table-title>
         <div class="flex justify-between items-center">
-          <h2 class="text-lg font-semibold">Liste des catégories</h2>
+          <h2 class="text-lg font-semibold">
+            Liste des caractéristiques produits
+          </h2>
         </div>
       </template>
 
@@ -45,31 +49,37 @@
             <BaseButton
               color="primary"
               @click="openAddModal"
-              label="Ajouter une categorie"
+              label="Ajouter une caractéristique"
             />
           </div>
         </div>
+      </template>
+
+      <template #description="{ item }">
+        <span>{{ item.description || "-" }}</span>
       </template>
 
       <template #row-actions="{ item, closeActionMenu }">
         <div class="flex flex-col px-2 gap-2 items-start">
           <button
             class="flex items-center text-blue-500 hover:text-blue-700"
-            @click.stop="editCategory(item); closeActionMenu()"
+            @click.stop="
+              editProductFeature(item);
+              closeActionMenu();
+            "
           >
             <PencilSquareIcon class="w-4 h-4 mr-1" /> Editer
           </button>
           <button
             class="flex items-center text-red-500 hover:text-red-700"
-            @click.stop="confirmDeleteCategory(item); closeActionMenu()"
+            @click.stop="
+              confirmDeleteProductFeature(item);
+              closeActionMenu();
+            "
           >
             <TrashIcon class="w-4 h-4 mr-1" /> Supprimer
           </button>
         </div>
-      </template>
-
-      <template #productCount="{ item }">
-        <span>{{ item.productCount }}</span>
       </template>
 
       <template #createdAt="{ item }">
@@ -81,9 +91,9 @@
       </template>
     </Table>
 
-    <CategoryFormModal
+    <ProductFeatureFormModal
       :visible="isModalVisible"
-      :initialData="selectedCategory"
+      :initialData="selectedProductFeature"
       :loading="isFormLoading"
       @submit="handleFormSubmit"
       @close="closeModal"
@@ -92,11 +102,9 @@
     <ConfirmationDialog
       :visible="isDeleteDialogVisible"
       @close="isDeleteDialogVisible = false"
-      @confirm="deleteCategory"
+      @confirm="deleteProductFeature"
       title="Confirmer la Suppression"
-      :message="`Êtes-vous sûr de vouloir
-    supprimer la catégorie ${categoryToDelete?.name} ? Cette action est
-    irréversible.`"
+      :message="`Êtes-vous sûr de vouloir supprimer la caractéristique produit ${productFeatureToDelete?.name} ? Cette action est irréversible.`"
       confirmText="Supprimer"
       cancelText="Annuler"
     />
@@ -106,25 +114,25 @@
 <script setup lang="ts">
 import { ref, computed, onMounted } from "vue";
 import BaseButton from "../../../components/form/BaseButton.vue";
-import Loader from "../../../components/BaseLoader.vue"; 
+import Loader from "../../../components/BaseLoader.vue";
 import SearchBar from "../../../components/SearchBar.vue";
-import { useCategoryStore } from "../../../stores/";
+import { useProductFeatureStore } from "../../../stores/modules/productFeature.store";
 import Table from "../../../components/Table.vue";
 import ConfirmationDialog from "../../../components/ConfirmationDialog.vue";
-import CategoryFormModal from "../../../forms/modules/admin/product/CategoryFormModal.vue";
-import { ICategory } from "../../../api";
-import { formatDateTime } from "../../../utils/"; 
+import ProductFeatureFormModal from "../../../forms/modules/admin/product/ProductFeatureFormModal.vue";
+import { IProductFeature } from "../../../api/";
+import { formatDateTime } from "../../../utils/";
 import { PencilSquareIcon, TrashIcon } from "@heroicons/vue/24/solid";
-import { useToast } from "vue-toast-notification"; 
+import { useToast } from "vue-toast-notification";
 
 const toast = useToast();
 
-const categoryStore = useCategoryStore();
+const productFeatureStore = useProductFeatureStore();
 
 const isDeleteDialogVisible = ref(false);
-const categoryToDelete = ref<ICategory | null>(null);
+const productFeatureToDelete = ref<IProductFeature | null>(null);
 const isModalVisible = ref(false);
-const selectedCategory = ref<ICategory | null>(null);
+const selectedProductFeature = ref<IProductFeature | null>(null);
 const isFormLoading = ref(false);
 
 const searchQuery = ref("");
@@ -132,83 +140,82 @@ const searchQuery = ref("");
 const columns = [
   { key: "name", label: "Nom", sortable: true },
   { key: "description", label: "Description", sortable: false },
-  {
-    key: "createdAt",
-    label: "Date Création",
-    sortable: true,
-    format: (value: string) => formatDateTime(new Date(value), false)
-  },
-  {
-    key: "updatedAt",
-    label: "Date Mise à Jour",
-    sortable: true,
-    format: (value: string) => formatDateTime(new Date(value), false)
-  },
+  { key: "createdAt", label: "Date Création", sortable: true },
+  { key: "updatedAt", label: "Date Mise à Jour", sortable: true },
 ];
 
 onMounted(async () => {
-  await categoryStore.fetchCategories();
+  await productFeatureStore.fetchProductFeatures();
 });
 
-const categories = computed(() => categoryStore.categories);
+const productFeatures = computed(() => productFeatureStore.productFeatures);
 
-const filteredCategories = computed(() => {
-  if (!searchQuery.value) return categories.value;
+const filteredProductFeatures = computed(() => {
+  if (!searchQuery.value) return productFeatures.value;
   const query = searchQuery.value.toLowerCase();
-  return categories.value.filter(
-    (category: ICategory) =>
-      category.name.toLowerCase().includes(query) ||
-      (category.description &&
-        category.description.toLowerCase().includes(query))
+  return productFeatures.value.filter(
+    (feature: IProductFeature) =>
+      feature.name.toLowerCase().includes(query) ||
+      (feature.description && feature.description.toLowerCase().includes(query))
   );
 });
 
 function openAddModal() {
-  selectedCategory.value = null;
+  selectedProductFeature.value = null;
   isModalVisible.value = true;
 }
 
-function editCategory(category: ICategory) {
-  selectedCategory.value = category;
+function editProductFeature(feature: IProductFeature) {
+  selectedProductFeature.value = feature;
   isModalVisible.value = true;
 }
 
 function closeModal() {
   isModalVisible.value = false;
-  selectedCategory.value = null;
+  selectedProductFeature.value = null;
 }
 
-function confirmDeleteCategory(category: ICategory) {
-  categoryToDelete.value = category;
+function confirmDeleteProductFeature(feature: IProductFeature) {
+  productFeatureToDelete.value = feature;
   isDeleteDialogVisible.value = true;
 }
 
-async function deleteCategory() {
-  if (categoryToDelete.value) {
+async function deleteProductFeature() {
+  if (productFeatureToDelete.value) {
     isFormLoading.value = true;
     try {
-      await categoryStore.deleteCategory(categoryToDelete.value._id);
-      toast.success("Catégorie supprimée avec succès!");
+      await productFeatureStore.deleteProductFeature(
+        productFeatureToDelete.value._id
+      );
+      toast.success("Caractéristique produit supprimée avec succès!");
     } catch (error) {
-      toast.error("Erreur lors de la suppression de la catégorie.");
-      console.error("Erreur lors de la suppression de la catégorie :", error);
+      toast.error(
+        "Erreur lors de la suppression de la caractéristique produit."
+      );
+      console.error(
+        "Erreur lors de la suppression de la caractéristique produit :",
+        error
+      );
     } finally {
       isFormLoading.value = false;
       isDeleteDialogVisible.value = false;
-      categoryToDelete.value = null;
+      productFeatureToDelete.value = null;
     }
   }
 }
 
-async function handleFormSubmit(formData: Partial<ICategory>) {
+async function handleFormSubmit(formData: Partial<IProductFeature>) {
   isFormLoading.value = true;
   try {
-    if (selectedCategory.value) {
-      await categoryStore.updateCategory(selectedCategory.value._id, formData);
-      toast.success("Catégorie mise à jour avec succès!");
+    if (selectedProductFeature.value) {
+      await productFeatureStore.updateProductFeature(
+        selectedProductFeature.value._id,
+        formData
+      );
+      toast.success("Caractéristique produit mise à jour avec succès!");
     } else {
-      await categoryStore.createCategory(formData);
-      toast.success("Catégorie créée avec succès!");
+      await productFeatureStore.createProductFeature(formData);
+      toast.success("Caractéristique produit créée avec succès!");
     }
   } catch (error) {
     toast.error("Erreur lors de la soumission du formulaire.");
