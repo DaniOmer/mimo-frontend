@@ -1,88 +1,119 @@
 import { defineStore } from 'pinia';
+import { useApiRequest } from '../../composables/useApiRequest';
 import { 
   fetchAllCategories, 
   fetchCategoryById, 
-  createCategory, 
-  updateCategory, 
-  deleteCategory 
+  createCategory as apiCreateCategory, 
+  updateCategory as apiUpdateCategory, 
+  deleteCategory as apiDeleteCategory 
 } from '../../api/';
 import type { ICategory } from '../../api'; 
 
 export const useCategoryStore = defineStore('category', {
   state: () => ({
     categories: [] as ICategory[],
-    loading: false,
+    status: 'idle' as 'idle' | 'pending' | 'success' | 'failed',
     error: null as string | null,
+    controller: null as AbortController | null,
   }),
 
+  getters: {
+    isLoading: (state) => state.status === "pending",
+  },
+
   actions: {
-
-    async fetchCategories(signal?: AbortSignal) {
-      this.loading = true;
-      this.error = null;
-      try {
-        this.categories = await fetchAllCategories(signal);
-      } catch (err) {
-        this.error = 'Erreur lors de la récupération des catégories.';
-      } finally {
-        this.loading = false;
+    initController() {
+      if (!this.controller) {
+        this.controller = new AbortController();
       }
     },
 
-    async createCategory(data: Partial<ICategory>, signal?: AbortSignal) {
-      this.loading = true;
-      this.error = null;
-      try {
-        const newCategory = await createCategory(data, signal);
-        this.categories.push(newCategory);
-      } catch (err) {
-        this.error = 'Erreur lors de la création de la catégorie.';
-      } finally {
-        this.loading = false;
+    async fetchCategories() {
+      const { execute, status, error } = useApiRequest<ICategory[]>();
+      this.initController();
+
+      this.status = status.value;
+      const result = await execute(() => fetchAllCategories(this.controller!.signal));
+
+      if (result) {
+        this.categories = result;
       }
+
+      this.status = status.value;
+      this.error = error.value;
     },
 
-    async updateCategory(id: string, data: Partial<ICategory>, signal?: AbortSignal) {
-      this.loading = true;
-      this.error = null;
-      try {
-        const updatedCategory = await updateCategory(id, data, signal);
+    async createCategory(data: Partial<ICategory>) {
+      const { execute, status, error } = useApiRequest<ICategory>();
+      this.initController();
+
+      this.status = status.value;
+      const result = await execute(() => apiCreateCategory(data, this.controller!.signal));
+
+      if (result) {
+        this.categories.push(result);
+      }
+
+      this.status = status.value;
+      this.error = error.value;
+    },
+
+    async updateCategory(id: string, data: Partial<ICategory>) {
+      const { execute, status, error } = useApiRequest<ICategory>();
+      this.initController();
+
+      this.status = status.value;
+      const result = await execute(() => apiUpdateCategory(id, data, this.controller!.signal));
+
+      if (result) {
         const index = this.categories.findIndex(cat => cat._id === id);
         if (index !== -1) {
-          this.categories[index] = updatedCategory;
+          this.categories[index] = result;
         }
-      } catch (err) {
-        this.error = 'Erreur lors de la mise à jour de la catégorie.';
-      } finally {
-        this.loading = false;
       }
+
+      this.status = status.value;
+      this.error = error.value;
     },
 
-    async deleteCategory(id: string, signal?: AbortSignal) {
-      this.loading = true;
-      this.error = null;
-      try {
-        await deleteCategory(id, signal);
+    async deleteCategory(id: string) {
+      const { execute, status, error } = useApiRequest<void>();
+      this.initController();
+
+      this.status = status.value;
+      const result = await execute(() => apiDeleteCategory(id, this.controller!.signal));
+
+      if (result === null) { 
         this.categories = this.categories.filter(cat => cat._id !== id);
-      } catch (err) {
-        this.error = 'Erreur lors de la suppression de la catégorie.';
-      } finally {
-        this.loading = false;
+      }
+
+      this.status = status.value;
+      this.error = error.value;
+    },
+
+    async getCategoryById(id: string): Promise<ICategory | null> {
+      const { execute, status, error } = useApiRequest<ICategory>();
+      this.initController();
+
+      this.status = status.value;
+      const category = await execute(() => fetchCategoryById(id, this.controller!.signal));
+
+      this.status = status.value;
+      this.error = error.value;
+
+      return category;
+    },
+
+    cancelRequest() {
+      if (this.controller) {
+        this.controller.abort();
+        this.controller = null;
       }
     },
 
-    async getCategoryById(id: string, signal?: AbortSignal): Promise<ICategory | null> {
-      this.loading = true;
+    resetStatus() {
+      this.status = 'idle';
       this.error = null;
-      try {
-        const category = await fetchCategoryById(id, signal);
-        return category;
-      } catch (err) {
-        this.error = 'Erreur lors de la récupération de la catégorie.';
-        return null;
-      } finally {
-        this.loading = false;
-      }
     },
   },
 });
