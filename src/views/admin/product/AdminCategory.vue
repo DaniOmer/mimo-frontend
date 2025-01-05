@@ -2,6 +2,10 @@
   <div class="p-6">
     <h1 class="text-2xl font-bold mb-6">Administration des catégories</h1>
 
+    <p class="mt-4 mb-4 text-sm">
+        Vous pouvez gérer les catégories des produits.
+    </p>
+
     <div
       v-if="categoryStore.error"
       class="mb-4 p-4 bg-red-100 text-red-700 rounded"
@@ -13,7 +17,7 @@
     </div>
 
     <div
-      v-if="categoryStore.loading"
+      v-if="categoryStore.status === 'pending'"
       class="flex justify-center items-center mb-4"
     >
       <Loader :visible="true" class="w-6 h-6 text-primary animate-spin" />
@@ -24,8 +28,8 @@
       :items="filteredCategories"
       :enableSort="true"
       :enablePagination="true"
-      :pageSize="10"
       :enableActions="true"
+      exportFileName="Export_categories.csv"
     >
 
       <template #table-controls>

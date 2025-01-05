@@ -17,7 +17,7 @@
     </div>
 
     <div
-      v-if="colorStore.loading"
+      v-if="colorStore.status === 'pending'"
       class="flex justify-center items-center mb-4"
     >
       <Loader :visible="true" class="w-6 h-6 text-primary animate-spin" />
@@ -30,6 +30,7 @@
       :enablePagination="true"
       :pageSize="10"
       :enableActions="true"
+      exportFileName="Export_couleurs.csv"
     >
       <template #table-title>
         <div class="flex justify-between items-center">

@@ -16,7 +16,7 @@
       }}
     </div>
 
-    <div v-if="sizeStore.loading" class="flex justify-center items-center mb-4">
+    <div v-if="sizeStore.status === 'pending'" class="flex justify-center items-center mb-4">
       <Loader :visible="true" class="w-6 h-6 text-primary animate-spin" />
     </div>
 
@@ -27,6 +27,7 @@
       :enablePagination="true"
       :pageSize="10"
       :enableActions="true"
+      exportFileName="Export_tailles.csv"
     >
 
       <template #table-controls>

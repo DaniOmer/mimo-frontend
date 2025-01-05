@@ -19,7 +19,7 @@
     </div>
 
     <div
-      v-if="productFeatureStore.loading"
+      v-if="productFeatureStore.status === 'pending'"
       class="flex justify-center items-center mb-4"
     >
       <Loader :visible="true" class="w-6 h-6 text-primary animate-spin" />
@@ -30,8 +30,8 @@
       :items="filteredProductFeatures"
       :enableSort="true"
       :enablePagination="true"
-      :pageSize="10"
       :enableActions="true"
+      exportFileName="Export_caracteristiques_produits.csv"
     >
       <template #table-title>
         <div class="flex justify-between items-center">

@@ -31,7 +31,7 @@
       :enableMultiSelect="true"
       :enableActions="true"
       @row-click="openEditModal"
-      @selection-change="onSelectionChange"
+      @bulk-delete="bulkDeleteUsers"
     >
     <template #table-controls>
         <div class="flex flex-wrap gap-4 items-center justify-between">
@@ -66,13 +66,6 @@
                 label="Inviter un utilisateur"
               />
             </div>
-            <div class="flex items-center gap-4">
-              <BulkDeleteButton
-                v-if="selectedCount > 0"
-                :count="selectedCount"
-                @click="confirmBulkDelete"
-              />
-          </div>
           </div>
         </div>
       </template>
@@ -172,17 +165,7 @@
       cancelText="Annuler"
     />
 
-    <ConfirmationDialog
-      :visible="isConfirmBulkDeleteVisible"
-      @close="isConfirmBulkDeleteVisible = false"
-      @confirm="bulkDeleteUsers"
-      title="Confirmer la Suppression Multiple"
-      :message="`Êtes-vous sûr de vouloir supprimer ${selectedCount} utilisateur(s) ? Cette action est irréversible.`"
-      confirmText="Supprimer"
-      cancelText="Annuler"
-    />
-
-
+   
     <EditUserFormModal
       v-if="userToEdit"
       :visible="isEditModalVisible"
@@ -216,7 +199,6 @@ import ConfirmationDialog from "../../components/ConfirmationDialog.vue";
 import EditUserFormModal from "../../forms/modules/admin/userAdmin/EditUserFormModal.vue";
 import InviteUserModal from "../../forms/modules/admin/userAdmin/InviteUserFormModal.vue";
 import Loader from "../../components/BaseLoader.vue";
-import BulkDeleteButton from "../../components/BulkDeleteButton.vue"; 
 
 import {
   PencilSquareIcon,
@@ -245,7 +227,6 @@ const selectedRole = ref<string | null>(null);
 const selectedStatus = ref<string | null>(null);
 
 const selectedUserIds = ref<string[]>([]);
-const selectedCount = computed(() => selectedUserIds.value.length);
 
 const roleOptions = computed<Option[]>(() =>
   userStore.allRoles.map((role) => ({
@@ -302,7 +283,7 @@ const isConfirmDeactivateVisible = ref(false);
 const isConfirmActivateVisible = ref(false);
 const isEditModalVisible = ref(false);
 const isInviteModalVisible = ref(false);
-const isConfirmBulkDeleteVisible = ref(false); 
+// const isConfirmBulkDeleteVisible = ref(false); 
 
 
 const userToDelete = ref<IUser | null>(null);
@@ -509,13 +490,6 @@ async function activateUser() {
   }
 }
 
-function onSelectionChange(selectedKeys: string[]) {
-  selectedUserIds.value = selectedKeys;
-}
-
-function confirmBulkDelete() {
-  isConfirmBulkDeleteVisible.value = true;
-}
 
 async function bulkDeleteUsers() {
   if (selectedUserIds.value.length > 0) {
@@ -531,9 +505,7 @@ async function bulkDeleteUsers() {
         position: "top",
         duration: 3000,
       });
-    } finally {
-      isConfirmBulkDeleteVisible.value = false;
-    }
+    } 
   }
 }
 
