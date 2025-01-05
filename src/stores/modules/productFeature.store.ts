@@ -1,87 +1,131 @@
-import { defineStore } from 'pinia';
-import { 
-  fetchAllProductFeatures, 
-  fetchProductFeatureById, 
-  createProductFeature, 
-  updateProductFeature, 
-  deleteProductFeature 
-} from '../../api/';
-import type { IProductFeature } from '../../api/'; 
+import { defineStore } from "pinia";
+import { useApiRequest } from "../../composables/useApiRequest";
+import {
+  fetchAllProductFeatures,
+  fetchProductFeatureById,
+  createProductFeature as apiCreateProductFeature,
+  updateProductFeature as apiUpdateProductFeature,
+  deleteProductFeature as apiDeleteProductFeature,
+} from "../../api/";
+import type { IProductFeature } from "../../api/";
 
-export const useProductFeatureStore = defineStore('productFeature', {
+export const useProductFeatureStore = defineStore("productFeature", {
   state: () => ({
     productFeatures: [] as IProductFeature[],
-    loading: false,
+    status: "idle" as "idle" | "pending" | "success" | "failed",
     error: null as string | null,
+    controller: null as AbortController | null,
   }),
 
+  getters: {
+    isLoading: (state) => state.status === "pending",
+    hasError: (state) => !!state.error,
+  },
+
   actions: {
-    async fetchProductFeatures(signal?: AbortSignal) {
-      this.loading = true;
-      this.error = null;
-      try {
-        this.productFeatures = await fetchAllProductFeatures(signal);
-      } catch (err) {
-        this.error = 'Erreur lors de la récupération des caractéristiques produits.';
-      } finally {
-        this.loading = false;
+    initController() {
+      if (!this.controller) {
+        this.controller = new AbortController();
       }
     },
 
-    async createProductFeature(data: Partial<IProductFeature>, signal?: AbortSignal) {
-      this.loading = true;
+    async fetchProductFeatures() {
+      const { execute, status, error } = useApiRequest<IProductFeature[]>();
       this.error = null;
-      try {
-        const newFeature = await createProductFeature(data, signal);
-        this.productFeatures.push(newFeature);
-      } catch (err) {
-        this.error = 'Erreur lors de la création de la caractéristique produit.';
-      } finally {
-        this.loading = false;
+      this.initController();
+
+      this.status = status.value;
+
+      const result = await execute(() => fetchAllProductFeatures(this.controller!.signal));
+
+      if (result) {
+        this.productFeatures = result;
       }
+
+      this.status = status.value;
+      this.error = error.value;
     },
 
-    async updateProductFeature(id: string, data: Partial<IProductFeature>, signal?: AbortSignal) {
-      this.loading = true;
+    async createProductFeature(featureData: Partial<IProductFeature>) {
+      const { execute, status, error } = useApiRequest<IProductFeature>();
       this.error = null;
-      try {
-        const updatedFeature = await updateProductFeature(id, data, signal);
-        const index = this.productFeatures.findIndex(feature => feature._id === id);
+      this.initController();
+
+      this.status = status.value;
+
+      const result = await execute(() => apiCreateProductFeature(featureData, this.controller!.signal));
+
+      if (result) {
+        this.productFeatures.push(result);
+      }
+
+      this.status = status.value;
+      this.error = error.value;
+    },
+
+    async updateProductFeature(id: string, featureData: Partial<IProductFeature>) {
+      const { execute, status, error } = useApiRequest<IProductFeature>();
+      this.error = null;
+      this.initController();
+
+      this.status = status.value;
+
+      const result = await execute(() => apiUpdateProductFeature(id, featureData, this.controller!.signal));
+
+      if (result) {
+        const index = this.productFeatures.findIndex((feature) => feature._id === id);
         if (index !== -1) {
-          this.productFeatures[index] = updatedFeature;
+          this.productFeatures[index] = result;
         }
-      } catch (err) {
-        this.error = 'Erreur lors de la mise à jour de la caractéristique produit.';
-      } finally {
-        this.loading = false;
+      }
+
+      this.status = status.value;
+      this.error = error.value;
+    },
+
+    async deleteProductFeature(id: string) {
+      const { execute, status, error } = useApiRequest<void>();
+      this.error = null;
+      this.initController();
+
+      this.status = status.value;
+
+      const result = await execute(() => apiDeleteProductFeature(id, this.controller!.signal));
+
+      if (result === null) {
+        this.productFeatures = this.productFeatures.filter((feature) => feature._id !== id);
+      }
+
+      this.status = status.value;
+      this.error = error.value;
+    },
+
+    async getProductFeatureById(id: string): Promise<IProductFeature | null> {
+      const { execute, status, error } = useApiRequest<IProductFeature>();
+      this.error = null;
+      this.initController();
+
+      this.status = status.value;
+
+      const feature = await execute(() => fetchProductFeatureById(id, this.controller!.signal));
+
+      this.status = status.value;
+      this.error = error.value;
+
+      return feature;
+    },
+
+    cancelRequest() {
+      if (this.controller) {
+        this.controller.abort();
+        this.controller = null;
+        this.status = "idle";
       }
     },
 
-    async deleteProductFeature(id: string, signal?: AbortSignal) {
-      this.loading = true;
+    resetStatus() {
+      this.status = "idle";
       this.error = null;
-      try {
-        await deleteProductFeature(id, signal);
-        this.productFeatures = this.productFeatures.filter(feature => feature._id !== id);
-      } catch (err) {
-        this.error = 'Erreur lors de la suppression de la caractéristique produit.';
-      } finally {
-        this.loading = false;
-      }
-    },
-
-    async getProductFeatureById(id: string, signal?: AbortSignal): Promise<IProductFeature | null> {
-      this.loading = true;
-      this.error = null;
-      try {
-        const feature = await fetchProductFeatureById(id, signal);
-        return feature;
-      } catch (err) {
-        this.error = 'Erreur lors de la récupération de la caractéristique produit.';
-        return null;
-      } finally {
-        this.loading = false;
-      }
     },
   },
 });
