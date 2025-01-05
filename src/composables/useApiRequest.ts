@@ -12,7 +12,7 @@ export function useApiRequest<T = any>() {
     controller = new AbortController();
 
     try {
-      // await new Promise((resolve) => setTimeout(resolve, 2000)); //USE FOR DEBUG ONLY
+      // await new Promise((resolve) => setTimeout(resolve, 9000)); //USE FOR DEBUG ONLY
       const result = await action();
       data.value = result;
       status.value = "success";
@@ -26,6 +26,7 @@ export function useApiRequest<T = any>() {
           err?.response?.data?.message ||
           err.message ||
           "An unexpected error occurred.";
+        console.log("MESSAGE FROM COMPOSABLE", error.value);
         status.value = "failed";
         console.error("API ERROR THROW IN COMPOSABLE :", err);
         return null;
