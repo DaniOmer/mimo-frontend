@@ -1,13 +1,11 @@
 <template>
   <div class="h-[60px]">
-    <nav class="flex justify-between py-2">
-      <div class="flex justify-between items-center lg:w-1/2">
-        <ul class="flex gap-x-2">
-          <NavItem :to="{ name: 'homepage' }">Tous</NavItem>
-          <NavItem :to="{ name: 'homepage' }">Nouveautés</NavItem>
-          <NavItem :to="{ name: 'catalog' }">Collections</NavItem>
-        </ul>
-      </div>
+    <nav class="flex justify-between items-center container mx-auto">
+      <ul class="flex justify-between items-center gap-x-3">
+        <NavItem :to="{ name: 'homepage' }">Tous</NavItem>
+        <NavItem :to="{ name: 'homepage' }">Nouveautés</NavItem>
+        <NavItem :to="{ name: 'catalog' }">Collections</NavItem>
+      </ul>
 
       <ul class="flex justify-between items-center">
         <NavItem :to="{ name: 'homepage' }">
