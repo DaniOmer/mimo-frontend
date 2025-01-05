@@ -59,3 +59,25 @@ export async function fetchAllRoles(signal?: AbortSignal): Promise<IRole[]> {
   const response = await httpClientPrivate.get('/roles', { signal });
   return response.data.data;
 }
+
+export async function deleteMultipleUsers(
+  userIds: string[],
+  signal?: AbortSignal
+): Promise<void> {
+  await httpClientPrivate.delete(`${ROUTE_PREFIX}/multiple/delete`, {
+    data: { ids: userIds }, 
+    signal
+  });
+}
+
+export async function disableMultipleUsers(
+  userIds: string[],
+  isDisabled: boolean,
+  signal?: AbortSignal
+): Promise<IUser[]> {
+  const response = await httpClientPrivate.patch(`${ROUTE_PREFIX}/multiple/status`, {
+    ids: userIds,
+    isDisabled
+  }, { signal });
+  return response.data.data;
+}

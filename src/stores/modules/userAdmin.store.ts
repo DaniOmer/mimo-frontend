@@ -13,6 +13,7 @@ import {
   IUser,
   IuserInvitation,
   IuserFromInvitation,
+  deleteMultipleUsers,
 } from "../../api/"; 
 
 export const useUserStore = defineStore("user", {
@@ -159,6 +160,24 @@ export const useUserStore = defineStore("user", {
       this.error = error.value;
       this.status = status.value;
     },
+
+    async deleteMultipleUsersAction(userIds: string[]) {
+      const { execute, status, error } = useApiRequest<void>();
+      this.error = null;
+
+      this.initializeController();
+
+      this.status = "pending";
+      await execute(() => deleteMultipleUsers(userIds, this.controller!.signal));
+
+      if (status.value === "success") {
+        this.users = this.users.filter(user => !userIds.includes(user._id));
+      }
+
+      this.error = error.value;
+      this.status = status.value;
+    },
+
 
     async fetchAllRoles() {
       const { execute, status, error, data } = useApiRequest<IRole[]>();

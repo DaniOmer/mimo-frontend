@@ -2,6 +2,12 @@
   <div class="p-6">
     <h1 class="text-2xl font-bold mb-6">Administration des utilisateurs</h1>
 
+    <p class="mt-4 mb-4 text-sm">
+      Vous pouvez gérer les utilisateurs de l'application ici. Vous pouvez inviter,
+      rechercher, filtrer, éditer, supprimer, activer ou désactiver les
+      utilisateurs.
+    </p>
+
     <div
       v-if="userStore.error"
       class="mb-4 p-4 bg-red-100 text-red-700 rounded"
@@ -27,46 +33,49 @@
       @row-click="openEditModal"
       @selection-change="onSelectionChange"
     >
-      <template #table-title>
-        <div class="flex justify-between items-center">
-          <h2 class="text-lg font-semibold">Liste des utilisateurs</h2>
-        </div>
-      </template>
-
-      <template #table-controls>
+    <template #table-controls>
         <div class="flex flex-wrap gap-4 items-center justify-between">
-          <SearchBar
-            v-model="searchQuery"
-            placeholder="Rechercher par nom ou email"
-            :searchMode="'front'"
-            @search="handleSearch"
-          />
+        
 
-          <div class="flex gap-4">
-            <FilterSelect
-              v-model="selectedRole"
-              :options="roleOptions"
-              placeholder="Filtrer par Rôle"
-              @update:model-value="handleRoleChange"
+          <div class="flex flex-wrap gap-4 items-center justify-between w-full lg:w-auto">
+            <SearchBar
+              v-model="searchQuery"
+              placeholder="Rechercher par nom ou email"
+              :searchMode="'front'"
+              @search="handleSearch"
             />
 
-            <FilterSelect
-              v-model="selectedStatus"
-              :options="statusOptions"
-              placeholder="Filtrer par Statut"
-              @update:model-value="handleStatusChange"
-            />
+            <div class="flex gap-4">
+              <FilterSelect
+                v-model="selectedRole"
+                :options="roleOptions"
+                placeholder="Filtrer par Rôle"
+                @update:model-value="handleRoleChange"
+              />
 
-            <button
-              class="bg-primary text-white px-4 py-2 rounded hover:bg-primary/90"
-              @click="openInviteModal"
-            >
-              Inviter un Utilisateur
-            </button>
+              <FilterSelect
+                v-model="selectedStatus"
+                :options="statusOptions"
+                placeholder="Filtrer par Statut"
+                @update:model-value="handleStatusChange"
+              />
+
+              <BaseButton
+                color="primary"
+                @click="openInviteModal"
+                label="Inviter un utilisateur"
+              />
+            </div>
+            <div class="flex items-center gap-4">
+              <BulkDeleteButton
+                v-if="selectedCount > 0"
+                :count="selectedCount"
+                @click="confirmBulkDelete"
+              />
+          </div>
           </div>
         </div>
       </template>
-
       <template #row-actions="{ item, closeActionMenu }">
         <div class="flex flex-col px-2 gap-2 items-start">
           <button
@@ -108,7 +117,6 @@
             alt="Avatar de l'utilisateur"
             class="w-8 h-8 rounded-full object-cover"
           />
-          <!-- Remplacez PencilSquareIcon par une icône par défaut appropriée -->
           <UserIcon
             v-else
             class="w-8 h-8 text-gray-400"
@@ -164,6 +172,17 @@
       cancelText="Annuler"
     />
 
+    <ConfirmationDialog
+      :visible="isConfirmBulkDeleteVisible"
+      @close="isConfirmBulkDeleteVisible = false"
+      @confirm="bulkDeleteUsers"
+      title="Confirmer la Suppression Multiple"
+      :message="`Êtes-vous sûr de vouloir supprimer ${selectedCount} utilisateur(s) ? Cette action est irréversible.`"
+      confirmText="Supprimer"
+      cancelText="Annuler"
+    />
+
+
     <EditUserFormModal
       v-if="userToEdit"
       :visible="isEditModalVisible"
@@ -197,6 +216,7 @@ import ConfirmationDialog from "../../components/ConfirmationDialog.vue";
 import EditUserFormModal from "../../forms/modules/admin/userAdmin/EditUserFormModal.vue";
 import InviteUserModal from "../../forms/modules/admin/userAdmin/InviteUserFormModal.vue";
 import Loader from "../../components/BaseLoader.vue";
+import BulkDeleteButton from "../../components/BulkDeleteButton.vue"; 
 
 import {
   PencilSquareIcon,
@@ -209,6 +229,7 @@ import {
 import { IRole, IUser } from "../../api";
 import { useToast } from "vue-toast-notification";
 import { formatDateTime } from "../../utils/date.ts";
+import BaseButton from "../../components/form/BaseButton.vue";
 
 interface Option {
   label: string;
@@ -222,6 +243,9 @@ const $toast = useToast();
 const searchQuery = ref("");
 const selectedRole = ref<string | null>(null);
 const selectedStatus = ref<string | null>(null);
+
+const selectedUserIds = ref<string[]>([]);
+const selectedCount = computed(() => selectedUserIds.value.length);
 
 const roleOptions = computed<Option[]>(() =>
   userStore.allRoles.map((role) => ({
@@ -278,6 +302,8 @@ const isConfirmDeactivateVisible = ref(false);
 const isConfirmActivateVisible = ref(false);
 const isEditModalVisible = ref(false);
 const isInviteModalVisible = ref(false);
+const isConfirmBulkDeleteVisible = ref(false); 
+
 
 const userToDelete = ref<IUser | null>(null);
 const userToDeactivate = ref<IUser | null>(null);
@@ -484,7 +510,32 @@ async function activateUser() {
 }
 
 function onSelectionChange(selectedKeys: string[]) {
-  console.log("Selected items:", selectedKeys);
-  // Pour faire des actions sur les éléments sélectionnés (à implémenter après)
+  selectedUserIds.value = selectedKeys;
 }
+
+function confirmBulkDelete() {
+  isConfirmBulkDeleteVisible.value = true;
+}
+
+async function bulkDeleteUsers() {
+  if (selectedUserIds.value.length > 0) {
+    try {
+      await userStore.deleteMultipleUsersAction(selectedUserIds.value);
+      $toast.success(`${selectedUserIds.value.length} utilisateur(s) supprimé(s) avec succès!`, {
+        position: "top",
+        duration: 3000,
+      });
+      selectedUserIds.value = [];
+    } catch (error) {
+      $toast.error("Erreur lors de la suppression des utilisateurs.", {
+        position: "top",
+        duration: 3000,
+      });
+    } finally {
+      isConfirmBulkDeleteVisible.value = false;
+    }
+  }
+}
+
+
 </script>
