@@ -1,17 +1,36 @@
+<!-- src/components/Table.vue -->
 <template>
   <div class="bg-white border border-gray-200 rounded-md shadow-sm">
-    <div
-      class="px-4 py-3 border-b border-gray-200 flex items-center justify-between"
-    >
+    <!-- Première Section : Contrôles du Tableau -->
+    <div class="px-4 py-3 flex items-center justify-between">
       <slot name="table-controls" />
     </div>
+    
+    <hr class="border-t border-gray-200" />
 
-    <!-- Tableau -->
+    <!-- Deuxième Section : Boutons Exporter Tout et Bulk -->
+    <div class="px-4 py-3 flex items-center justify-between">
+      <div v-if="enableExportAll">
+        <BaseButton
+          color="secondary"
+          @click="() => exportAll(exportFileName)"
+          :loading="isExporting"
+          label="Exporter Tout"
+        />
+      </div>
+      <div v-if="enableBulkActions && selectedKeys.length > 0" class="flex gap-4">
+        <BulkDeleteButton :count="selectedKeys.length" @click="openBulkDeleteDialog" />
+        <BulkExportButton :count="selectedKeys.length" @click="()=> exportSelected(exportFileName)" />
+      </div>
+    </div>
+    
+    <hr class="border-t border-gray-200" />
+
+    <!-- Troisième Section : Tableau -->
     <div class="overflow-x-auto">
       <table class="min-w-full text-sm text-gray-700">
         <thead class="border-b bg-gray-50">
           <tr>
-            <!-- Case “sélectionner tout” si multi-select -->
             <th v-if="enableMultiSelect" class="w-12 px-2 py-3 text-left">
               <input
                 type="checkbox"
@@ -20,8 +39,6 @@
                 @change="toggleSelectAll"
               />
             </th>
-
-            <!-- Colonnes -->
             <th
               v-for="col in columns"
               :key="col.key"
@@ -38,105 +55,89 @@
                 {{ sortOrder === "asc" ? "▲" : "▼" }}
               </span>
             </th>
-
-            <th v-if="enableActions" class="px-4 py-3 text-right"></th>
+            <th v-if="enableActions || enableBulkActions" class="px-4 py-3 text-right"></th>
           </tr>
         </thead>
-
-        <tbody>
-          <template v-if="!paginatedItems.length">
-            <tr>
-              <td
-                :colspan="
-                  columns.length +
-                  (enableMultiSelect ? 1 : 0) +
-                  (enableActions ? 1 : 0)
-                "
-                class="text-center py-4 text-gray-500"
-              >
-                Aucun résultat trouvé.
-              </td>
-            </tr>
-          </template>
-
-          <!-- Lignes de données -->
-          <template v-else>
-            <tr
-              v-for="(rowData, rowIndex) in paginatedItems"
-              :key="itemUniqueKey(rowData, rowIndex)"
-              class="border-b hover:bg-gray-50 transition-colors group"
+        <tbody class="bg-white divide-y divide-gray-200">
+          <tr v-if="!paginatedItems.length">
+            <td
+              :colspan="
+                columns.length +
+                (enableMultiSelect ? 1 : 0) +
+                (enableActions || enableBulkActions ? 1 : 0)
+              "
+              class="py-4 text-center text-gray-500"
             >
-              <!-- Checkbox par ligne si multiSelect -->
-              <td v-if="enableMultiSelect" class="w-12 px-2 py-3">
-                <input
-                  type="checkbox"
-                  class="cursor-pointer accent-primary"
-                  :checked="selectedKeys.includes(getItemKey(rowData, rowIndex))"
-                  @change="() => toggleRowSelect(rowData, rowIndex)"
-                  @click.stop
-                />
-              </td>
-
-              <!-- Cellules -->
-              <td
-                v-for="col in columns"
-                :key="col.key"
-                class="px-4 py-3"
-                :class="{
-                  'text-left': col.align !== 'center',
-                  'text-center': col.align === 'center',
-                }"
-                @click="onRowClick(rowData)"
+              Aucun résultat trouvé.
+            </td>
+          </tr>
+          <tr
+            v-for="(rowData, rowIndex) in paginatedItems"
+            :key="itemUniqueKey(rowData, rowIndex)"
+            class="hover:bg-gray-50 transition-colors"
+          >
+            <td v-if="enableMultiSelect" class="w-12 px-2 py-3">
+              <input
+                type="checkbox"
+                class="cursor-pointer accent-primary"
+                :checked="selectedKeys.includes(getItemKey(rowData, rowIndex))"
+                @change="() => toggleRowSelect(rowData, rowIndex)"
+                @click.stop
+              />
+            </td>
+            <td
+              v-for="col in columns"
+              :key="col.key"
+              class="px-4 py-3"
+              :class="{
+                'text-left': col.align !== 'center',
+                'text-center': col.align === 'center',
+              }"
+              @click="onRowClick(rowData)"
+            >
+              <slot
+                v-if="$slots[col.key]"
+                :name="col.key"
+                :item="rowData"
+                :value="rowData[col.key]"
+              />
+              <span v-else>
+                {{
+                  col.format ? col.format(rowData[col.key]) : rowData[col.key]
+                }}
+              </span>
+            </td>
+            <td v-if="enableActions || enableBulkActions" class="px-4 py-3 text-right">
+              <button
+                v-if="actions.length || $slots['row-actions']"
+                class="text-gray-400 hover:text-gray-700 p-2 focus:outline-none"
+                @click.stop="openActionMenu(rowData, $event)"
               >
-                <slot
-                  v-if="$slots[col.key]"
-                  :name="col.key"
-                  :item="rowData"
-                  :value="rowData[col.key]"
-                />
-                <span v-else>
-                  {{
-                    col.format ? col.format(rowData[col.key]) : rowData[col.key]
-                  }}
-                </span>
-              </td>
-
-              <!-- Actions -->
-              <td v-if="enableActions" class="px-4 py-3 text-right">
-                <button
-                  v-if="actions.length || $slots['row-actions']"
-                  class="text-gray-400 hover:text-gray-700 p-2 focus:outline-none"
-                  @click.stop="openActionMenu(rowData, $event)"
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="w-10 h-10"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  stroke-width="2"
                 >
-                  <svg
-                    xmlns="http://www.w3.org/2000/svg"
-                    class="w-10 h-10"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                    stroke-width="2"
-                  >
-                    <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M12 5v.01M12 12v.01M12 19v.01"
-                    />
-                  </svg>
-                </button>
-              </td>
-            </tr>
-          </template>
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M12 5v.01M12 12v.01M12 19v.01"
+                  />
+                </svg>
+              </button>
+            </td>
+          </tr>
         </tbody>
       </table>
     </div>
 
     <!-- Pagination -->
-    <div
-      class="flex items-center justify-between px-4 py-3"
-      v-if="shouldShowPagination"
-    >
+    <div class="px-4 py-3 flex items-center justify-between" v-if="shouldShowPagination">
       <div class="text-sm text-gray-500">
-        Affichage
+        Affichage de
         <span class="font-medium">{{ startIndex + 1 }}</span>
         à
         <span class="font-medium">{{ Math.min(endIndex, totalItems) }}</span>
@@ -144,7 +145,6 @@
         <span class="font-medium">{{ totalItems }}</span>
         résultats
       </div>
-
       <div class="flex items-center gap-1">
         <button
           class="px-2 py-1 rounded border text-sm disabled:opacity-50"
@@ -153,7 +153,6 @@
         >
           Précédent
         </button>
-
         <button
           v-for="p in pagesArray"
           :key="p"
@@ -166,7 +165,6 @@
         >
           {{ p }}
         </button>
-
         <button
           class="px-2 py-1 rounded border text-sm disabled:opacity-50"
           :disabled="currentPage >= totalPagesComputed"
@@ -184,9 +182,7 @@
         class="fixed z-50 w-48 bg-white border border-gray-200 shadow-md rounded-md overflow-hidden"
         :style="{ left: menuPosition.x + 'px', top: menuPosition.y + 'px' }"
       >
-        <div
-          class="flex items-center justify-between px-3 py-2 border-b bg-gray-50"
-        >
+        <div class="flex items-center justify-between px-3 py-2 bg-gray-50 border-b">
           <span class="text-sm font-semibold text-gray-700">Actions</span>
           <button
             class="text-gray-400 hover:text-gray-700"
@@ -208,21 +204,18 @@
             </svg>
           </button>
         </div>
-
         <div class="py-1">
-          <!-- Slot row-actions -->
           <slot
             name="row-actions"
             :item="openActionData"
             :closeActionMenu="closeActionMenu"
             v-if="$slots['row-actions']"
           />
-          <!-- Sinon, on affiche actions[] -->
           <div
             v-else
             v-for="(act, i) in actions"
             :key="i"
-            class="px-3 py-2 hover:bg-gray-100 text-sm text-gray-700 cursor-pointer flex items-center gap-2"
+            class="flex items-center gap-2 px-3 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
             @click="handleActionClick(act, openActionData)"
           >
             <span v-if="act.icon" class="text-gray-500">
@@ -233,26 +226,41 @@
         </div>
       </div>
     </teleport>
+
+    <ConfirmationDialog
+      v-if="enableBulkActions && showBulkDeleteDialog"
+      :visible="showBulkDeleteDialog"
+      @close="showBulkDeleteDialog = false"
+      @confirm="confirmBulkDelete"
+      title="Confirmer la Suppression en Masse"
+      :message="`Êtes-vous sûr de vouloir supprimer ${selectedKeys.length} éléments sélectionnés ? Cette action est irréversible.`"
+      confirmText="Supprimer"
+      cancelText="Annuler"
+    />
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent } from "vue";
-import type { TableColumn } from "../types/TableColumn";
-
+import { defineComponent, ref } from "vue";
+import type { TableColumn, TableItem } from "../types/";
 import { useSorting } from "../composables/table/useSorting";
 import { usePagination } from "../composables/table/usePagination";
 import { useSelection } from "../composables/table/useSelection";
 import { useActions } from "../composables/table/useActions";
-
-interface TableItem {
-  _id: string;
-  [key: string]: any;
-}
+import BulkDeleteButton from "../components/BulkDeleteButton.vue";
+import BulkExportButton from "../components/BulkExportButton.vue";
+import ConfirmationDialog from "./ConfirmationDialog.vue";
+import BaseButton from "./form/BaseButton.vue";
+import { useCSVExport } from "../composables/useCSVExport";
 
 export default defineComponent({
   name: "Table",
-
+  components: {
+    BulkDeleteButton,
+    BulkExportButton,
+    ConfirmationDialog,
+    BaseButton,
+  },
   props: {
     columns: {
       type: Array as () => TableColumn[],
@@ -276,7 +284,7 @@ export default defineComponent({
     },
     pageSize: {
       type: Number,
-      default: 10,
+      default: 5,
     },
     defaultPage: {
       type: Number,
@@ -284,7 +292,7 @@ export default defineComponent({
     },
     enableMultiSelect: {
       type: Boolean,
-      default: false,
+      default: true,
     },
     actions: {
       type: Array as () => {
@@ -298,10 +306,20 @@ export default defineComponent({
       type: Boolean,
       default: false,
     },
+    enableBulkActions: { 
+      type: Boolean,
+      default: true,
+    },
+    enableExportAll: { 
+      type: Boolean,
+      default: true,
+    },
+    exportFileName: {
+      type: String,
+      default: "export.csv",
+    },
   },
-
-  emits: ["row-click", "sort-change", "page-change", "selection-change"],
-
+  emits: ["row-click", "sort-change", "page-change", "selection-change", "bulk-delete", "export-all", "export-selected"],
   setup(props, { emit }) {
     const { sortKey, sortOrder, handleSort, sortedItems } = useSorting(props, emit);
     const {
@@ -330,6 +348,34 @@ export default defineComponent({
       handleActionClick,
       itemUniqueKey,
     } = useActions(props, emit);
+    const showBulkDeleteDialog = ref(false);
+    const { exportToCSV, isExporting } = useCSVExport();
+
+    function openBulkDeleteDialog() {
+      showBulkDeleteDialog.value = true;
+    }
+
+    function confirmBulkDelete() {
+      emit("bulk-delete", selectedKeys);
+      showBulkDeleteDialog.value = false;
+    }
+
+    async function exportSelected( exportFileName: string = 'selected_export.csv') {
+      const selectedItems = props.items.filter(item => selectedKeys.value.includes(item[props.itemKey]));
+      if (selectedItems.length === 0) {
+        return; 
+      }
+      const columnsToExport = props.columns.filter(col => col.key !== 'actions');
+      await exportToCSV(selectedItems, columnsToExport, exportFileName, true);
+      emit("export-selected", selectedKeys);
+    }
+
+    async function exportAll(exportFileName: string = 'all_export.csv') {
+      if (props.items.length === 0) return;
+      const columnsToExport = props.columns.filter(col => col.key !== 'actions');
+      await exportToCSV(props.items, columnsToExport, exportFileName, true);
+      emit("export-all");
+    }
 
     function onRowClick(rowData: TableItem) {
       emit("row-click", rowData);
@@ -362,8 +408,13 @@ export default defineComponent({
       closeActionMenu,
       handleActionClick,
       itemUniqueKey,
+      showBulkDeleteDialog,
+      openBulkDeleteDialog,
+      confirmBulkDelete,
+      exportSelected,
+      exportAll,
+      isExporting,
     };
   },
 });
 </script>
-
