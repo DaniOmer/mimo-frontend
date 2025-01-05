@@ -29,7 +29,7 @@
           </div>
           <div class="flex items-center gap-2">
             <strong>Prix Unitaire :</strong>
-            <span>{{ orderItem.priceEtx.toFixed(2) }} €</span>
+            <span>{{ orderItem.productVariant.priceEtx.toFixed(2) }} €</span>
           </div>
         </div>
       </div>

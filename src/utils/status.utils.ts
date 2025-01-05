@@ -1,5 +1,5 @@
-import { STATUS_COLORS } from "../config/status.config";
+import { STATUS_CONFIG } from "../config/status.config";
 
-export const getStatusColor= (status: string): string => {
-  return STATUS_COLORS[status] || "bg-gray-100 text-gray-700";
+export const getStatusDetails = (status: string): { color: string; label: string } => {
+  return STATUS_CONFIG[status] || { color: "bg-gray-100 text-gray-700", label: "Inconnu" };
 };
