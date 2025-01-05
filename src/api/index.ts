@@ -10,3 +10,7 @@ export * from "./product/color.api";
 export * from "./product/color.types";
 export * from "./product/productFeature.types";
 export * from "./product/productFeature.api";
+export * from "./product/product.api";
+export * from "./product/product.types";
+export * from "./product/productVariant.types";
+export * from "./product/productImage.types";
