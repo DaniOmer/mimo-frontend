@@ -1,88 +1,131 @@
 import { defineStore } from "pinia";
+import { useApiRequest } from "../../composables/useApiRequest";
 import {
   fetchAllSizes,
   fetchSizeById,
-  createSize,
-  updateSize,
-  deleteSize,
+  createSize as apiCreateSize,
+  updateSize as apiUpdateSize,
+  deleteSize as apiDeleteSize,
 } from "../../api/";
 import type { ISize } from "../../api";
 
 export const useSizeStore = defineStore("size", {
   state: () => ({
     sizes: [] as ISize[],
-    loading: false,
+    status: "idle" as "idle" | "pending" | "success" | "failed",
     error: null as string | null,
+    controller: null as AbortController | null,
   }),
 
+  getters: {
+    isLoading: (state) => state.status === "pending",
+    hasError: (state) => !!state.error,
+  },
+
   actions: {
-
-    async fetchSizes(signal?: AbortSignal) {
-      this.loading = true;
-      this.error = null;
-      try {
-        this.sizes = await fetchAllSizes(signal);
-      } catch (err) {
-        this.error = "Erreur lors de la récupération des tailles.";
-      } finally {
-        this.loading = false;
+    initController() {
+      if (!this.controller) {
+        this.controller = new AbortController();
       }
     },
 
-    async createSize(data: Partial<ISize>, signal?: AbortSignal) {
-      this.loading = true;
+    async fetchSizes() {
+      const { execute, status, error } = useApiRequest<ISize[]>();
       this.error = null;
-      try {
-        const newSize = await createSize(data, signal);
-        this.sizes.push(newSize);
-      } catch (err) {
-        this.error = "Erreur lors de la création de la taille.";
-      } finally {
-        this.loading = false;
+      this.initController();
+
+      this.status = status.value;
+
+      const result = await execute(() => fetchAllSizes(this.controller!.signal));
+
+      if (result) {
+        this.sizes = result;
       }
+
+      this.status = status.value;
+      this.error = error.value;
     },
 
-    async updateSize(id: string, data: Partial<ISize>, signal?: AbortSignal) {
-      this.loading = true;
+    async createSize(sizeData: Partial<ISize>) {
+      const { execute, status, error } = useApiRequest<ISize>();
       this.error = null;
-      try {
-        const updatedSize = await updateSize(id, data, signal);
+      this.initController();
+
+      this.status = status.value;
+
+      const result = await execute(() => apiCreateSize(sizeData, this.controller!.signal));
+
+      if (result) {
+        this.sizes.push(result);
+      }
+
+      this.status = status.value;
+      this.error = error.value;
+    },
+
+    async updateSize(id: string, sizeData: Partial<ISize>) {
+      const { execute, status, error } = useApiRequest<ISize>();
+      this.error = null;
+      this.initController();
+
+      this.status = status.value;
+
+      const result = await execute(() => apiUpdateSize(id, sizeData, this.controller!.signal));
+
+      if (result) {
         const index = this.sizes.findIndex((size) => size._id === id);
         if (index !== -1) {
-          this.sizes[index] = updatedSize;
+          this.sizes[index] = result;
         }
-      } catch (err) {
-        this.error = "Erreur lors de la mise à jour de la taille.";
-      } finally {
-        this.loading = false;
       }
+
+      this.status = status.value;
+      this.error = error.value;
     },
 
-    async deleteSize(id: string, signal?: AbortSignal) {
-      this.loading = true;
+    async deleteSize(id: string) {
+      const { execute, status, error } = useApiRequest<void>();
       this.error = null;
-      try {
-        await deleteSize(id, signal);
+      this.initController();
+
+      this.status = status.value;
+
+      const result = await execute(() => apiDeleteSize(id, this.controller!.signal));
+
+      if (result === null) {
         this.sizes = this.sizes.filter((size) => size._id !== id);
-      } catch (err) {
-        this.error = "Erreur lors de la suppression de la taille.";
-      } finally {
-        this.loading = false;
+      }
+
+      this.status = status.value;
+      this.error = error.value;
+    },
+
+    async getSizeById(id: string): Promise<ISize | null> {
+      const { execute, status, error } = useApiRequest<ISize>();
+      this.error = null;
+      this.initController();
+
+      this.status = status.value;
+
+      const size = await execute(() => fetchSizeById(id, this.controller!.signal));
+
+      this.status = status.value;
+      this.error = error.value;
+
+      return size;
+    },
+
+    cancelRequest() {
+      if (this.controller) {
+        this.controller.abort();
+        this.controller = null;
+        this.status = "idle";
       }
     },
 
-    async getSizeById(id: string, signal?: AbortSignal): Promise<ISize | null> {
-      this.loading = true;
+    resetStatus() {
+      this.status = "idle";
       this.error = null;
-      try {
-        const size = await fetchSizeById(id, signal);
-        return size;
-      } catch (err) {
-        this.error = "Erreur lors de la récupération de la taille.";
-        return null;
-      } finally {
-        this.loading = false;
-      }
     },
   },
 });
