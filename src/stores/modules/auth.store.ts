@@ -4,8 +4,10 @@ import {
   registerUser,
   verifyEmail,
   IUserCreate,
+  createUserFromInvitation,
   IUser,
   IUserLogin,
+  IuserFromInvitation,
   loginUser,
 } from "../../api";
 import { useUserStore } from "./user.store";
@@ -61,6 +63,21 @@ export const useAuthStore = defineStore("auth", {
       this.status = status.value;
     },
 
+    async createUserFromInvitation(userData: IuserFromInvitation) {
+      const { execute, status, error } = useApiRequest<void>();
+      this.error = null;
+    
+      if (!this.controller) {
+        this.controller = new AbortController();
+      }
+    
+      this.status = status.value;
+      await execute(() => createUserFromInvitation(userData, this.controller!.signal));
+    
+      this.error = error.value;
+      this.status = status.value;
+    },
+    
     async login(userData: IUserLogin) {
       const { execute, status, error, data } = useApiRequest<{
         token: string;
