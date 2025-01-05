@@ -28,7 +28,6 @@ export const useUserStore = defineStore("user", {
   actions: {
     async fetchProfile(id: string) {
       try {
-        console.log("USER STORE ID", id);
         const { execute, status, error, data } = useApiRequest<IUser>();
         this.error = error.value;
 
@@ -38,7 +37,6 @@ export const useUserStore = defineStore("user", {
 
         this.status = status.value;
         await execute(() => fetchUser(id, this.controller!.signal));
-        console.log("USER STORE", data.value);
 
         this.user = data.value;
         this.error = error.value;

@@ -6,76 +6,74 @@
       de passe ici.
     </p>
     <div>
-      <div>
-        <div class="flex justify-between items-center border-b border-gray-300">
-          <div class="flex lg:gap-6 xl:gap-20 py-14">
-            <div><UserIcon class="size-8 text-black" /></div>
-            <div>
-              <p class="font-semibold">Nom</p>
-              <p>{{ user?.firstName }} {{ user?.lastName }}</p>
-            </div>
-            <div>
-              <p class="font-semibold">Téléphone mobile</p>
-              <p>{{ user?.email }}</p>
-            </div>
-          </div>
-          <BaseButton
-            classes="text-primary border-primary hover:bg-primary hover:text-white w-40 h-fit"
-            label="Modifier"
-            type="button"
-            @click="openPersonalInfoModal"
-          />
-        </div>
-        <BaseModal
-          :isOpen="isPersonalInfoModalOpen"
-          :close="closePersonalInfoModal"
-        >
-          <template v-slot:header>
-            <h2 class="text-lg font-semibold">
-              Mettre à jour mes données personnelles
-            </h2>
-          </template>
-          <template v-slot:body>
-            <PersonalInfosForm
-              :initialFormData="{
-                firstName: firstName,
-                lastName: lastName,
-              }"
-              :loading="userStore.isLoading"
-              :submit-error="error"
-              @submit="handleFormSubmit"
-            />
-          </template>
-        </BaseModal>
-      </div>
       <div class="flex justify-between items-center border-b border-gray-300">
         <div class="flex lg:gap-6 xl:gap-20 py-14">
-          <div><LockClosedIcon class="size-8 text-black" /></div>
+          <div><UserIcon class="size-8 text-black" /></div>
           <div>
-            <p class="font-semibold">Votre mot de passe</p>
-            <p>************</p>
+            <p class="font-semibold">Nom</p>
+            <p>{{ user?.firstName }} {{ user?.lastName }}</p>
+          </div>
+          <div>
+            <p class="font-semibold">Téléphone mobile</p>
+            <p>{{ user?.email }}</p>
           </div>
         </div>
         <BaseButton
-          classes="text-primary border-primary hover:bg-primary hover:text-white w-40"
+          classes="text-primary border-primary hover:bg-primary hover:text-white w-40 h-fit"
           label="Modifier"
           type="button"
-          @click="openPasswordModal"
+          @click="openPersonalInfoModal"
         />
-        <BaseModal :isOpen="isPasswordModalOpen" :close="closePasswordModal">
-          <template v-slot:header>
-            <h2 class="text-lg font-semibold">Changer le mot de passe</h2>
-          </template>
-          <template v-slot:body>
-            <ChangePasswordForm
-              :initialFormData="changePasswordFormData"
-              :loading="userStore.isLoading"
-              :submit-error="error"
-              @submit="handlePasswordFormSubmit"
-            />
-          </template>
-        </BaseModal>
       </div>
+      <BaseModal
+        :isOpen="isPersonalInfoModalOpen"
+        :close="closePersonalInfoModal"
+      >
+        <template v-slot:header>
+          <h2 class="text-lg font-semibold">
+            Mettre à jour mes données personnelles
+          </h2>
+        </template>
+        <template v-slot:body>
+          <PersonalInfosForm
+            :initialFormData="{
+              firstName: firstName,
+              lastName: lastName,
+            }"
+            :loading="userStore.isLoading"
+            :submit-error="error"
+            @submit="handleFormSubmit"
+          />
+        </template>
+      </BaseModal>
+    </div>
+    <div class="flex justify-between items-center border-b border-gray-300">
+      <div class="flex lg:gap-6 xl:gap-20 py-14">
+        <div><LockClosedIcon class="size-8 text-black" /></div>
+        <div>
+          <p class="font-semibold">Votre mot de passe</p>
+          <p>************</p>
+        </div>
+      </div>
+      <BaseButton
+        classes="text-primary border-primary hover:bg-primary hover:text-white w-40"
+        label="Modifier"
+        type="button"
+        @click="openPasswordModal"
+      />
+      <BaseModal :isOpen="isPasswordModalOpen" :close="closePasswordModal">
+        <template v-slot:header>
+          <h2 class="text-lg font-semibold">Changer le mot de passe</h2>
+        </template>
+        <template v-slot:body>
+          <ChangePasswordForm
+            :initialFormData="changePasswordFormData"
+            :loading="userStore.isLoading"
+            :submit-error="error"
+            @submit="handlePasswordFormSubmit"
+          />
+        </template>
+      </BaseModal>
     </div>
   </div>
 </template>
