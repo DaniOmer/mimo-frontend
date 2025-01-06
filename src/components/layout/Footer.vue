@@ -17,7 +17,12 @@
           >
         </li>
         <li>
-          <a href="#" class="hover:underline me-4 md:me-6">CGV</a>
+          <router-link
+            to="/conditions-generales-de-vente"
+            class="hover:underline me-4 md:me-6"
+          >
+            CGV
+          </router-link>
         </li>
         <li>
           <a href="#" class="hover:underline">Contact</a>

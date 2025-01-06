@@ -6,6 +6,7 @@ import UserPersonalInfosView from "../../views/main/UserPersonalInfosView.vue";
 import UserAddressView from "../../views/main/UserAddressView.vue";
 import UserPreferenceView from "../../views/main/UserPreferenceView.vue";
 import OrdersView from "../../views/main/UserOrdersView.vue";
+import ConditionView from "../../views/main/ConditionView.vue";
 
 export const publicRoutes: RouteRecordRaw[] = [
   {
@@ -38,5 +39,10 @@ export const publicRoutes: RouteRecordRaw[] = [
         component: OrdersView, 
       }
     ],
+  },
+  {
+    path: "/conditions-generales-de-vente",
+    component: MainLayout,
+    children: [{ path: "", name: "condition", component: ConditionView }],
   },
 ];
