@@ -263,7 +263,7 @@
 <section id="section-17">
     <h2>17. Service consommateur & Médiateur de la consommation</h2>
     <p>17.1 En cas de litige, le Client peut adresser une réclamation à notre service client :</p>
-    <p>Adresse : Votre adresse<br>Mail : Votre Email</p>
+    <p>Adresse : 11 rue saint-Antoine ,75012 PARIS<br>Mail : mimo@mimo.fr</p>
     <p>17.2 La saisine du Médiateur est possible via : 
         <a href="https://www.economie.gouv.fr/mediation-conso/mediateurs-references" target="_blank">
             Médiateurs référencés
