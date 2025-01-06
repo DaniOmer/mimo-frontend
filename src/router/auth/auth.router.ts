@@ -42,7 +42,7 @@ export const authRoutes: RouteRecordRaw[] = [
         component: ResetPasswordView,
       },
       {
-        path: "password/reset-password",
+        path: "reset-password",
         name: "resetPasswordConfirm",
         component: ResetPasswordConfirmView,
         props: (route) => ({ token: route.query.token }), 
