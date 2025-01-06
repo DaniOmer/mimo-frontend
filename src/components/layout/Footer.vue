@@ -29,21 +29,13 @@
         </li>
       </ul>
     </div>
-    <CookieModal :isOpen="isModalVisible" :close="closeCookieModal" />
+    <CookieModal :isOpen="isModalOpen" :close="closeCookieModal" />
   </footer>
 </template>
 
 <script setup lang="ts">
-import { ref } from "vue";
+import { useModal } from "../../composables/useModal";
 import CookieModal from "../../components/CookieModal.vue";
 
-const isModalVisible = ref(false);
-
-function showCookieModal() {
-  isModalVisible.value = true;
-}
-
-function closeCookieModal() {
-  isModalVisible.value = false;
-}
+const { isOpen: isModalOpen, open: showCookieModal, close: closeCookieModal } = useModal();
 </script>
