@@ -12,9 +12,7 @@
           <a href="#" class="hover:underline me-4 md:me-6">À propos</a>
         </li>
         <li>
-          <a href="#" class="hover:underline me-4 md:me-6"
-            >Politique de confidentialité</a
-          >
+          <router-link to="/politique-de-confidentialite" class="hover:underline me-4 md:me-6">Politique de confidentialité</router-link>
         </li>
         <li>
           <router-link
@@ -32,4 +30,5 @@
   </footer>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+</script>

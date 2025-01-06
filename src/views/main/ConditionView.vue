@@ -3,23 +3,23 @@
     <aside class="sidebar">
       <nav class="toc">
         <ul>
-          <li><a href="#section-1">1. Dispositions générales</a></li>
-          <li><a href="#section-2">2. Identification du fournisseur</a></li>
-          <li><a href="#section-3">3. Renseignements sur les produits et leur disponibilité</a></li>
-          <li><a href="#section-4">4. Prix</a></li>
-          <li><a href="#section-5">5. Exécution du contrat</a></li>
-          <li><a href="#section-6">6. Mode de paiement</a></li>
-          <li><a href="#section-7">7. Transport et livraison</a></li>
-          <li><a href="#section-8">8. Envoi et confirmation de livraison</a></li>
-          <li><a href="#section-9">9. Rubanage et emballage</a></li>
-          <li><a href="#section-10">10. Droit de rétractation</a></li>
-          <li><a href="#section-11">11. Produits personnalisés</a></li>
-          <li><a href="#section-12">12. Remplacement des produits</a></li>
-          <li><a href="#section-13">13. Défaut de conformité</a></li>
-          <li><a href="#section-14">14. Garantie d’authenticité et droits de propriété intellectuelle</a></li>
-          <li><a href="#section-15">15. Droit applicable et juridiction compétente</a></li>
-          <li><a href="#section-16">16. Contacts</a></li>
-          <li><a href="#section-17">17. Médiateur de la consommation</a></li>
+          <li><a href="#section-1">Dispositions générales</a></li>
+          <li><a href="#section-2">Identification du fournisseur</a></li>
+          <li><a href="#section-3">Renseignements sur les produits et leur disponibilité</a></li>
+          <li><a href="#section-4">Prix</a></li>
+          <li><a href="#section-5">Exécution du contrat</a></li>
+          <li><a href="#section-6">Mode de paiement</a></li>
+          <li><a href="#section-7">Transport et livraison</a></li>
+          <li><a href="#section-8">Envoi et confirmation de livraison</a></li>
+          <li><a href="#section-9">Rubanage et emballage</a></li>
+          <li><a href="#section-10">Droit de rétractation</a></li>
+          <li><a href="#section-11">Produits personnalisés</a></li>
+          <li><a href="#section-12">Remplacement des produits</a></li>
+          <li><a href="#section-13">Défaut de conformité</a></li>
+          <li><a href="#section-14">Garantie d’authenticité et droits de propriété intellectuelle</a></li>
+          <li><a href="#section-15">Droit applicable et juridiction compétente</a></li>
+          <li><a href="#section-16">Contacts</a></li>
+          <li><a href="#section-17">Médiateur de la consommation</a></li>
         </ul>
       </nav>
     </aside>
@@ -270,24 +270,11 @@
         </a>. Le Client peut tenter une médiation amiable avant de saisir le juge.</p>
     <p>La saisine doit s’effectuer dans un délai d’un an après la réclamation écrite et en cas de non-réponse sous 60 jours.</p>
 </section>
-
-
-
-
-
-      <section>
-
-      </section>
-
-
-       
-
     </main>
   </div>
 </template>
 
 <script setup>
-// Optionally, you can add dynamic logic here if needed
 </script>
 
 <style scoped>
@@ -299,22 +286,29 @@
 
 .sidebar {
   width: 250px;
+  padding: 20px;
   border-right: 1px solid #ccc;
-  padding-right: 20px;
+  background-color: #f9f9f9;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
 }
 
 .toc ul {
   list-style: none;
   padding: 0;
+  margin: 0;
 }
 
 .toc li {
-  margin: 5px 0;
+  margin: 10px 0;
 }
 
 .toc a {
-  color: #007bff;
+  color: #1a73e8;
   text-decoration: none;
+  font-weight: 500;
 }
 
 .toc a:hover {
@@ -328,14 +322,14 @@
 
 h1 {
   font-size: 24px;
-  margin-bottom: 10px;
+  margin-bottom: 20px;
 }
 
 h2 {
   font-size: 20px;
   margin-top: 20px;
-  border-bottom: 1px solid #ddd;
   padding-bottom: 5px;
+  border-bottom: 1px solid #ddd;
 }
 
 section {
