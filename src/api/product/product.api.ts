@@ -7,7 +7,7 @@ export const fetchActiveProducts = async (
   signal?: AbortSignal
 ): Promise<IProduct[]> => {
   try {
-    const response = await httpClientPublic.get(ROUTE_PREFIX, {
+    const response = await httpClientPublic.get(`${ROUTE_PREFIX}/active`, {
       signal,
     });
     return response.data.data;
@@ -17,17 +17,15 @@ export const fetchActiveProducts = async (
   }
 };
 
-export const fetchProductWithVariants = async (
+export const fetchProductById = async (
   id: string,
   signal?: AbortSignal
 ): Promise<IProduct> => {
   try {
-    const response = await httpClientPublic.get(
-      `${ROUTE_PREFIX}/${id}/variants`,
-      {
-        signal,
-      }
-    );
+    const response = await httpClientPublic.get(`${ROUTE_PREFIX}/${id}`, {
+      signal,
+    });
+    console.log("FROM PRODUCT API", response.data);
     return response.data.data;
   } catch (error) {
     console.error(
@@ -46,6 +44,32 @@ export const fetchProductFilters = async (signal?: AbortSignal) => {
     return response.data.data;
   } catch (error) {
     console.error("Erreur lors de la récupération des filtres :", error);
+    throw error;
+  }
+};
+
+export const fetchFilteredProducts = async (
+  filters: any,
+  signal?: AbortSignal
+): Promise<IProduct[]> => {
+  try {
+    console.log(filters);
+    const response = await httpClientPublic.post(
+      `${ROUTE_PREFIX}/search`,
+      {
+        ...filters,
+        isActive: true,
+      },
+      {
+        signal,
+      }
+    );
+    return response.data.data;
+  } catch (error) {
+    console.error(
+      "Erreur lors de la récupération des produits filtrés :",
+      error
+    );
     throw error;
   }
 };

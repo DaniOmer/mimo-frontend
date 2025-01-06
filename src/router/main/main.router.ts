@@ -6,6 +6,7 @@ import UserPersonalInfosView from "../../views/main/UserPersonalInfosView.vue";
 import UserAddressView from "../../views/main/UserAddressView.vue";
 import CatalogView from "../../views/main/CatalogView.vue";
 import ProductDetailsView from "../../views/main/ProductDetailsView.vue";
+import NotFoundView from "../../views/main/NotFoundView.vue";
 
 export const publicRoutes: RouteRecordRaw[] = [
   {
@@ -19,6 +20,11 @@ export const publicRoutes: RouteRecordRaw[] = [
         name: "ProductDetails",
         component: ProductDetailsView,
         props: true,
+      },
+      {
+        path: "/:catchAll(.*)",
+        name: "NotFound",
+        component: NotFoundView,
       },
     ],
   },
