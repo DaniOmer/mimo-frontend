@@ -81,9 +81,19 @@ const emit = defineEmits<{
 }>();
 
 const localUserData = reactive({
-  ...props.userData,
-  role: props.userData.role || props.roles[0]?.value || '', 
+  firstName: '',
+  lastName: '',
+  email: '',
+  role: ''
 });
+
+watch(
+  () => props.userData,
+  (newUserData) => {
+    Object.assign(localUserData, newUserData);
+  },
+  { immediate: true }
+);
 
 const { errors, validate } = useFormValidation(editUserSchema);
 
