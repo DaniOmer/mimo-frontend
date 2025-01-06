@@ -4,7 +4,7 @@
       <div>
         <h1 class="text-lg font-semibold">Mon compte</h1>
         <ul class="flex flex-col gap-y-1">
-          <NavItem :to="{ name: 'homepage' }">Commandes</NavItem>
+          <NavItem :to="{ name: 'userOrders' }">Commandes</NavItem>
           <NavItem :to="{ name: 'userPersonnalInfos' }"
             >Données personnelles</NavItem
           >
