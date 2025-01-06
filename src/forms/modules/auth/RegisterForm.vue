@@ -39,19 +39,22 @@
         type="password"
         :error="errors.confirmPassword"
       />
-      <div class="mt-4">
-        <label class="flex items-center space-x-2">
-          <input
-            v-model="localFormData.isTermsOfSale"
-            type="checkbox"
-            class="h-4 w-4 rounded border-gray-300 text-quaternary"
-          />
-          <span class="text-sm text-gray-700">J'accepte les CGU</span>
-        </label>
-        <p v-if="errors.isTermsOfSale" class="mt-2 text-sm text-red-600">
-          {{ errors.isTermsOfSale }}
-        </p>
-      </div>
+      <BaseCheckbox
+        v-model="localFormData.isTermsOfSale"
+        @update:modelValue="($event) => (localFormData.isTermsOfSale = $event)"
+        label="J'accepte les CGU"
+        name="isBilling"
+        :error="errors.isTermsOfSale"
+      />
+      <BaseCheckbox
+        v-model="localFormData.isDefaultPreference"
+        @update:modelValue="
+          ($event) => (localFormData.isDefaultPreference = $event)
+        "
+        label="J'accepte les préférence définis par défaut"
+        name="isDefaultPreference"
+        :error="errors.isDefaultPreference"
+      />
     </div>
     <BaseButton label="S'inscrire" type="submit" :loading="loading" />
   </form>
@@ -63,6 +66,7 @@ import { useFormValidation } from "../../../composables/useFormValidation";
 import { registerSchema } from "../../schema/registerSchema";
 import InputField from "../../../components/form/InputField.vue";
 import BaseButton from "../../../components/form/BaseButton.vue";
+import BaseCheckbox from "../../../components/form/BaseCheckbox.vue";
 
 export interface IRegisterFormData {
   firstName: string;
@@ -71,6 +75,7 @@ export interface IRegisterFormData {
   password: string;
   confirmPassword: string;
   isTermsOfSale: boolean;
+  isDefaultPreference: boolean;
 }
 
 const props = defineProps<{
@@ -80,7 +85,6 @@ const props = defineProps<{
 
 const emit = defineEmits(["submit"]);
 const localFormData = reactive({ ...props.initialFormData });
-
 const { errors, validate } = useFormValidation(registerSchema);
 
 const handleSubmit = () => {

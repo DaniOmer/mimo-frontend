@@ -4,6 +4,7 @@ import MainLayout from "../../layouts/MainLayout.vue";
 import HomeView from "../../views/main/HomeView.vue";
 import UserPersonalInfosView from "../../views/main/UserPersonalInfosView.vue";
 import UserAddressView from "../../views/main/UserAddressView.vue";
+import UserPreferenceView from "../../views/main/UserPreferenceView.vue";
 import OrdersView from "../../views/main/UserOrdersView.vue";
 
 export const publicRoutes: RouteRecordRaw[] = [
@@ -22,9 +23,14 @@ export const publicRoutes: RouteRecordRaw[] = [
         component: UserPersonalInfosView,
       },
       {
-        path: "address",
-        name: "userAddress",
+        path: "addresses",
+        name: "userAddresses",
         component: UserAddressView,
+      },
+      {
+        path: "preferences",
+        name: "userPreferences",
+        component: UserPreferenceView,
       },
       {
         path: "orders",

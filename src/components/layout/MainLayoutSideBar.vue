@@ -8,7 +8,7 @@
           <NavItem :to="{ name: 'userPersonnalInfos' }"
             >Données personnelles</NavItem
           >
-          <NavItem :to="{ name: 'userAddress' }">Adresses</NavItem>
+          <NavItem :to="{ name: 'userAddresses' }">Adresses</NavItem>
           <NavItem :to="{ name: 'homepage' }">Newsletter</NavItem>
         </ul>
       </div>
@@ -16,8 +16,8 @@
       <div>
         <h1 class="text-lg font-semibold">Données et confidentialités</h1>
         <ul class="flex flex-col gap-y-3">
-          <NavItem :to="{ name: 'homepage' }"
-            >Préférences de recommandation</NavItem
+          <NavItem :to="{ name: 'userPreferences' }"
+            >Préférences et notifications</NavItem
           >
           <NavItem :to="{ name: 'homepage' }"
             >Demander ou supprimer des données</NavItem

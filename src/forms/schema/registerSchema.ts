@@ -28,6 +28,7 @@ export const registerSchema = z
     isTermsOfSale: z
       .boolean()
       .refine((val) => val, "Vous devez accepter les CGU."),
+    isDefaultPreference: z.boolean(),
   })
   .superRefine((data, ctx) => {
     if (data.password !== data.confirmPassword) {
