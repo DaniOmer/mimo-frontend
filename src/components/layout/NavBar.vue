@@ -4,7 +4,7 @@
       <ul class="flex justify-between items-center gap-x-3">
         <NavItem :to="{ name: 'homepage' }">Tous</NavItem>
         <NavItem :to="{ name: 'homepage' }">Nouveautés</NavItem>
-        <NavItem :to="{ name: 'homepage' }">Collections</NavItem>
+        <NavItem :to="{ name: 'catalog' }">Collections</NavItem>
       </ul>
 
       <ul class="flex justify-between items-center">

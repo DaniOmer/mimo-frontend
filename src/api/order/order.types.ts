@@ -9,18 +9,20 @@ export enum OrderStatus {
   
   export interface IOrder {
     _id: string; 
-    user: string; 
+    user: string;
     number: string; 
     shipDate?: Date; 
     status: OrderStatus; 
     amountEtx: number; 
     amountVat: number; 
-    shippingAddress: string; 
+    shippingAddress:string
     billingAddress: string;
+    createdAt: Date;
     items: IOrderItem[];
   }
 
   export interface IOrderItem {
+    _id: string;
     product: string;
     productVariant: string ;
     order: string ;

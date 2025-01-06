@@ -10,45 +10,55 @@
         />
       </div>
       <div class="flex-1 text-sm">
-        <p class="text-gray-500 mt-1">{{ orderItem.description }}</p>
+        <p class="mt-1">{{ orderItem.product.description }}</p>
         <div class="mt-3 space-y-2">
           <div class="flex items-center gap-2">
-            <strong>Taille :</strong>
-            <span>{{ orderItem.productVariant.size || 'N/A' }}</span>
+            <p class="font-medium">Taille :</p>
+            <p>{{ orderItem.productVariant.size || 'N/A' }}</p>
           </div>
           <div class="flex items-center gap-2">
-            <strong>Couleur :</strong>
+            <p class="font-medium">Couleur :</p>
             <div
               class="w-4 h-4 rounded-md border"
               :style="{ backgroundColor: orderItem.productVariant.color || '#000000' }"
             ></div>
           </div>
           <div class="flex items-center gap-2">
-            <strong>Quantité :</strong>
-            <span>{{ orderItem.quantity }}</span>
+            <p class="font-medium">Quantité :</p>
+            <p>{{ orderItem.quantity }}</p>
           </div>
           <div class="flex items-center gap-2">
-            <strong>Prix Unitaire :</strong>
-            <span>{{ orderItem.productVariant.priceEtx.toFixed(2) }} €</span>
+            <p class="font-medium">Prix Unitaire :</p>
+            <p>{{ orderItem.productVariant.priceEtx.toFixed(2) }} €</p>
           </div>
         </div>
       </div>
     </div>
     <div class="flex justify-end mt-3">
-      <button
-        class="px-4 py-2 text-sm text-white border border-quaternary rounded bg-quaternary hover:bg-quaternary transition"
-      >
-        Afficher votre article
-      </button>
-    </div>
+    <BaseButton
+      color="primary"
+      @click="redirectToPage"
+      label="Afficher votre article"
+      class="w-auto px-4"
+    />
+  </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { defineProps } from "vue";
+import { useRouter } from "vue-router";
 import { IOrderItem } from "../api/order/order.types";
+import BaseButton from "../components/form/BaseButton.vue";  
 
 defineProps({
   orderItem: { type: Object as () => IOrderItem, required: true },
 });
+
+const router = useRouter();
+
+const redirectToPage = () => {
+  const url = "/page-url"; 
+  router.push(url);
+};
 </script>

@@ -4,7 +4,7 @@
       <h2 class="text-lg font-semibold">Détails de la commande</h2>
     </template>
     <template v-slot:body>
-      <OrderDetails :order="orderData" @action="handleOrderAction" />
+      <OrderDetails v-if="orderData" :order="orderData" />
     </template>
   </BaseModal>
 </template>
@@ -18,6 +18,5 @@ defineProps<{
   orderData: IOrder | null; 
   isOpen: boolean; 
   close: () => void; 
-  handleOrderAction: (action: string, order: IOrder) => void; 
 }>();
 </script>

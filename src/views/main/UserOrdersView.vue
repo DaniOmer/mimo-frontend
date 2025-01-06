@@ -1,14 +1,10 @@
 <template>
   <div class="p-6 w-full">
     <h1 class="text-xl font-bold mb-6">Mes Commandes</h1>
-    <div>
-      <div
-        v-for="order in orders"
-        :key="order.number"
-        class="border rounded-md bg-white shadow-sm mb-6"
-      >
+    <div class="space-y-6">
+      <div v-for="order in orders" :key="order.number" class="border rounded-md shadow-sm bg-white">
         <div class="flex items-center justify-between bg-quaternary px-6 py-4 text-sm text-white">
-         
+
           <div>
             <p class="font-semibold">Commande effectuée le</p>
             <p>{{ order.createdAt ? new Date(order.createdAt).toLocaleDateString("fr-FR") : "Date non définie" }}</p>
@@ -16,16 +12,12 @@
 
           <div>
             <p class="font-semibold">Total</p>
-            <p>{{ (order.amountVat).toFixed(2) }} €</p>
+            <p>{{ order.amountVat.toFixed(2) }} €</p>
           </div>
 
           <div>
             <p class="font-semibold">Livraison à</p>
-            <a
-              href="javascript:void(0)"
-              class="text-blue-600 underline"
-              @click="goToAddressPage"
-            >
+            <a href="javascript:void(0)" class="text-blue-600 underline" @click="goToAddressPage">
               {{ order.user.firstName }} {{ order.user.lastName }}
             </a>
           </div>
@@ -36,25 +28,23 @@
           </div>
 
           <div class="flex space-x-3">
-            <button 
-              @click="openOrderDetailsModal(order)" 
-              class="text-blue-600 hover:underline"
-            >
+            <button @click="openOrderDetailsModal(order)" class="text-blue-600 hover:underline">
               Détails de commande
             </button>
-            <p :class="[getStatusDetails(order.status).color, 'ml-4border rounded-sm']">
-                {{ getStatusDetails(order.status).label }}
+            <p :class="[getStatusDetails(order.status).color, 'border rounded-sm']">
+              {{ getStatusDetails(order.status).label }}
             </p>
           </div>
+
         </div>
 
-        <div class="px-6 py-4">
+        <div class="px-6 py-4 space-y-4">
           <OrderCard
             v-for="item in order.items"
             :key="item.product"
+            :order="order"
             :orderItem="item"
             :imageUrl="item.product.image?.url || 'https://via.placeholder.com/150'"
-            :handleOrderAction="handleOrderAction"
           />
         </div>
       </div>
@@ -64,8 +54,8 @@
       :isOpen="isOrderDetailsModalOpen"
       :close="closeOrderDetailsModal"
       :orderData="selectedOrder"
-      :handle-order-action="handleOrderAction"
     />
+    
   </div>
 </template>
 
@@ -89,22 +79,18 @@ onMounted(() => {
   ordersStore.fetchOrders();
 });
 
-function goToAddressPage() {
+const goToAddressPage=()=>{
   router.push({ name: "userAddress" });
 }
 
-function openOrderDetailsModal(order: IOrder) {
-  selectedOrder.value = order; 
-  isOrderDetailsModalOpen.value = true; 
+const openOrderDetailsModal=(order: IOrder)=>{
+  selectedOrder.value = order;
+  isOrderDetailsModalOpen.value = true;
 }
 
-function closeOrderDetailsModal() {
-  isOrderDetailsModalOpen.value = false; 
-  selectedOrder.value = null; 
-}
-
-function handleOrderAction(action: string, order: IOrder) {
-  console.log(`Action ${action} sur la commande`, order);
+const closeOrderDetailsModal=() =>{
+  isOrderDetailsModalOpen.value = false;
+  selectedOrder.value = null;
 }
 
 </script>

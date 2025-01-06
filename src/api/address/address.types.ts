@@ -4,7 +4,7 @@ export interface IAddress {
   _id: string;
   firstName: string;
   lastName: string;
-  streetNumber: number;
+  streetNumber: string;
   street: string;
   city: string;
   state?: string;

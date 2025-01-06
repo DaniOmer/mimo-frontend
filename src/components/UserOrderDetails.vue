@@ -1,6 +1,6 @@
 <template>
-  <div class="p-6 w-full">
-    <div class="flex justify-between items-center text-sm text-gray-700 mb-6">
+  <div class="p-6 w-full border rounded-md shadow-sm bg-white">
+    <div class="flex justify-between items-center text-sm text-gray-700 mb-4">
       <div>
         <p>Commandé le {{ formatDate(order.createdAt) }}</p>
         <p>N° de commande : {{ order.number }}</p>
@@ -10,28 +10,32 @@
 
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
       <div class="border rounded-md p-4 bg-gray-50">
-        <h2 class="text-lg font-semibold mb-2">Adresse de livraison</h2>
+        <h3 class="text-lg font-semibold mb-2">Adresse de livraison</h3>
         <p>{{ order.shippingAddress.streetNumber }} {{ order.shippingAddress.street }}</p>
         <p>{{ order.shippingAddress.city }}, {{ order.shippingAddress.postalCode }}</p>
         <p>{{ order.shippingAddress.country }}</p>
       </div>
+
       <div class="border rounded-md p-4 bg-gray-50">
-        <h2 class="text-lg font-semibold mb-2">Récapitulatif de commande</h2>
-        <div class="flex justify-between">
-          <span>Total des articles :</span>
-          <span>{{ (order.amountEtx).toFixed(2) }} €</span>
+        <h3 class="text-lg font-semibold mb-2">Récapitulatif de commande</h3>
+        <div class="flex justify-between text-sm">
+          <p class="font-bold ">Total des articles :</p>
+          <p>{{ order.amountEtx.toFixed(2) }} €</p>
         </div>
-        <div class="flex justify-between">
-          <span>Montant HT :</span>
-          <span>{{ (order.amountEtx).toFixed(2) }} €</span>
+
+        <div class="flex justify-between text-sm">
+          <p class="font-bold ">Montant HT :</p>
+          <p>{{ order.amountEtx.toFixed(2) }} €</p>
         </div>
-        <div class="flex justify-between">
-          <span>TVA (20%) :</span>
-          <span>{{ calculateTvaAmount(order.amountEtx).toFixed(2) }} €</span>
+
+        <div class="flex justify-between text-sm">
+          <p class="font-bold ">TVA (20%) :</p>
+          <p>{{ calculateTvaAmount(order.amountEtx).toFixed(2) }} €</p>
         </div>
-        <div class="flex justify-between font-semibold">
-          <span>Montant total TTC :</span>
-          <span>{{ order.amountVat.toFixed(2) }} €</span>
+
+        <div class="flex justify-between text-sm font-semibold text-gray-900">
+          <p class="font-bold">Montant total TTC :</p>
+          <p>{{ order.amountVat.toFixed(2) }} €</p>
         </div>
       </div>
     </div>
@@ -40,13 +44,13 @@
 
 <script setup lang="ts">
 import { defineProps } from "vue";
-import { IOrder} from "../api/order/order.types";
+import { IOrder } from "../api/order/order.types";
 
-defineProps<{
-  order: IOrder; 
-}>();
+defineProps({
+  order: { type: Object as () => IOrder, required: true },
+});
 
-const formatDate = (date: string) => {
+const formatDate = (date: Date) => {
   const options: Intl.DateTimeFormatOptions = { year: "numeric", month: "long", day: "numeric" };
   return new Date(date).toLocaleDateString("fr-FR", options);
 };

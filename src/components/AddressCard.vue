@@ -30,11 +30,15 @@
         </div>
       </div>
       <div class="grid grid-cols-4 w-full gap-x-2">
-        <button class="w-full text-center font-medium">
+        <button
+          class="w-full text-center font-medium"
+          @click="handleDeleteClick"
+        >
           <TrashIcon class="h-12 w-12 border border-black p-2" />
         </button>
         <button
           class="text-center font-medium flex justify-center items-center gap-x-3 border border-black col-span-3"
+          @click="handleUpdateClick"
         >
           <PencilSquareIcon class="h-12 w-12 p-2" />
           <span>Modifier</span>
@@ -54,9 +58,16 @@ import {
 
 import { IAddress } from "../api";
 
-defineProps<{
+const props = defineProps<{
   address: IAddress;
-  // handleEditAddress: () => void;
-  // handleDeleteAddress: () => void;
 }>();
+
+const emit = defineEmits(["click:update", "click:delete"]);
+const handleUpdateClick = () => {
+  emit("click:update", props.address);
+};
+
+const handleDeleteClick = () => {
+  emit("click:delete", props.address);
+};
 </script>
