@@ -20,7 +20,12 @@
           <a href="#" class="hover:underline me-4 md:me-6">CGV</a>
         </li>
         <li>
-          <a href="#" class="hover:underline">Contact</a>
+          <router-link
+            to="/contact"
+            class="hover:underline me-4 md:me-6"
+          >
+            Contact
+          </router-link>
         </li>
       </ul>
     </div>
