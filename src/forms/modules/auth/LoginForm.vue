@@ -21,6 +21,12 @@
     <p v-if="submitError" class="text-red-600">{{ submitError }}</p>
     <BaseButton label="Se connecter" type="submit" :loading="loading" />
   </form>
+
+  <div class="flex items-center justify-center h-full">
+    <RouterLink :to="{ name: 'resetPassword' }" class="text-red-600 hover:underline">
+      Mot de passe oublié ?
+    </RouterLink>
+  </div>
 </template>
 
 <script setup lang="ts">
