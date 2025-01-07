@@ -65,6 +65,32 @@ export interface IPasswordUpdate {
   newPassword: string;
 }
 
+export interface IuserInvitation {
+  firstName: string;
+  lastName: string;
+  email: string;
+  roleId: string;
+} 
+
+export interface IuserFromInvitation {
+  tokenHash: string;
+  password: string;
+  isTermsOfSale: boolean;
+}
+
+export interface IPasswordUpdate {
+  oldPassword: string;
+  newPassword: string;
+}
+
+export interface IPasswordResetRequest {
+  email: string;
+}
+
+export interface IPasswordReset {
+  token: string;
+  password: string;
+}
 export interface IPasswordChange {
   oldPassword: string;
   newPassword: string;

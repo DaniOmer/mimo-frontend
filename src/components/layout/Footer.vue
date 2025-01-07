@@ -12,19 +12,28 @@
           <a href="#" class="hover:underline me-4 md:me-6">À propos</a>
         </li>
         <li>
-          <a href="#" class="hover:underline me-4 md:me-6"
-            >Politique de confidentialité</a
+          <router-link to="/privacy-policy" class="hover:underline me-4 md:me-6">Politique de confidentialité</router-link>
+        </li>
+        <li>
+          <router-link
+            to="/terms-and-conditions"
+            class="hover:underline me-4 md:me-6"
           >
+            CGV
+          </router-link>
         </li>
         <li>
-          <a href="#" class="hover:underline me-4 md:me-6">CGV</a>
-        </li>
-        <li>
-          <a href="#" class="hover:underline">Contact</a>
+          <router-link
+            to="/contact"
+            class="hover:underline me-4 md:me-6"
+          >
+            Contact
+          </router-link>
         </li>
       </ul>
     </div>
   </footer>
 </template>
 
-<script setup lang="ts"></script>
+<script setup lang="ts">
+</script>

@@ -6,6 +6,8 @@ import LoginView from "../../views/auth/LoginView.vue";
 import RegisterConfirmationView from "../../views/auth/RegisterConfirmationView.vue";
 import RegisterEmailConfirmationView from "../../views/auth/RegisterEmailConfirmationView.vue";
 import { guestGuard } from "../../middlewares/guestGuard";
+import ResetPasswordView from "../../views/auth/ResetPasswordView.vue";
+import ResetPasswordConfirmView from "../../views/auth/ResetPasswordConfirmView.vue";
 import CreateUserFromInvitationView from "../../views/auth/createUserFromInvitationView.vue";
 
 export const authRoutes: RouteRecordRaw[] = [
@@ -35,6 +37,17 @@ export const authRoutes: RouteRecordRaw[] = [
         component: RegisterEmailConfirmationView,
         props: (route) => ({ token: route.query.token }),
       },
+      {
+        path:"password/password-reset",
+        name:"resetPassword",
+        component: ResetPasswordView,
+      },
+      {
+        path: "reset-password",
+        name: "resetPasswordConfirm",
+        component: ResetPasswordConfirmView,
+        props: (route) => ({ token: route.query.token }), 
+      }
     ],
   },
   {
