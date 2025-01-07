@@ -39,51 +39,50 @@
     >
       <template #table-controls>
         <div class="flex flex-wrap items-center gap-4 mb-4">
-      <!-- Zone gauche : SearchBar + les 3 FilterSelect -->
-      <div class="flex flex-wrap gap-4 items-center grow">
-        <SearchBar
-          v-model="searchQuery"
-          placeholder="Rechercher par nom ou description"
-          :searchMode="'front'"
-          @search="handleSearch"
-          class="w-full lg:w-auto"
-        />
+          <!-- Zone gauche : SearchBar + les 3 FilterSelect -->
+          <div class="flex flex-wrap gap-4 items-center grow">
+            <SearchBar
+              v-model="searchQuery"
+              placeholder="Rechercher par nom ou description"
+              :searchMode="'front'"
+              @search="handleSearch"
+              class="w-full lg:w-auto"
+            />
 
-        <FilterSelect
-          v-model="selectedCategory"
-          :options="categoryOptions"
-          placeholder="Filtrer par Catégorie"
-          :isMultiple="false"
-          class="w-48"
-        />
+            <FilterSelect
+              v-model="selectedCategory"
+              :options="categoryOptions"
+              placeholder="Filtrer par Catégorie"
+              :isMultiple="false"
+              class="w-48"
+            />
 
-        <FilterSelect
-          v-model="selectedFeature"
-          :options="featureOptions"
-          placeholder="Par Caractéristique"
-          :isMultiple="false"
-          class="w-48"
-        />
+            <FilterSelect
+              v-model="selectedFeature"
+              :options="featureOptions"
+              placeholder="Par Caractéristique"
+              :isMultiple="false"
+              class="w-48"
+            />
 
-        <FilterSelect
-          v-model="selectedStatus"
-          :options="statusOptions"
-          placeholder="Filtrer par Statut"
-          :isMultiple="false"
-          class="w-48"
-        />
-      </div>
+            <FilterSelect
+              v-model="selectedStatus"
+              :options="statusOptions"
+              placeholder="Filtrer par Statut"
+              :isMultiple="false"
+              class="w-48"
+            />
+          </div>
 
-      <!-- Zone droite : Bouton Créer un Produit -->
-      <div class="flex-none">
-        <BaseButton
-          color="primary"
-          @click="openCreateModal"
-          label="Créer un Produit"
-        />
-      </div>
-    </div>
-
+          <!-- Zone droite : Bouton Créer un Produit -->
+          <div class="flex-none">
+            <BaseButton
+              color="primary"
+              @click="openCreateModal"
+              label="Créer un Produit"
+            />
+          </div>
+        </div>
       </template>
 
       <template #row-actions="{ item, closeActionMenu }">
@@ -200,17 +199,16 @@
       cancelText="Annuler"
     />
 
-    <ProductCreateModal
-  :visible="isFormModalVisible"
-  :productData="productToEdit"
-  :categoryOptions="categoryOptions"
-  :featureOptions="featureOptions"
-  :colorOptions="colorOptions"
-  @close="isFormModalVisible = false"
-  @submit="handleCreateOrUpdateProduct"
-  :submitLabel="formSubmitLabel"
-  :loading="isFormLoading"
-/>
+    <ProductFormModal
+      :visible="isFormModalVisible"
+      :productData="productToEdit"
+      :categoryOptions="categoryOptions"
+      :featureOptions="featureOptions"
+      @close="isFormModalVisible = false"
+      @submit="handleCreateOrUpdateProduct"
+      :submitLabel="formSubmitLabel"
+      :loading="isFormLoading"
+    />
 
     <Loader
       :visible="isFormLoading"
@@ -229,7 +227,7 @@ import SearchBar from "../../../components/SearchBar.vue";
 import FilterSelect from "../../../components/FilterSelect.vue";
 import Table from "../../../components/Table.vue";
 import ConfirmationDialog from "../../../components/ConfirmationDialog.vue";
-import ProductCreateModal from "../../../forms/modules/admin/product/ProductFormModal.vue";
+import ProductFormModal from "../../../forms/modules/admin/product/ProductFormModal.vue";
 import Loader from "../../../components/BaseLoader.vue";
 import BaseButton from "../../../components/form/BaseButton.vue";
 
@@ -279,19 +277,6 @@ const featureOptions = computed<Option[]>(() =>
   }))
 );
 
-const sizeOptions = computed<Option[]>(() =>
-  sizeStore.sizes.map((size) => ({
-    label: size.name,
-    value: size._id,
-  }))
-);
-
-const colorOptions = computed<Option[]>(() =>
-  colorStore.colors.map((color) => ({
-    label: color.name,
-    value: color._id,
-  }))
-);
 
 const statusOptions = computed<Option[]>(() => [
   { label: "Actif", value: "Active" },
@@ -314,12 +299,15 @@ const columns = [
     key: "createdAt",
     label: "Date Création",
     sortable: true,
-    format: (value: string) => value ?  formatDateTime(new Date(value), false) : "",
+    format: (value: string) =>
+      value ? formatDateTime(new Date(value), false) : "",
     align: "center" as "center",
   },
 ];
 
-const productData = computed<Partial<IProduct> | undefined>(() => productToEdit.value || undefined);
+const productData = computed<Partial<IProduct> | undefined>(
+  () => productToEdit.value || undefined
+);
 
 const isConfirmDeleteVisible = ref(false);
 const isConfirmDeactivateVisible = ref(false);
@@ -357,7 +345,9 @@ const filteredProducts = computed(() => {
   return productStore.products.filter((product) => {
     const matchesSearch =
       product.name.toLowerCase().includes(searchQuery.value.toLowerCase()) ||
-      product.description.toLowerCase().includes(searchQuery.value.toLowerCase());
+      product.description
+        .toLowerCase()
+        .includes(searchQuery.value.toLowerCase());
     const matchesCategory =
       !selectedCategory.value ||
       product.categoryIds.includes(selectedCategory.value);
@@ -398,82 +388,43 @@ function openEditModal(product: IProduct) {
   isFormModalVisible.value = true;
 }
 
-function closeFormModal() {
-  isFormModalVisible.value = false;
-  productToEdit.value = null;
-}
-
 interface ProductFormData {
   name: string;
   description: string;
   priceEtx: number;
   categoryIds: string[];
   featureIds: string[];
-  colorIds: string[];
-  images: File[]; // ou tout autre format de gestion
 }
 
-function handleCreateOrUpdateProduct(payload: {
-  product: ProductFormData;
-  variants: any[];
-}) {
+async function handleCreateOrUpdateProduct(formData: ProductFormData) {
   isFormLoading.value = true;
   try {
-    if (productToEdit.value) {
-      productStore.updateProductWithVariants(
-        productToEdit.value._id,
-        payload.product,
-        payload.variants
-      );
-    } else {
-      productStore.createProductWithVariants(
-        payload.product,
-        payload.variants
-      );
+    if (productToEdit.value && productToEdit.value._id) {
+      await productStore.updateProduct(productToEdit.value._id, {
+        name: formData.name,
+        description: formData.description,
+        priceEtx: formData.priceEtx,
+        categoryIds: formData.categoryIds,
+        featureIds: formData.featureIds,
+      });
+      $toast.success("Produit mis à jour avec succès !");
+    }
+    else {
+      await productStore.createProduct({
+        name: formData.name,
+        description: formData.description,
+        priceEtx: formData.priceEtx,
+        categoryIds: formData.categoryIds,
+        featureIds: formData.featureIds,
+      });
+      $toast.success("Produit créé avec succès !");
     }
   } catch (error) {
-    // ...
+    $toast.error("Erreur lors de la création/mise à jour du produit.");
   } finally {
     isFormLoading.value = false;
     isFormModalVisible.value = false;
-  }
-}
-
-
-async function handleFormSubmit(formData: any) {
-  isFormLoading.value = true;
-  try {
-    if (productToEdit.value) {
-      const { product, variants } = formData;
-
-      await productStore.updateProductWithVariants(
-        productToEdit.value._id, 
-        product,
-        variants
-      );
-      $toast.success("Produit mis à jour avec succès!", {
-        position: "top",
-        duration: 3000,
-      });
-    } else {
-      const { product, variants } = formData;
-      await productStore.createProductWithVariants(
-        product,
-        variants
-      );
-      $toast.success("Produit créé avec succès!", {
-        position: "top",
-        duration: 3000,
-      });
-    }
-    closeFormModal();
-  } catch (error) {
-    $toast.error("Erreur lors de la soumission du formulaire.", {
-      position: "top",
-      duration: 3000,
-    });
-  } finally {
-    isFormLoading.value = false;
+    productToEdit.value = null;
   }
 }
 
