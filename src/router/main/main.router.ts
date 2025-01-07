@@ -6,8 +6,8 @@ import UserPersonalInfosView from "../../views/main/UserPersonalInfosView.vue";
 import CatalogView from "../../views/main/CatalogView.vue";
 import ProductDetailsView from "../../views/main/ProductDetailsView.vue";
 import UserAddressView from "../../views/main/UserAddressView.vue";
-import CatalogView from "../../views/main/CatalogView.vue";
-import ProductDetailsView from "../../views/main/ProductDetailsView.vue";
+import UserPreferenceView from "../../views/main/UserPreferenceView.vue";
+import OrdersView from "../../views/main/UserOrdersView.vue";
 
 export const publicRoutes: RouteRecordRaw[] = [
   {
@@ -34,10 +34,20 @@ export const publicRoutes: RouteRecordRaw[] = [
         component: UserPersonalInfosView,
       },
       {
-        path: "address",
-        name: "userAddress",
+        path: "addresses",
+        name: "userAddresses",
         component: UserAddressView,
       },
+      {
+        path: "preferences",
+        name: "userPreferences",
+        component: UserPreferenceView,
+      },
+      {
+        path: "orders",
+        name: "userOrders",
+        component: OrdersView, 
+      }
     ],
   },
   {

@@ -1,10 +1,12 @@
 import { defineStore } from "pinia";
+
 import { IOrder, OrderStatus } from "../../api/";
 import {
   fetchAllOrders,
   updateOrderStatus,
   getOrdersByUserId,
   getOrderByNumber,
+    fetchOders,
 } from "../../api/";
 import { useApiRequest } from "../../composables/useApiRequest";
 
@@ -82,12 +84,19 @@ export const useOrderStore = defineStore("order", {
 
     // Mise à jour du statut d'une commande
     async updateOrderStatus(orderId: string, status: OrderStatus) {
-      const { execute, status: reqStatus, error, data } = useApiRequest<IOrder>();
+      const {
+        execute,
+        status: reqStatus,
+        error,
+        data,
+      } = useApiRequest<IOrder>();
       this.error = null;
       this.initializeController();
       this.status = "pending";
 
-      await execute(() => updateOrderStatus(orderId, status, this.controller!.signal));
+      await execute(() =>
+        updateOrderStatus(orderId, status, this.controller!.signal)
+      );
 
       if (reqStatus.value === "success" && data.value) {
         const index = this.orders.findIndex((order) => order._id === orderId);
@@ -96,13 +105,32 @@ export const useOrderStore = defineStore("order", {
         }
         // Si la commande mise à jour est aussi celle dans selectedOrderDetails,
         // on met également à jour son statut localement.
-        if (this.selectedOrderDetails && this.selectedOrderDetails._id === orderId) {
+        if (
+          this.selectedOrderDetails &&
+          this.selectedOrderDetails._id === orderId
+        ) {
           this.selectedOrderDetails.status = data.value.status;
         }
       }
 
       this.error = error.value;
       this.status = reqStatus.value;
+    },
+
+    async fetchOrders() {
+      const { execute, status, error, data } = useApiRequest<IOrder[]>();
+      this.error = null;
+
+      if (!this.controller) {
+        this.controller = new AbortController();
+      }
+
+      this.status = "pending";
+      await execute(() => fetchOders(this.controller!.signal));
+
+      this.orders = data.value || [];
+      this.error = error.value;
+      this.status = status.value;
     },
 
     resetState() {

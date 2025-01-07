@@ -1,6 +1,5 @@
 import { IAddress } from "../address/address.types";
 import { IUser } from "../user/user.types";
-
 export enum OrderStatus {
   Pending = "pending",
   Completed = "completed",
@@ -9,8 +8,19 @@ export enum OrderStatus {
   Canceled = "canceled",
 }
 
+export interface IOrderItem {
+  product: string;
+  productVariant: string;
+  order: string;
+  quantity: number;
+  priceEtx: number;
+  priceVat: number;
+  subTotalEtx: number;
+  subTotalVat: number;
+}
+
 export interface IOrder {
-  _id: string ;
+  _id: string;
   user: string | IUser;
   number: string;
   shipDate?: Date;

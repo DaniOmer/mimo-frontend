@@ -69,3 +69,20 @@ export interface IPasswordChange {
   oldPassword: string;
   newPassword: string;
 }
+
+export interface IUserPreference {
+  _id: string;
+  user: string | IUser;
+  notifications: {
+    email: boolean;
+    sms: boolean;
+    push: boolean;
+  };
+  marketingConsent: boolean;
+  cookiesConsent: boolean;
+  personalizedAds: boolean;
+  language: string;
+  currency: string;
+  createdAt: Date;
+  updatedAt: Date;
+}

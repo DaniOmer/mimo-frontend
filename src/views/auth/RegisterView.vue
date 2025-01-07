@@ -54,9 +54,11 @@ const formData = ref({
   password: "",
   confirmPassword: "",
   isTermsOfSale: false,
+  isDefaultPreference: false,
 });
 
 const handleFormSubmit = async (data: IRegisterFormData) => {
+  console.log("REGISTER", data);
   const { confirmPassword, ...userData } = data;
   await authStore.register(userData);
   if (authStore.status === "success") {
