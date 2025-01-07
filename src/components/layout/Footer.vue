@@ -28,9 +28,6 @@
           </router-link>
         </li>
         <li>
-          <a href="#" class="hover:underline me-4 md:me-6">Contact</a>
-        </li>
-        <li>
           <a href="#" class="hover:underline" @click.prevent="showCookieModal"
             >Cookies</a
           >
