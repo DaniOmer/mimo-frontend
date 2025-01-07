@@ -15,7 +15,7 @@
           :submitError="error"
           @submit="handleFormSubmit"
         />
-        <p class="flex justify-end text-sm mt-2">
+        <p class="flex justify-center text-sm mt-2">
           Vous n'avez pas de compte ?
           <RouterLink :to="{ name: 'register' }">
             <p
