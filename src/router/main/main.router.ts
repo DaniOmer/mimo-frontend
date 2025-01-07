@@ -42,12 +42,12 @@ export const publicRoutes: RouteRecordRaw[] = [
     ],
   },
   {
-    path: "/conditions-generales-de-vente",
+    path: "/terms-and-conditions",
     component: MainLayout,
-    children: [{ path: "", name: "condition", component: ConditionView }],
+    children: [{ path: "", name: "terms", component: ConditionView }],
   },
   {
-    path:"/politique-de-confidentialite",
+    path:"/privacy-policy",
     component: MainLayout,
     children: [{ path: "", name: "privacy", component: PrivacyView}],
   }

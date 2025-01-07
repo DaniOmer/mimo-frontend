@@ -8,6 +8,7 @@
         v-model="resetEmailOrPhone"
         name="emailOrPhone"
         label="E-mail"
+        type="email"
         placeholder="Entrez votre e-mail"
         :error="resetErrors.emailOrPhone"
       />

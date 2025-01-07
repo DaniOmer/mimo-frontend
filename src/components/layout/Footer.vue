@@ -12,11 +12,11 @@
           <a href="#" class="hover:underline me-4 md:me-6">À propos</a>
         </li>
         <li>
-          <router-link to="/politique-de-confidentialite" class="hover:underline me-4 md:me-6">Politique de confidentialité</router-link>
+          <router-link to="/privacy-policy" class="hover:underline me-4 md:me-6">Politique de confidentialité</router-link>
         </li>
         <li>
           <router-link
-            to="/conditions-generales-de-vente"
+            to="/terms-and-conditions"
             class="hover:underline me-4 md:me-6"
           >
             CGV
