@@ -1,245 +1,245 @@
-<!-- src/components/admin/product/ProductFormModal.vue -->
 <template>
-  <BaseModal :isOpen="visible" :close="onClose">
-    <template v-slot:header>
-      <h2 class="text-lg font-semibold">
-        {{ isEditMode ? "Modifier le Produit" : "Créer un Produit" }}
+  <BaseModal :isOpen="visible" :close="closeModal">
+    <template #header>
+      <h2 class="text-lg font-semibold text-primary">
+        {{ isEditMode ? "Modifier le Produit" : "Créer un Nouveau Produit" }}
       </h2>
     </template>
 
-    <template v-slot:body>
+    <template #body>
       <form @submit.prevent="handleSubmit" class="space-y-4">
-        <!-- Nom du Produit -->
         <InputField
-          v-model="localProductData.name"
+          v-model="localFormData.name"
           name="name"
-          label="Nom"
-          placeholder="Saisir le nom du produit"
+          label="Nom du Produit"
+          placeholder="Entrez le nom du produit"
           :error="errors.name"
         />
 
-        <!-- Description du Produit -->
         <TextAreaField
-          v-model="localProductData.description"
+          v-model="localFormData.description"
           name="description"
           label="Description"
-          placeholder="Saisir la description du produit"
+          placeholder="Entrez la description du produit"
           :error="errors.description"
-          :rows="4"
+          :rows="3"
         />
 
         <InputField
-          v-model.number="localProductData.priceEtx"
+          v-model.number="localFormData.priceEtx"
           name="priceEtx"
           label="Prix HT"
+          placeholder="0"
           type="number"
-          placeholder="Saisir le prix HT"
           :error="errors.priceEtx"
+          min="0"
         />
 
-        <div class="flex flex-col mt-4">
+        <div>
+          <label class="block text-sm font-medium text-primary mb-1">
+            Catégories
+          </label>
           <FilterSelect
-            v-model="localProductData.categoryIds"
+            v-model="localFormData.categoryIds"
             :options="categoryOptions"
-            placeholder="Sélectionner des catégories"
+            placeholder="Sélectionner les catégories"
             :isMultiple="true"
           />
-          <p v-if="errors.categoryIds" class="mt-1 text-sm text-red-600">
+          <p v-if="errors.categoryIds" class="mt-1 text-sm text-red-500">
             {{ errors.categoryIds }}
           </p>
         </div>
 
-        <div class="flex flex-col mt-4">
+        <div>
+          <label class="block text-sm font-medium text-primary mb-1">
+            Caractéristiques
+          </label>
           <FilterSelect
-            v-model="localProductData.featureIds"
+            v-model="localFormData.featureIds"
             :options="featureOptions"
-            placeholder="Sélectionner des fonctionnalités"
+            placeholder="Sélectionner les caractéristiques"
             :isMultiple="true"
           />
-          <p v-if="errors.featureIds" class="mt-1 text-sm text-red-600">
+          <p v-if="errors.featureIds" class="mt-1 text-sm text-red-500">
             {{ errors.featureIds }}
           </p>
         </div>
 
-        <div class="flex items-center mt-4">
-          <input
-            type="checkbox"
-            id="hasVariants"
-            v-model="localProductData.hasVariants"
-            class="mr-2"
+        <div>
+          <label class="block text-sm font-medium text-primary mb-1">
+            Couleurs
+          </label>
+          <FilterSelect
+            v-model="localFormData.colorIds"
+            :options="colorOptions"
+            placeholder="Sélectionner les couleurs"
+            :isMultiple="true"
           />
-          <label for="hasVariants" class="text-sm">Ajouter des variantes</label>
+          <p v-if="errors.colorIds" class="mt-1 text-sm text-red-500">
+            {{ errors.colorIds }}
+          </p>
         </div>
 
-        <ProductVariantForm
-          v-if="localProductData.hasVariants"
-          :variants="localProductData.variants"
-          :sizeOptions="sizeOptions"
-          :colorOptions="colorOptions"
-          :variantsError="errors.variants"
-          @update:variants="updateVariants"
-        />
+        <div>
+          <label class="block text-sm font-medium text-primary mb-1">
+            Images
+          </label>
+          <div class="space-y-2">
+            <div
+              v-for="(file, index) in localFormData.images"
+              :key="index"
+              class="flex items-center justify-between bg-tertiary/10 p-2 rounded"
+            >
+              <span class="text-sm text-primary flex-1">
+                {{ file?.name || "Image n°" + (index + 1) }}
+              </span>
+              <button
+                type="button"
+                class="text-red-600 hover:text-red-800 text-sm"
+                @click="removeImage(index)"
+              >
+                Supprimer
+              </button>
+            </div>
+          </div>
+          <input
+            type="file"
+            multiple
+            accept="image/*"
+            class="mt-2 text-sm text-primary"
+            @change="handleFileSelection"
+          />
+          <p v-if="errors.images" class="mt-1 text-sm text-red-500">
+            {{ errors.images }}
+          </p>
+        </div>
 
-        <BaseButton :label="submitLabel" type="submit" :loading="loading" />
+        <p v-if="submitError" class="text-sm text-red-600">{{ submitError }}</p>
+
+        <div class="flex justify-end gap-3 mt-4">
+          <BaseButton
+            color="gray"
+            :label="isEditMode ? 'Annuler' : 'Fermer'"
+            type="button"
+            @click="closeModal"
+          />
+          <BaseButton
+            :label="submitLabel"
+            type="submit"
+            color="primary"
+            :loading="loading"
+          />
+        </div>
       </form>
     </template>
   </BaseModal>
 </template>
 
 <script setup lang="ts">
-import { reactive, watch, computed } from "vue";
-import { defineProps, defineEmits } from "vue";
-import { useFormValidation } from "../../../../composables/useFormValidation";
+import { computed, reactive } from "vue";
+import { defineProps, defineEmits, watch } from "vue";
+import BaseModal from "../../../../components/BaseModal.vue";
 import InputField from "../../../../components/form/InputField.vue";
 import TextAreaField from "../../../../components/form/TextAreaField.vue";
 import BaseButton from "../../../../components/form/BaseButton.vue";
-import BaseModal from "../../../../components/BaseModal.vue";
 import FilterSelect from "../../../../components/FilterSelect.vue";
-import ProductVariantForm from "./ProductVariantForm.vue";
-import { productFormSchema } from "../../../schema/product.schema";
-import { IProduct } from "../../../../api/product/product.types";
+import { useFormValidation } from "../../../../composables/useFormValidation";
+import { productCreateSchema } from "../../../schema/product.schema.ts";
+import { ProductFormData } from "../../../../api/product/product.types.ts";
 
-interface Variant {
-  _id?: string;
-  sizeId: string | number | null;
-  colorId: string | number | null;
-  priceEtx: number;
-  weight?: number;
-}
-
-interface ProductFormData {
-  name: string;
-  description: string;
-  priceEtx: number;
-  hasVariants: boolean;
-  isActive?: boolean;
-  categoryIds: string[];
-  featureIds: string[];
-}
 
 const props = defineProps<{
   visible: boolean;
-  productData?: Partial<IProduct>;
+  productData?: Partial<ProductFormData>; 
+  categoryOptions: { label: string; value: string }[];
+  featureOptions: { label: string; value: string }[];
+  colorOptions: { label: string; value: string }[];
   submitLabel?: string;
   loading?: boolean;
-  sizeOptions: { label: string; value: string | number }[];
-  colorOptions: { label: string; value: string | number }[];
-  categoryOptions: { label: string; value: string | number }[];
-  featureOptions: { label: string; value: string | number }[];
 }>();
 
-
 const emit = defineEmits<{
-  (e: "submit", data: { product: ProductFormData; variants: Variant[] }): void;
   (e: "close"): void;
+  (
+    e: "submit",
+    data: {
+      product: ProductFormData;
+      variants: any[];
+    }
+  ): void;
 }>();
 
 const isEditMode = computed(() => !!props.productData);
-const { errors, validate } = useFormValidation(productFormSchema);
 
-const localProductData = reactive<ProductFormData & { variants: Variant[] }>({
-  name: props.productData?.name || "",
-  description: props.productData?.description || "",
-  priceEtx: props.productData?.priceEtx || 0,
-  hasVariants: props.productData?.hasVariants || false,
-  categoryIds: props.productData?.categoryIds || [],
-  featureIds: props.productData?.featureIds || [],
-  variants: props.productData?.variants
-    ? props.productData.variants.map((v) => ({
-        _id: v?._id,
-        sizeId: v.sizeId,
-        colorId: v.colorId,
-        priceEtx: v.priceEtx,
-      }))
-    : [],
+const localFormData = reactive<ProductFormData>({
+  name: "",
+  description: "",
+  priceEtx: 0,
+  categoryIds: [],
+  featureIds: [],
+  colorIds: [],
+  images: [],
 });
-
-const handleSubmit = () => {
-  const isValid = validate({
-    name: localProductData.name,
-    description: localProductData.description,
-    priceEtx: localProductData.priceEtx,
-    categoryIds: localProductData.categoryIds,
-    featureIds: localProductData.featureIds,
-    hasVariants: localProductData.hasVariants,
-    variants: localProductData.variants,
-  });
-
-  if (!isValid) {
-    return;
-  }
-
-  const {
-    name,
-    description,
-    priceEtx,
-    categoryIds,
-    featureIds,
-    hasVariants,
-    variants,
-  } = localProductData;
-
-  const product: ProductFormData = {
-    name: String(name),
-    description: String(description),
-    priceEtx: Number(priceEtx),
-    categoryIds: categoryIds.map(String),
-    featureIds: featureIds.map(String),
-    hasVariants: Boolean(hasVariants),
-    isActive: true,
-  };
-
-  const variantsData = hasVariants
-    ? variants.map((v) => ({ ...v, weight: 100 }))
-    : [];
-
-  emit("submit", { product, variants: variantsData });
-};
-
-const onClose = () => {
-  emit("close");
-  resetLocalData();
-};
-
-const resetLocalData = () => {
-  localProductData.name = "";
-  localProductData.description = "";
-  localProductData.priceEtx = 0;
-  localProductData.hasVariants = false;
-  localProductData.variants = [];
-  localProductData.categoryIds = [];
-  localProductData.featureIds = [];
-};
-
-const updateVariants = (updatedVariants: Variant[]) => {
-  localProductData.variants = updatedVariants;
-};
 
 watch(
   () => props.productData,
   (newVal) => {
     if (newVal) {
-      localProductData.name = newVal.name || "";
-      localProductData.description = newVal.description || "";
-      localProductData.priceEtx = newVal.priceEtx || 0;
-      localProductData.hasVariants = newVal.hasVariants || false;
-      localProductData.variants = newVal.variants
-        ? newVal.variants.map((v) => ({
-            _id: v?._id,
-            sizeId: v.sizeId,
-            colorId: v.colorId,
-            priceEtx: v.priceEtx,
-            weight: 100,
-          }))
-        : [];
-      localProductData.categoryIds = newVal.categoryIds || [];
-      localProductData.featureIds = newVal.featureIds || [];
+      localFormData.name = newVal.name || "";
+      localFormData.description = newVal.description || "";
+      localFormData.priceEtx = newVal.priceEtx ?? 0;
+      localFormData.categoryIds = newVal.categoryIds || [];
+      localFormData.featureIds = newVal.featureIds || [];
+      localFormData.colorIds = newVal.colorIds || [];
+      localFormData.images = newVal.images || [];
     } else {
-      resetLocalData();
+      resetForm();
     }
   },
   { immediate: true }
 );
+
+const { errors, validate } = useFormValidation(productCreateSchema);
+
+function handleSubmit() {
+  if (!validate(localFormData)) {
+    return;
+  }
+  emit("submit", {
+    product: { ...localFormData },
+    variants: [],
+  });
+}
+
+function closeModal() {
+  emit("close");
+  resetForm();
+}
+
+function resetForm() {
+  localFormData.name = "";
+  localFormData.description = "";
+  localFormData.priceEtx = 0;
+  localFormData.categoryIds = [];
+  localFormData.featureIds = [];
+  localFormData.colorIds = [];
+  localFormData.images = [];
+}
+
+function handleFileSelection(e: Event) {
+  const target = e.target as HTMLInputElement;
+  if (target.files) {
+    const filesArray = Array.from(target.files);
+    localFormData.images.push(...filesArray);
+  }
+}
+
+function removeImage(index: number) {
+  localFormData.images.splice(index, 1);
+}
+
+const loading = computed(() => props.loading || false);
+const submitError = computed(() => errors.value?.submit); 
 
 const submitLabel = computed(
   () => props.submitLabel || (isEditMode.value ? "Mettre à jour" : "Créer")

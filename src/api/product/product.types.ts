@@ -1,9 +1,10 @@
+
 export interface IProduct {
   _id: string;
   name: string;
   description: string;
   priceEtx: number;
-  priceVat?: number;
+  priceVat: number;
   priceRange?: string;
   stripeId: string;
   isActive: boolean;
@@ -39,4 +40,14 @@ export interface IProductFeature {
   _id: string;
   name: string; 
   description?: string; 
+}
+
+export interface ProductFormData {
+  name: string;
+  description: string;
+  priceEtx: number;
+  categoryIds: string[];
+  featureIds: string[];
+  colorIds: string[];
+  images: File[]; 
 }

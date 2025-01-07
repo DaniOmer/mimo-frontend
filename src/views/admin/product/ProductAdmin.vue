@@ -13,7 +13,7 @@
       class="mb-4 p-4 bg-red-100 text-red-700 rounded"
     >
       {{
-        productStore.error.message ||
+        productStore.error ||
         "Une erreur est survenue lors de la récupération des produits."
       }}
     </div>
@@ -38,47 +38,52 @@
       @update:selectedItems="updateSelectedProductIds"
     >
       <template #table-controls>
-        <div class="flex flex-wrap gap-4 items-center justify-between w-full">
-          <SearchBar
-            v-model="searchQuery"
-            placeholder="Rechercher par nom ou description"
-            :searchMode="'front'"
-            @search="handleSearch"
-            class="w-full lg:w-auto"
-          />
+        <div class="flex flex-wrap items-center gap-4 mb-4">
+      <!-- Zone gauche : SearchBar + les 3 FilterSelect -->
+      <div class="flex flex-wrap gap-4 items-center grow">
+        <SearchBar
+          v-model="searchQuery"
+          placeholder="Rechercher par nom ou description"
+          :searchMode="'front'"
+          @search="handleSearch"
+          class="w-full lg:w-auto"
+        />
 
-          <div class="flex flex-wrap gap-4 items-center">
-            <FilterSelect
-              v-model="selectedCategory"
-              :options="categoryOptions"
-              placeholder="Filtrer par Catégorie"
-              :isMultiple="false"
-              class="w-48"
-            />
+        <FilterSelect
+          v-model="selectedCategory"
+          :options="categoryOptions"
+          placeholder="Filtrer par Catégorie"
+          :isMultiple="false"
+          class="w-48"
+        />
 
-            <FilterSelect
-              v-model="selectedFeature"
-              :options="featureOptions"
-              placeholder="Par Caractéristique"
-              :isMultiple="false"
-              class="w-48"
-            />
+        <FilterSelect
+          v-model="selectedFeature"
+          :options="featureOptions"
+          placeholder="Par Caractéristique"
+          :isMultiple="false"
+          class="w-48"
+        />
 
-            <FilterSelect
-              v-model="selectedStatus"
-              :options="statusOptions"
-              placeholder="Filtrer par Statut"
-              :isMultiple="false"
-              class="w-48"
-            />
+        <FilterSelect
+          v-model="selectedStatus"
+          :options="statusOptions"
+          placeholder="Filtrer par Statut"
+          :isMultiple="false"
+          class="w-48"
+        />
+      </div>
 
-            <BaseButton
-              color="primary"
-              @click="openCreateModal"
-              label="Créer un Produit"
-            />
-          </div>
-        </div>
+      <!-- Zone droite : Bouton Créer un Produit -->
+      <div class="flex-none">
+        <BaseButton
+          color="primary"
+          @click="openCreateModal"
+          label="Créer un Produit"
+        />
+      </div>
+    </div>
+
       </template>
 
       <template #row-actions="{ item, closeActionMenu }">
@@ -195,18 +200,17 @@
       cancelText="Annuler"
     />
 
-    <ProductFormModal
-      :visible="isFormModalVisible"
-      :productData="productData"
-      :sizeOptions="sizeOptions"
-      :colorOptions="colorOptions"
-      :categoryOptions="categoryOptions"
-      :featureOptions="featureOptions"
-      @submit="handleFormSubmit"
-      @close="closeFormModal"
-      :submitLabel="formSubmitLabel"
-      :loading="isFormLoading"
-    />
+    <ProductCreateModal
+  :visible="isFormModalVisible"
+  :productData="productToEdit"
+  :categoryOptions="categoryOptions"
+  :featureOptions="featureOptions"
+  :colorOptions="colorOptions"
+  @close="isFormModalVisible = false"
+  @submit="handleCreateOrUpdateProduct"
+  :submitLabel="formSubmitLabel"
+  :loading="isFormLoading"
+/>
 
     <Loader
       :visible="isFormLoading"
@@ -225,7 +229,7 @@ import SearchBar from "../../../components/SearchBar.vue";
 import FilterSelect from "../../../components/FilterSelect.vue";
 import Table from "../../../components/Table.vue";
 import ConfirmationDialog from "../../../components/ConfirmationDialog.vue";
-import ProductFormModal from "../../../forms/modules/admin/product/ProductFormModal.vue";
+import ProductCreateModal from "../../../forms/modules/admin/product/ProductFormModal.vue";
 import Loader from "../../../components/BaseLoader.vue";
 import BaseButton from "../../../components/form/BaseButton.vue";
 
@@ -398,6 +402,43 @@ function closeFormModal() {
   isFormModalVisible.value = false;
   productToEdit.value = null;
 }
+
+interface ProductFormData {
+  name: string;
+  description: string;
+  priceEtx: number;
+  categoryIds: string[];
+  featureIds: string[];
+  colorIds: string[];
+  images: File[]; // ou tout autre format de gestion
+}
+
+function handleCreateOrUpdateProduct(payload: {
+  product: ProductFormData;
+  variants: any[];
+}) {
+  isFormLoading.value = true;
+  try {
+    if (productToEdit.value) {
+      productStore.updateProductWithVariants(
+        productToEdit.value._id,
+        payload.product,
+        payload.variants
+      );
+    } else {
+      productStore.createProductWithVariants(
+        payload.product,
+        payload.variants
+      );
+    }
+  } catch (error) {
+    // ...
+  } finally {
+    isFormLoading.value = false;
+    isFormModalVisible.value = false;
+  }
+}
+
 
 async function handleFormSubmit(formData: any) {
   isFormLoading.value = true;
