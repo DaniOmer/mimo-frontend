@@ -70,7 +70,7 @@
 </template>
 
 <script setup lang="ts">
-import { useOrdersStore } from "../../stores/modules/order.store";
+import { useOrderStore } from "../../stores/modules/order.store";
 import { storeToRefs } from "pinia";
 import OrderCard from "../../components/OrderItem.vue";
 import UserOrderModal from "../../components/UserOrderModal.vue";
@@ -79,7 +79,7 @@ import { getStatusDetails } from "../../utils/status.utils";
 import { onMounted, ref } from "vue";
 import { router } from "../../router";
 
-const ordersStore = useOrdersStore();
+const ordersStore = useOrderStore();
 const { orders } = storeToRefs(ordersStore);
 
 const isOrderDetailsModalOpen = ref(false);
