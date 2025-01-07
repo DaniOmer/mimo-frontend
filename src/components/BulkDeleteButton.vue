@@ -9,11 +9,9 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps } from "vue";
 import { TrashIcon } from "@heroicons/vue/24/solid";
 
-const props = defineProps<{
+defineProps<{
   count: number;
 }>();
 </script>
-

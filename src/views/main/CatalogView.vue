@@ -70,55 +70,21 @@
         <h2 id="products-heading" class="sr-only">Products</h2>
 
         <div class="grid grid-cols-1 gap-x-8 gap-y-10 lg:grid-cols-4">
-          <!-- Filters -->
-          <form class="hidden lg:block">
-            <Disclosure
-              as="div"
-              v-for="section in filters"
-              :key="section.id"
-              class="border-b border-gray-200 py-6"
-              v-slot="{ open }"
-            >
-              <h3 class="-my-3 flow-root">
-                <DisclosureButton
-                  class="flex w-full items-center justify-between bg-white py-3 text-sm text-gray-400 hover:text-gray-500"
-                >
-                  <span class="font-medium text-gray-900">{{
-                    section.name
-                  }}</span>
-                  <span class="ml-6 flex items-center">
-                    <PlusIcon v-if="!open" class="size-5" aria-hidden="true" />
-                    <MinusIcon v-else class="size-5" aria-hidden="true" />
-                  </span>
-                </DisclosureButton>
-              </h3>
-              <DisclosurePanel class="pt-6">
-                <div class="space-y-4">
-                  <div
-                    v-for="(option, optionIdx) in section.options"
-                    :key="option.value"
-                    class="flex gap-3"
-                  >
-                    <FilterCheckBox
-                      :label="option.label"
-                      :name="section.id"
-                      :value="option.checked"
-                      :option="option"
-                      @update:filter="onFilterChange"
-                    />
-                  </div>
-                </div>
-              </DisclosurePanel>
-            </Disclosure>
-          </form>
-
+          <ProductFilterForm
+            :filters="filters"
+            :priceFilters="priceFilters"
+            :onFilterChange="onFilterChange"
+            :apply-price-filter="applyPriceFilter"
+            :fetch-filtered-products="fetchFilteredProducts"
+            :reset-filters="resetFilters"
+          />
           <!-- Product grid -->
           <div
-            v-if="!isLoading && productsWithPriceInfo.length > 0"
+            v-if="!isLoading && products.length > 0"
             class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-10 w-full col-span-3 mx-auto"
           >
             <ProductCard
-              v-for="product in productsWithPriceInfo"
+              v-for="product in products"
               :key="product._id"
               :product="product"
             />
@@ -137,27 +103,10 @@
 
 <script setup>
 import { ref } from "vue";
-import {
-  Dialog,
-  DialogPanel,
-  Disclosure,
-  DisclosureButton,
-  DisclosurePanel,
-  Menu,
-  MenuButton,
-  MenuItem,
-  MenuItems,
-  TransitionChild,
-  TransitionRoot,
-} from "@headlessui/vue";
-import { XMarkIcon } from "@heroicons/vue/24/outline";
-import {
-  ChevronDownIcon,
-  FunnelIcon,
-  MinusIcon,
-  PlusIcon,
-  Squares2X2Icon,
-} from "@heroicons/vue/20/solid";
+import { Menu, MenuButton, MenuItem, MenuItems } from "@headlessui/vue";
+import { ChevronDownIcon, Squares2X2Icon } from "@heroicons/vue/20/solid";
+
+import ProductFilterForm from "../../forms/modules/product/ProductFilterForm.vue";
 
 const sortOptions = [
   { name: "Les plus populaires", href: "#", current: true },
@@ -167,22 +116,85 @@ const sortOptions = [
 ];
 
 import { onMounted, toRefs } from "vue";
-import { useRoute } from "vue-router";
 
 import ProductCard from "../../components/ProductCard.vue";
 import { useProductStore } from "../../stores/modules/product.store";
-import BaseCheckbox from "../../components/form/BaseCheckbox.vue";
-import FilterCheckBox from "../../components/form/FilterCheckBox.vue";
 
 const productStore = useProductStore();
-const { products, filters, error, isLoading, productsWithPriceInfo } =
-  toRefs(productStore);
+const { products, filters, error, isLoading } = toRefs(productStore);
+const priceFilters = ref({ min: null, max: null });
+
+const resetFilters = () => {
+  filters.value.forEach((section) => {
+    section.options.forEach((option) => {
+      option.checked = false;
+    });
+  });
+  priceFilters.value.min = null;
+  priceFilters.value.max = null;
+  updateURLParams();
+};
+
+const applyPriceFilter = () => {
+  const params = new URLSearchParams(window.location.search);
+
+  if (priceFilters.value.min) {
+    params.set("price_min", priceFilters.value.min);
+  }
+  if (priceFilters.value.max) {
+    params.set("price_max", priceFilters.value.max);
+  }
+  window.history.pushState({}, "", "?" + params.toString());
+};
+
+const getActiveFilters = () => {
+  return filters.value.reduce((acc, section) => {
+    const selectedOptions = section.options
+      .filter((option) => option.checked)
+      .map((option) => option.value);
+
+    if (selectedOptions.length) {
+      acc[section.id] = selectedOptions.join(",");
+    }
+
+    return acc;
+  }, {});
+};
+
+const fetchFilteredProducts = async () => {
+  try {
+    const params = getActiveFilters();
+    const features = [];
+    const categoryIds = [];
+    const colors = [];
+    const sizes = [];
+    for (const [key, value] of Object.entries(params)) {
+      if (key === "feature") {
+        features.push(...value.split(","));
+      } else if (key === "category") {
+        categoryIds.push(...value.split(","));
+      }
+    }
+    const query = {
+      price_min: priceFilters.value.min,
+      price_max: priceFilters.value.max,
+      features,
+      categoryIds,
+      colors,
+      sizes,
+    };
+    await productStore.getFilteredProducts(query);
+  } catch (err) {
+    console.error("Erreur lors de la mise à jour des produits :", err);
+  }
+};
 
 const loadProducts = async () => {
   try {
     await productStore.getFilters();
     await productStore.getActiveProducts();
-    productStore.transformProducts();
+    loadFiltersFromURL();
+
     if (!products.value || products.value.length === 0) {
       console.error("Aucun produit disponible.");
     }
@@ -204,20 +216,25 @@ const onFilterChange = (updateFilter) => {
       return acc;
     }, {})
   );
+  fetchFilteredProducts();
 };
 
 const addParamsToLocation = (params) => {
-  const currentUrl = window.location.href;
+  const currentUrl = window.location.href.split("?")[0];
+  const urlParams = new URLSearchParams();
 
-  const newUrl =
-    currentUrl.split("?")[0] +
-    "?" +
-    Object.keys(params)
-      .map(
-        (key) => `${encodeURIComponent(key)}=${encodeURIComponent(params[key])}`
-      )
-      .join("&");
+  for (const [key, values] of Object.entries(params)) {
+    if (Array.isArray(values)) {
+      values.forEach((value) => {
+        urlParams.append(key, value);
+      });
+    } else {
+      urlParams.set(key, values);
+    }
+  }
 
+  const newUrl = `${currentUrl}?${urlParams.toString()}`;
+  console.log("NEW GENERATED URL", newUrl);
   if (window.location.href !== newUrl) {
     history.replaceState({}, "", newUrl);
   }
@@ -248,6 +265,8 @@ const loadFiltersFromURL = () => {
   }
 
   const urlParams = new URLSearchParams(window.location.search);
+  priceFilters.value.min = urlParams.get("price_min") || null;
+  priceFilters.value.max = urlParams.get("price_max") || null;
 
   filters.value.forEach((section) => {
     section.options.forEach((option) => {
@@ -255,10 +274,10 @@ const loadFiltersFromURL = () => {
         urlParams.has(section.id) && urlParams.get(section.id) === option.value;
     });
   });
+  fetchFilteredProducts();
 };
 
 onMounted(async () => {
   await loadProducts();
-  loadFiltersFromURL();
 });
 </script>

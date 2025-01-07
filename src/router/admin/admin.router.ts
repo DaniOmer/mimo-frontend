@@ -5,27 +5,28 @@ import AdminLayout from "../../components/layout/AdminLayout.vue";
 import UserPersonalInfosView from "../../views/main/UserPersonalInfosView.vue";
 import OrderAdmin from "../../views/admin/order/orderAdmin.vue";
 import AdminReportView from "../../views/admin/report/AdminReportView.vue";
-
+import { adminGuard } from "../../middlewares/adminGuard";
 
 export const adminRoutes: RouteRecordRaw[] = [
   {
-    path: '/admin',
-    name: 'admin',
+    path: "/admin",
+    name: "admin",
+    beforeEnter: adminGuard,
     component: AdminLayout,
     children: [
       {
-        path: 'users',
-        name: 'adminUsers',
+        path: "users",
+        name: "adminUsers",
         component: AdminUsersView,
       },
       {
-        path: 'products',
-        name: 'adminProducts',
+        path: "products",
+        name: "adminProducts",
         component: AdminProductsView,
       },
       {
-        path: 'orders',
-        name: 'adminOrders',
+        path: "orders",
+        name: "adminOrders",
         component: OrderAdmin,
       },
       {
@@ -34,16 +35,15 @@ export const adminRoutes: RouteRecordRaw[] = [
         component: AdminReportView,
       },
       {
-        path: 'settings',
-        name: 'adminSettings',
+        path: "settings",
+        name: "adminSettings",
         component: UserPersonalInfosView,
       },
       {
-        path: 'logs',
-        name: 'adminLogs',
+        path: "logs",
+        name: "adminLogs",
         component: AdminUsersView,
       },
     ],
   },
- 
 ];

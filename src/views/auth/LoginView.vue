@@ -31,20 +31,26 @@
 </template>
 
 <script setup lang="ts">
-import { ref, toRefs, onUnmounted } from "vue";
+import { ref, toRefs } from "vue";
 import { useRouter } from "vue-router";
 
 import { useToast } from "vue-toast-notification";
 import "vue-toast-notification/dist/theme-sugar.css";
 
 import { useAuthStore } from "../../stores";
+import { useCartStore } from "../../stores/modules/cart.store";
 import LoginForm from "../../forms/modules/auth/LoginForm.vue";
 import { ILoginFormData } from "../../forms/modules/auth/LoginForm.vue";
 import { useUserPreferenceStore } from "../../stores/modules/userPreference.store";
 
 const router = useRouter();
 const authStore = useAuthStore();
+
 const { error, status } = toRefs(authStore);
+
+const cartStore = useCartStore();
+const { items } = toRefs(cartStore);
+
 const userPreferenceStore = useUserPreferenceStore();
 const { error: userPreferenceError } = toRefs(userPreferenceStore);
 const $toast = useToast();
@@ -57,6 +63,8 @@ const formData = ref({
 const handleFormSubmit = async (data: ILoginFormData) => {
   await authStore.login(data);
   if (authStore.isAuthenticated) {
+    await cartStore.getCart();
+    console.log("LoginView unmounted", items.value);
     await userPreferenceStore.fetchUserPreference();
     if (userPreferenceError.value) {
       console.error(
@@ -71,8 +79,4 @@ const handleFormSubmit = async (data: ILoginFormData) => {
     router.push({ name: "homepage" });
   }
 };
-
-onUnmounted(() => {
-  authStore.resetStatus();
-});
 </script>

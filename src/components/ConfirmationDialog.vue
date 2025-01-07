@@ -42,11 +42,10 @@
 </template>
 
 <script setup lang="ts">
-import { defineProps, defineEmits } from "vue";
 import { XMarkIcon } from "@heroicons/vue/24/outline";
 import BaseButton from "./form/BaseButton.vue";
 
-const props = defineProps<{
+defineProps<{
   visible: boolean;
   title: string;
   message: string;

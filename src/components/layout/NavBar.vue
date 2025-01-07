@@ -18,7 +18,9 @@
       </ul>
 
       <ul class="flex justify-between items-center gap-x-3">
-        <NavItem :to="{ name: 'homepage' }">Panier (0)</NavItem>
+        <NavItem :to="{ name: 'cart' }"
+          >Panier ({{ items ? items.length : 0 }})</NavItem
+        >
         <div
           v-if="!authStore.isAuthenticated"
           class="flex justify-between items-center gap-x-3"
@@ -41,16 +43,31 @@
 </template>
 
 <script setup lang="ts">
+import { toRefs, watch } from "vue";
+
 import { useRouter } from "vue-router";
 
 import NavItem from "./NavItem.vue";
+
 import { useAuthStore } from "../../stores";
+import { useCartStore } from "../../stores/modules/cart.store";
 
 const router = useRouter();
 const authStore = useAuthStore();
+const cartStore = useCartStore();
+const { items } = toRefs(cartStore);
+
+watch(
+  () => cartStore.items,
+  (newItems) => {
+    items.value = newItems;
+  },
+  { deep: true }
+);
 
 const handleLogout = () => {
   authStore.logout();
+  cartStore.resetCartStore();
   router.push({ name: "homepage" });
 };
 </script>
