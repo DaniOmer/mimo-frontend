@@ -11,6 +11,8 @@ import { IAddress } from "../../api";
 export const useAddressStore = defineStore("address", {
   state: () => ({
     addresses: [] as IAddress[] | null,
+    selectedShippingAddress: null as IAddress | null,
+    selectedBillingAddress: null as IAddress | null,
     getAddressesState: {
       status: "idle" as "idle" | "pending" | "success" | "failed",
       error: null as any | null,

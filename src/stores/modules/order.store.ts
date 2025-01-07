@@ -1,21 +1,24 @@
 import { defineStore } from "pinia";
 
-import { IOrder, OrderStatus } from "../../api/";
+import { IOrder, OrderCreateDTO, OrderStatus } from "../../api/";
 import {
   fetchAllOrders,
   updateOrderStatus,
   getOrdersByUserId,
   getOrderByNumber,
-    fetchOders,
-    createOrderForUser,
-    IAdminCreateOrderPayload
+  fetchOders,
+  createOrderForUser,
+  IAdminCreateOrderPayload,
+  createOrder,
 } from "../../api/";
 import { useApiRequest } from "../../composables/useApiRequest";
+import { useCartStore } from "./cart.store";
 
 export const useOrderStore = defineStore("order", {
   state: () => ({
     orders: [] as IOrder[],
-    selectedOrderDetails: null as IOrder | null, 
+    selectedOrderDetails: null as IOrder | null,
+    createdOrder: null as IOrder | null,
     error: null as any | null,
     status: "idle" as "idle" | "pending" | "success" | "failed",
     controller: null as AbortController | null,
@@ -129,29 +132,45 @@ export const useOrderStore = defineStore("order", {
       this.status = status.value;
     },
 
-    async createOrderForUserAction(userId: string, payload: IAdminCreateOrderPayload) {
-        const { execute, status, error, data } = useApiRequest<IOrder>();
-        this.error = null;
-        this.initializeController();
-        this.status = "pending";
-  
-        await execute(() =>
-          createOrderForUser(userId, payload, this.controller!.signal)
-        );
-  
-        if (status.value === "success" && data.value) {
-          this.orders.push(data.value);
-        }
-  
-        this.error = error.value;
-        this.status = status.value;
-        return data.value; 
-      },
-  
+    async createOrder(orderData: OrderCreateDTO) {
+      const { execute, status, error, data } = useApiRequest<IOrder>();
+      this.error = null;
+      this.initializeController();
+      this.status = "pending";
+
+      await execute(() => createOrder(orderData, this.controller!.signal));
+      if (status.value === "success" && data.value) {
+        this.createdOrder = data.value;
+      }
+      this.error = error.value;
+      this.status = status.value;
+    },
+
+    async createOrderForUserAction(
+      userId: string,
+      payload: IAdminCreateOrderPayload
+    ) {
+      const { execute, status, error, data } = useApiRequest<IOrder>();
+      this.error = null;
+      this.initializeController();
+      this.status = "pending";
+
+      await execute(() =>
+        createOrderForUser(userId, payload, this.controller!.signal)
+      );
+
+      if (status.value === "success" && data.value) {
+        this.orders.push(data.value);
+      }
+
+      this.error = error.value;
+      this.status = status.value;
+      return data.value;
+    },
 
     resetState() {
       this.orders = [];
-      this.selectedOrderDetails = null; 
+      this.selectedOrderDetails = null;
       this.error = null;
       this.status = "idle";
 

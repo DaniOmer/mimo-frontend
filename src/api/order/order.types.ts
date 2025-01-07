@@ -34,13 +34,19 @@ export interface IOrder {
 }
 
 export interface IAdminOrderItem {
-    productId: string;
-    productVariantId?: string;
-    quantity: number;
-    // priceEtx: number;
-    // priceVat: number;
-  }
-  
-  export interface IAdminCreateOrderPayload {
-    items: IAdminOrderItem[];
-  }
+  productId: string;
+  productVariantId?: string;
+  quantity: number;
+  // priceEtx: number;
+  // priceVat: number;
+}
+
+export interface IAdminCreateOrderPayload {
+  items: IAdminOrderItem[];
+}
+
+export interface OrderCreateDTO {
+  cartId: string;
+  shippingAddressId: string;
+  billingAddressId: string;
+}

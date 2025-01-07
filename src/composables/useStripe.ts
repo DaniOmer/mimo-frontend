@@ -29,8 +29,25 @@ export const useStripe = () => {
     }
   };
 
+  const confirmPayment = async (
+    paymentIntentClientSecret: string,
+    paymentMethod: any
+  ) => {
+    if (!stripe.value) return null;
+
+    const { error, paymentIntent } = await stripe.value.confirmCardPayment(
+      paymentIntentClientSecret,
+      {
+        payment_method: paymentMethod.id,
+      }
+    );
+
+    return { error, paymentIntent };
+  };
+
   return {
     cardElement,
+    confirmPayment,
     createPaymentMethod,
     initializeStripeElements,
   };

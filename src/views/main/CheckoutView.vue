@@ -1,6 +1,6 @@
 <template>
   <section class="bg-white py-8">
-    <div class="mx-auto max-w-screen-xl px-4">
+    <div class="container mx-auto px-4">
       <div class="flex items-center justify-between">
         <h2 class="text-xl font-semibold text-gray-900">Votre panier</h2>
         <div v-if="cart" class="flex items-baseline gap-2">
@@ -9,7 +9,7 @@
             class="flex items-center gap-2"
           >
             <span class="text-sm">expire dans</span>
-            <CountdownTimer :expireAt="cart?.expireAt" />
+            <CountdownTimer :expireAt="new Date(cart.expireAt)" />
           </div>
         </div>
       </div>
@@ -38,7 +38,10 @@
 </template>
 
 <script setup lang="ts">
+import { useRouter } from "vue-router";
+
 import { useCartStore } from "../../stores/modules/cart.store";
+// import { useOrderStore } from "../../stores";
 import CartItem from "../../components/CartItem.vue";
 import CartSummary from "../../components/CartSummary.vue";
 import { onMounted, computed, toRefs } from "vue";
@@ -46,7 +49,10 @@ import CountdownTimer from "../../components/CountDownTimer.vue";
 import { IProduct } from "../../api/product/product.types";
 
 const cartStore = useCartStore();
+const router = useRouter();
 const { cart, items } = toRefs(cartStore);
+
+// const orderStore = useOrderStore();
 
 const totalHT = computed(() =>
   cartStore.items.reduce((sum, item) => {
@@ -88,7 +94,7 @@ const removeItem = (id: string) => {
 const handleOrderSubmit = async () => {
   try {
     // await cartStore.createOrder();
-    console.log("Commande créée avec succès !");
+    router.push({ name: "paymentAddress" });
   } catch (error) {
     console.error("Erreur lors de la création de la commande :", error);
   }

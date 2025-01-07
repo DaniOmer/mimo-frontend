@@ -1,8 +1,6 @@
-<!-- src/components/NavItem.vue -->
 <template>
   <li :class="computedClasses">
     <RouterLink :to="resolvedTo" class="flex items-center">
-      <!-- Affichage de l'icône si fournie -->
       <component
         v-if="icon"
         :is="icon"
@@ -23,11 +21,7 @@ import type { Component } from "vue";
 const props = defineProps<{
   to: RouteLocationRaw;
   label: string;
-  icon?: Component; 
-}>();
-
-const emit = defineEmits<{
-  (e: "update:activeTab", tabName: string): void;
+  icon?: Component;
 }>();
 
 const route = useRoute();

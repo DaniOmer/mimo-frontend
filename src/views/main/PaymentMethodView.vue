@@ -103,10 +103,13 @@
 </template>
 
 <script setup>
+import { useRouter } from "vue-router";
+
 import { onMounted, onUnmounted, ref, toRefs, computed } from "vue";
 import { usePaymentStore } from "../../stores/modules/payment.store";
 import { useCartStore } from "../../stores/modules/cart.store";
 import { useStripe } from "../../composables/useStripe";
+import { useAuthStore } from "../../stores";
 import BaseButton from "../../components/form/BaseButton.vue";
 import CartSummary from "../../components/CartSummary.vue";
 
@@ -114,7 +117,10 @@ import { ShieldCheckIcon } from "@heroicons/vue/24/outline";
 
 const paymentStore = usePaymentStore();
 const cartStore = useCartStore();
+const authStore = useAuthStore();
 const { cart, items } = toRefs(cartStore);
+
+const router = useRouter();
 
 const totalHT = computed(() =>
   cartStore.items.reduce(
@@ -124,8 +130,12 @@ const totalHT = computed(() =>
 );
 const tva = computed(() => totalHT.value * 0.2);
 const total = computed(() => totalHT.value + tva.value);
-const { cardElement, createPaymentMethod, initializeStripeElements } =
-  useStripe();
+const {
+  cardElement,
+  createPaymentMethod,
+  initializeStripeElements,
+  confirmPayment,
+} = useStripe();
 
 const error = ref("");
 const isLoading = ref(false);
@@ -146,7 +156,48 @@ const handleSubmit = async () => {
         name: `${firstName.value} ${lastName.value}`,
       },
     });
+    await paymentStore.createPaymentIntent({
+      amount: total.value,
+      paymentMethod: paymentMethod.id,
+      currency: "eur",
+      receiptEmail: authStore.user?.email,
+    });
     console.log("Méthode de paiement créée", paymentMethod);
+
+    if (
+      paymentStore.paymentIntent &&
+      paymentStore.paymentIntent.client_secret
+    ) {
+      console.log(
+        "Intent de paiement",
+        paymentStore.paymentIntent.client_secret
+      );
+
+      const { error: confirmError, paymentIntent } = await confirmPayment(
+        paymentStore.paymentIntent.client_secret,
+        paymentMethod.id
+      );
+
+      if (confirmError) {
+        error.value = confirmError.message;
+        console.error(
+          "Erreur lors de la confirmation du paiement :",
+          confirmError
+        );
+      } else if (paymentIntent && paymentIntent.status === "succeeded") {
+        console.log("Paiement réussi !", paymentIntent);
+        alert("Paiement réussi ! Merci pour votre commande.");
+        router.push({ name: "checkoutConfirmation" });
+      } else {
+        console.error(
+          "Statut inattendu du PaymentIntent :",
+          paymentIntent?.status
+        );
+        error.value = "Le paiement n'a pas pu être effectué.";
+      }
+    } else {
+      error.value = "Impossible de récupérer le client_secret.";
+    }
   } catch (err) {
     console.log("Méthode de paiement échouée", err);
   } finally {
@@ -158,9 +209,9 @@ onMounted(() => {
   initializeStripeElements();
 });
 
-onUnmounted(() => {
-  if (cardElement) {
-    cardElement.destroy();
-  }
-});
+// onUnmounted(() => {
+//   if (cardElement) {
+//     cardElement.destroy();
+//   }
+// });
 </script>

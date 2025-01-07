@@ -1,3 +1,5 @@
+import { IUser } from "../user/user.types";
+
 export interface IProduct {
   _id: string;
   name: string;
@@ -26,13 +28,6 @@ export interface IProductImage {
   resolution?: string;
   type?: string;
   order?: number;
-}
-
-export interface ICategory {
-  _id: string;
-  name: string;
-  description?: string;
-  parentId?: string;
 }
 
 export interface IFeature {
