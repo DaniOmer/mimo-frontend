@@ -1,5 +1,3 @@
-import { IUser } from "../user/user.types";
-
 export interface IProduct {
   _id: string;
   name: string;
@@ -23,17 +21,34 @@ export interface IProductImage {
   _id: string;
   product_id: string;
   url: string;
-  isPrimary: boolean;
-  altText: string;
-  resolution: string;
-  type: string;
-  order: number;
+  isPrimary?: boolean;
+  altText?: string;
+  resolution?: string;
+  type?: string;
+  order?: number;
 }
 
-export interface IProductFeature {
+export interface ICategory {
   _id: string;
   name: string;
+  description?: string;
+  parentId?: string;
+}
+
+export interface IFeature {
+  _id: string;
+  name: string;
+  description?: string;
+}
+
+export interface ProductFormData {
+  name: string;
   description: string;
+  priceEtx: number;
+  categoryIds: string[];
+  featureIds: string[];
+  colorIds: string[];
+  images: File[];
 }
 
 export interface IProductFilter {

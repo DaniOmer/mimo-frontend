@@ -47,7 +47,68 @@ export interface IEmailVerify {
   token: string;
 }
 
+export interface IuserInvitation {
+  firstName: string;
+  lastName: string;
+  email: string;
+  roleId: string;
+} 
+
+export interface IuserFromInvitation {
+  tokenHash: string;
+  password: string;
+  isTermsOfSale: boolean;
+}
+
+export interface IPasswordUpdate {
+  oldPassword: string;
+  newPassword: string;
+}
+
+export interface IuserInvitation {
+  firstName: string;
+  lastName: string;
+  email: string;
+  roleId: string;
+} 
+
+export interface IuserFromInvitation {
+  tokenHash: string;
+  password: string;
+  isTermsOfSale: boolean;
+}
+
+export interface IPasswordUpdate {
+  oldPassword: string;
+  newPassword: string;
+}
+
+export interface IPasswordResetRequest {
+  email: string;
+}
+
+export interface IPasswordReset {
+  token: string;
+  password: string;
+}
 export interface IPasswordChange {
   oldPassword: string;
   newPassword: string;
+}
+
+export interface IUserPreference {
+  _id: string;
+  user: string | IUser;
+  notifications: {
+    email: boolean;
+    sms: boolean;
+    push: boolean;
+  };
+  marketingConsent: boolean;
+  cookiesConsent: boolean;
+  personalizedAds: boolean;
+  language: string;
+  currency: string;
+  createdAt: Date;
+  updatedAt: Date;
 }
