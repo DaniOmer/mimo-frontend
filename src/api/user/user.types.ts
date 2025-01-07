@@ -65,14 +65,6 @@ export interface IPasswordUpdate {
   newPassword: string;
 }
 
-export interface IPasswordResetRequest {
-  email: string;
-}
-
-export interface IPasswordReset {
-  token: string;
-  password: string;
-}
 export interface IPasswordChange {
   oldPassword: string;
   newPassword: string;
