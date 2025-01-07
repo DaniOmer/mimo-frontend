@@ -152,13 +152,13 @@ const columns = [
     key: "createdAt",
     label: "Date Création",
     sortable: true,
-    format: (value: string) => formatDateTime(new Date(value), false),
+    format: (value: string) => value ? formatDateTime(new Date(value), false): ""
   },
   {
     key: "updatedAt",
     label: "Date Mise à Jour",
     sortable: true,
-    format: (value: string) => formatDateTime(new Date(value), false),
+    format: (value: string) => value ? formatDateTime(new Date(value), false): ""
   },
 ];
 
