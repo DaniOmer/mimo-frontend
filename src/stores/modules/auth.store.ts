@@ -13,18 +13,21 @@ import {
   resetPasswordConfirm,
 } from "../../api";
 import { useUserStore } from "./user.store";
+import { decodeToken } from "../../utils/jwt";
 
 export const useAuthStore = defineStore("auth", {
   state: () => ({
     user: null as IUser | null,
     token: null as string | null,
+    roles: null as string[] | null,
+    permissions: null as string[] | null,
     error: null as any | null,
     status: "idle" as "idle" | "pending" | "success" | "failed",
     controller: null as AbortController | null,
   }),
 
   persist: {
-    pick: ["user", "token"],
+    pick: ["user", "token", "roles", "permissions"],
   },
 
   getters: {
@@ -36,6 +39,18 @@ export const useAuthStore = defineStore("auth", {
   },
 
   actions: {
+    setToken(token: string) {
+      this.token = token;
+
+      const decoded = decodeToken(token);
+      if (decoded && decoded.role) {
+        this.roles = decoded.role;
+        this.permissions = decoded.permissions;
+      } else {
+        this.roles = null;
+      }
+    },
+
     async register(userData: IUserCreate) {
       const { execute, status, error, data } = useApiRequest<IUser>();
       this.error = null;
@@ -70,19 +85,20 @@ export const useAuthStore = defineStore("auth", {
     async createUserFromInvitation(userData: IuserFromInvitation) {
       const { execute, status, error } = useApiRequest<void>();
       this.error = null;
-    
+
       if (!this.controller) {
         this.controller = new AbortController();
       }
-    
+
       this.status = status.value;
-      await execute(() => createUserFromInvitation(userData, this.controller!.signal));
-    
+      await execute(() =>
+        createUserFromInvitation(userData, this.controller!.signal)
+      );
+
       this.error = error.value;
       this.status = status.value;
     },
 
-    
     async login(userData: IUserLogin) {
       const { execute, status, error, data } = useApiRequest<{
         token: string;
@@ -110,16 +126,14 @@ export const useAuthStore = defineStore("auth", {
         email: string;
       }>();
       this.error = null;
-    
+
       if (!this.controller) {
         this.controller = new AbortController();
       }
-    
+
       this.status = status.value;
-      await execute(() =>
-        resetPassword({ email }, this.controller!.signal)
-      );
-    
+      await execute(() => resetPassword({ email }, this.controller!.signal));
+
       this.error = error.value;
       this.status = status.value;
     },
@@ -127,16 +141,16 @@ export const useAuthStore = defineStore("auth", {
     async resetPasswordConfirm(token: string, password: string) {
       const { execute, status, error } = useApiRequest<void>();
       this.error = null;
-    
+
       if (!this.controller) {
         this.controller = new AbortController();
       }
-    
+
       this.status = status.value;
       await execute(() =>
         resetPasswordConfirm({ token, password }, this.controller!.signal)
       );
-    
+
       this.error = error.value;
       this.status = status.value;
     },

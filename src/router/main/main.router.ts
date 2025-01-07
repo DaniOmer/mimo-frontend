@@ -29,7 +29,12 @@ export const publicRoutes: RouteRecordRaw[] = [
         component: ProductDetailsView,
         props: true,
       },
-      { path: "cart", name: "cart", component: CartView },
+      {
+        path: "cart",
+        name: "cart",
+        component: CartView,
+        meta: { requiresAuth: true },
+      },
       {
         path: "/:catchAll(.*)",
         name: "NotFound",
@@ -39,7 +44,9 @@ export const publicRoutes: RouteRecordRaw[] = [
   },
   {
     path: "/myaccount",
+    name: "myaccount",
     component: MainLayout,
+    meta: { requiresAuth: true },
     children: [
       {
         path: "personnal-infos",
@@ -65,7 +72,9 @@ export const publicRoutes: RouteRecordRaw[] = [
   },
   {
     path: "/checkout",
+    name: "checkout",
     component: MainLayout,
+    meta: { requiresAuth: true },
     children: [
       {
         path: "payment-method",

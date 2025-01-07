@@ -4,44 +4,45 @@ import AdminProductsView from "../../views/admin/product/AdminProductsView.vue";
 import AdminLayout from "../../components/layout/AdminLayout.vue";
 import UserPersonalInfosView from "../../views/main/UserPersonalInfosView.vue";
 import OrderAdmin from "../../views/admin/order/orderAdmin.vue";
-
+import { adminGuard } from "../../middlewares/adminGuard";
 
 export const adminRoutes: RouteRecordRaw[] = [
   {
-    path: '/admin',
+    path: "/admin",
+    name: "admin",
+    beforeEnter: adminGuard,
     component: AdminLayout,
     children: [
       {
-        path: 'users',
-        name: 'adminUsers',
+        path: "users",
+        name: "adminUsers",
         component: AdminUsersView,
       },
       {
-        path: 'products',
-        name: 'adminProducts',
+        path: "products",
+        name: "adminProducts",
         component: AdminProductsView,
       },
       {
-        path: 'orders',
-        name: 'adminOrders',
+        path: "orders",
+        name: "adminOrders",
         component: OrderAdmin,
       },
       {
-        path: 'reports',
-        name: 'adminReports',
+        path: "reports",
+        name: "adminReports",
         component: AdminUsersView,
       },
       {
-        path: 'settings',
-        name: 'adminSettings',
+        path: "settings",
+        name: "adminSettings",
         component: UserPersonalInfosView,
       },
       {
-        path: 'logs',
-        name: 'adminLogs',
+        path: "logs",
+        name: "adminLogs",
         component: AdminUsersView,
       },
     ],
   },
- 
 ];
