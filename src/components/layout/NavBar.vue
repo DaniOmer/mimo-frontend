@@ -1,10 +1,10 @@
 <template>
-  <header class="h-[60px] py-2">
+  <div class="h-[60px]">
     <nav class="flex justify-between items-center container mx-auto">
       <ul class="flex justify-between items-center gap-x-3">
         <NavItem :to="{ name: 'homepage' }">Tous</NavItem>
         <NavItem :to="{ name: 'homepage' }">Nouveautés</NavItem>
-        <NavItem :to="{ name: 'homepage' }">Collections</NavItem>
+        <NavItem :to="{ name: 'catalog' }">Collections</NavItem>
       </ul>
 
       <ul class="flex justify-between items-center">
@@ -37,7 +37,7 @@
         </div>
       </ul>
     </nav>
-  </header>
+  </div>
 </template>
 
 <script setup lang="ts">
