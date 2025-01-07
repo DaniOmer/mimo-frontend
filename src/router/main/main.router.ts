@@ -6,6 +6,8 @@ import UserPersonalInfosView from "../../views/main/UserPersonalInfosView.vue";
 import UserAddressView from "../../views/main/UserAddressView.vue";
 import UserPreferenceView from "../../views/main/UserPreferenceView.vue";
 import OrdersView from "../../views/main/UserOrdersView.vue";
+import ConditionView from "../../views/main/ConditionView.vue";
+import PrivacyView from "../../views/main/PrivacyView.vue";
 
 export const publicRoutes: RouteRecordRaw[] = [
   {
@@ -39,4 +41,14 @@ export const publicRoutes: RouteRecordRaw[] = [
       }
     ],
   },
+  {
+    path: "/terms-and-conditions",
+    component: MainLayout,
+    children: [{ path: "", name: "terms", component: ConditionView }],
+  },
+  {
+    path:"/privacy-policy",
+    component: MainLayout,
+    children: [{ path: "", name: "privacy", component: PrivacyView}],
+  }
 ];

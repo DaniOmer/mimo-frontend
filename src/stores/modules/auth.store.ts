@@ -7,6 +7,8 @@ import {
   IUser,
   IUserLogin,
   loginUser,
+  resetPassword,
+  resetPasswordConfirm,
 } from "../../api";
 import { useUserStore } from "./user.store";
 
@@ -63,6 +65,7 @@ export const useAuthStore = defineStore("auth", {
       this.status = status.value;
     },
 
+
     async login(userData: IUserLogin) {
       const { execute, status, error, data } = useApiRequest<{
         token: string;
@@ -83,6 +86,42 @@ export const useAuthStore = defineStore("auth", {
 
       const userStore = useUserStore();
       await userStore.fetchProfile(data.value?.user._id as string);
+    },
+
+    async resetPassword(email: string) {
+      const { execute, status, error } = useApiRequest<{
+        email: string;
+      }>();
+      this.error = null;
+    
+      if (!this.controller) {
+        this.controller = new AbortController();
+      }
+    
+      this.status = status.value;
+      await execute(() =>
+        resetPassword({ email }, this.controller!.signal)
+      );
+    
+      this.error = error.value;
+      this.status = status.value;
+    },
+
+    async resetPasswordConfirm(token: string, password: string) {
+      const { execute, status, error } = useApiRequest<void>();
+      this.error = null;
+    
+      if (!this.controller) {
+        this.controller = new AbortController();
+      }
+    
+      this.status = status.value;
+      await execute(() =>
+        resetPasswordConfirm({ token, password }, this.controller!.signal)
+      );
+    
+      this.error = error.value;
+      this.status = status.value;
     },
 
     logout() {
