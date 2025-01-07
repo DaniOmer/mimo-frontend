@@ -105,7 +105,6 @@ watch(
 const emit = defineEmits(["remove", "updateQuantity"]);
 
 const removeItem = () => {
-  // Emit event to remove item from the cart
   emit("remove", props.item._id);
 };
 

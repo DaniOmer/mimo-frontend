@@ -14,8 +14,9 @@ export interface CartItemUpdateDTO {
 
 export interface ICart {
   _id: string;
-  user: string | IUser;
   items: ICartItem[];
+  user: string | IUser;
+  expireAt: Date;
   createdAt: Date;
   updatedAt: Date;
 }

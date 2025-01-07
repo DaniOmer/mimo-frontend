@@ -10,11 +10,13 @@ import { useApiRequest } from "../../composables";
 import {
   CartItemCreateDTO,
   CartItemUpdateDTO,
+  ICart,
   ICartItem,
 } from "../../api/cart/cart.types";
 
 export const useCartStore = defineStore("cart", {
   state: () => ({
+    cart: null as ICart | null,
     items: [] as ICartItem[],
     error: null as string | null,
     status: "idle" as "idle" | "pending" | "success" | "failed",
@@ -22,7 +24,7 @@ export const useCartStore = defineStore("cart", {
   }),
 
   persist: {
-    pick: ["items"],
+    pick: ["cart", "items"],
   },
 
   getters: {
@@ -53,6 +55,7 @@ export const useCartStore = defineStore("cart", {
       await execute(() => fetchUserCart(this.controller!.signal));
 
       if (status.value === "success" && data.value) {
+        this.cart = data.value;
         this.items = [...data.value.items];
       } else {
         this.error = error.value;
