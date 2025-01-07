@@ -31,19 +31,25 @@
 </template>
 
 <script setup lang="ts">
-import { ref, toRefs, onUnmounted } from "vue";
+import { ref, toRefs } from "vue";
 import { useRouter } from "vue-router";
 
 import { useToast } from "vue-toast-notification";
 import "vue-toast-notification/dist/theme-sugar.css";
 
 import { useAuthStore } from "../../stores";
+import { useCartStore } from "../../stores/modules/cart.store";
 import LoginForm from "../../forms/modules/auth/LoginForm.vue";
 import { ILoginFormData } from "../../forms/modules/auth/LoginForm.vue";
 
 const router = useRouter();
 const authStore = useAuthStore();
+
 const { error, status } = toRefs(authStore);
+
+const cartStore = useCartStore();
+const { items } = toRefs(cartStore);
+
 const $toast = useToast();
 
 const formData = ref({
@@ -54,6 +60,8 @@ const formData = ref({
 const handleFormSubmit = async (data: ILoginFormData) => {
   await authStore.login(data);
   if (authStore.isAuthenticated) {
+    await cartStore.getCart();
+    console.log("LoginView unmounted", items.value);
     $toast.success("Connexion réussie", {
       position: "top-right",
       duration: 3000,
@@ -61,8 +69,4 @@ const handleFormSubmit = async (data: ILoginFormData) => {
     router.push({ name: "homepage" });
   }
 };
-
-onUnmounted(() => {
-  authStore.resetStatus();
-});
 </script>

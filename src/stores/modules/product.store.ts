@@ -73,7 +73,6 @@ export const useProductStore = defineStore("product", {
 
       if (status.value === "success" && data.value) {
         this.products = data.value;
-        this.status = status.value;
       } else {
         this.error = error.value;
       }

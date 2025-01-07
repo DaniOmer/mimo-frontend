@@ -3,9 +3,7 @@ import { ICart, CartItemCreateDTO, CartItemUpdateDTO } from "./cart.types";
 
 const ROUTE_PREFIX = "/carts";
 
-export const fetchCartByUserId = async (
-  signal?: AbortSignal
-): Promise<ICart> => {
+export const fetchUserCart = async (signal?: AbortSignal): Promise<ICart> => {
   try {
     const response = await httpClientPrivate.get(`${ROUTE_PREFIX}/me`, {
       signal,
@@ -41,12 +39,36 @@ export const updateCartItemQuantity = async (
   signal?: AbortSignal
 ): Promise<ICart> => {
   try {
-    const response = await httpClientPrivate.put(`${ROUTE_PREFIX}/item`, data, {
-      signal,
-    });
+    const response = await httpClientPrivate.put(
+      `${ROUTE_PREFIX}/item/${data.cartItemId}`,
+      {
+        quantity: data.quantity,
+      },
+      {
+        signal,
+      }
+    );
     return response.data.data;
   } catch (error) {
     console.error("Erreur lors de la mise à jour de la quantité :", error);
+    throw error;
+  }
+};
+
+export const deleteCartItem = async (
+  cartItemId: string,
+  signal?: AbortSignal
+): Promise<ICart> => {
+  try {
+    const response = await httpClientPrivate.delete(
+      `${ROUTE_PREFIX}/item/${cartItemId}`,
+      {
+        signal,
+      }
+    );
+    return response.data.data;
+  } catch (error) {
+    console.error("Erreur lors de la suppression d'un article :", error);
     throw error;
   }
 };

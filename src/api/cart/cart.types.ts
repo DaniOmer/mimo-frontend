@@ -8,9 +8,7 @@ export interface CartItemCreateDTO {
 }
 
 export interface CartItemUpdateDTO {
-  cartId: string;
-  productId: string;
-  productVariantId?: string;
+  cartItemId: string;
   quantity: number;
 }
 

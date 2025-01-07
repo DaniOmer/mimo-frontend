@@ -39,16 +39,37 @@
 import { onMounted, toRefs } from "vue";
 import ProductDetailForm from "../../forms/modules/product/ProductDetailForm.vue";
 import { useProductStore } from "../../stores/modules/product.store";
+import { useCartStore } from "../../stores/modules/cart.store";
+import { IProduct } from "../../api/product/product.types";
 
 const props = defineProps<{ id: string }>();
 const productStore = useProductStore();
 const { selectedProduct, error } = toRefs(productStore);
 
+const cartStore = useCartStore();
+
 const handleFormSubmit = (formData: { quantity: number }) => {
-  console.log("Ajouter au panier :", {
-    productId: selectedProduct.value?._id,
-    quantity: formData.quantity,
-  });
+  try {
+    const existingItem = cartStore.items.find((item) => {
+      const product = item.product as IProduct;
+      return product._id === selectedProduct.value?._id;
+    });
+
+    if (existingItem) {
+      const newQuantity = existingItem.quantity + formData.quantity;
+      cartStore.updateCartItemQuantity({
+        cartItemId: existingItem._id,
+        quantity: newQuantity,
+      });
+    } else {
+      cartStore.addToCart({
+        productId: selectedProduct.value?._id as string,
+        quantity: formData.quantity,
+      });
+    }
+  } catch (error) {
+    console.error("Erreur lors de l'ajout du produit au panier :", error);
+  }
 };
 
 const loadProduct = async () => {
