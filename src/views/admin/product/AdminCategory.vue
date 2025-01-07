@@ -73,13 +73,6 @@
         <span>{{ item.productCount }}</span>
       </template>
 
-      <template #createdAt="{ item }">
-        <span>{{ formatDateTime(item.createdAt) }}</span>
-      </template>
-
-      <template #updatedAt="{ item }">
-        <span>{{ formatDateTime(item.updatedAt) }}</span>
-      </template>
     </Table>
 
     <CategoryFormModal

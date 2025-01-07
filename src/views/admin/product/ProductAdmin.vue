@@ -314,7 +314,7 @@ const columns = [
     key: "createdAt",
     label: "Date Création",
     sortable: true,
-    format: (value: string) => formatDateTime(new Date(value), false),
+    format: (value: string) => value ?  formatDateTime(new Date(value), false) : "",
     align: "center" as "center",
   },
 ];

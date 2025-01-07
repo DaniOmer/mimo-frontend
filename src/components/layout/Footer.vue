@@ -9,7 +9,12 @@
         class="flex flex-wrap items-center mt-3 text-sm font-medium text-gray-500 dark:text-gray-400 sm:mt-0"
       >
         <li>
-          <a href="#" class="hover:underline me-4 md:me-6">À propos</a>
+          <router-link
+            to="/about"
+            class="hover:underline me-4 md:me-6"
+          >
+            À propos
+          </router-link>
         </li>
         <li>
           <router-link to="/privacy-policy" class="hover:underline me-4 md:me-6">Politique de confidentialité</router-link>
@@ -23,6 +28,12 @@
           </router-link>
         </li>
         <li>
+          <a href="#" class="hover:underline me-4 md:me-6">Contact</a>
+        </li>
+        <li>
+          <a href="#" class="hover:underline" @click.prevent="showCookieModal"
+            >Cookies</a
+          >
           <router-link
             to="/contact"
             class="hover:underline me-4 md:me-6"
@@ -32,8 +43,13 @@
         </li>
       </ul>
     </div>
+    <CookieModal :isOpen="isModalOpen" :close="closeCookieModal" />
   </footer>
 </template>
 
 <script setup lang="ts">
+import { useModal } from "../../composables/useModal";
+import CookieModal from "../../components/CookieModal.vue";
+
+const { isOpen: isModalOpen, open: showCookieModal, close: closeCookieModal } = useModal();
 </script>

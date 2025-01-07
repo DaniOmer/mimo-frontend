@@ -8,7 +8,8 @@ import ProductDetailsView from "../../views/main/ProductDetailsView.vue";
 import UserAddressView from "../../views/main/UserAddressView.vue";
 import UserPreferenceView from "../../views/main/UserPreferenceView.vue";
 import OrdersView from "../../views/main/UserOrdersView.vue";
-import ContactView from "../../../src/views/main/ContactView.vue";
+import AboutView from "../../views/main/AboutView.vue";
+import ContactView from "../../views/main/ContactView.vue";
 import ConditionView from "../../views/main/ConditionView.vue";
 import PrivacyView from "../../views/main/PrivacyView.vue";
 
@@ -52,6 +53,11 @@ export const publicRoutes: RouteRecordRaw[] = [
         component: OrdersView, 
       }
     ],
+  },
+  {
+    path: "/about",
+    component: MainLayout,
+    children: [{ path: "", name: "about", component: AboutView }],
   },
   {
     path: "/contact",
