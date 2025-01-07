@@ -73,13 +73,6 @@
         <span>{{ item.productCount }}</span>
       </template>
 
-      <template #createdAt="{ item }">
-        <span>{{ formatDateTime(item.createdAt) }}</span>
-      </template>
-
-      <template #updatedAt="{ item }">
-        <span>{{ formatDateTime(item.updatedAt) }}</span>
-      </template>
     </Table>
 
     <CategoryFormModal
@@ -137,13 +130,13 @@ const columns = [
     key: "createdAt",
     label: "Date Création",
     sortable: true,
-    format: (value: string) => formatDateTime(new Date(value), false)
+    format: (value: string) => value ? formatDateTime(new Date(value), false): ""
   },
   {
     key: "updatedAt",
     label: "Date Mise à Jour",
     sortable: true,
-    format: (value: string) => formatDateTime(new Date(value), false)
+    format: (value: string) => value ? formatDateTime(new Date(value), false): ""
   },
 ];
 

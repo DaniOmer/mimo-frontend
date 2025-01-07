@@ -87,13 +87,6 @@
         </div>
       </template>
 
-      <template #createdAt="{ item }">
-        <span>{{ formatDateTime(item.createdAt) }}</span>
-      </template>
-
-      <template #updatedAt="{ item }">
-        <span>{{ formatDateTime(item.updatedAt) }}</span>
-      </template>
     </Table>
 
     <ProductFeatureFormModal
@@ -145,8 +138,8 @@ const searchQuery = ref("");
 const columns = [
   { key: "name", label: "Nom", sortable: true },
   { key: "description", label: "Description", sortable: false },
-  { key: "createdAt", label: "Date Création", sortable: true },
-  { key: "updatedAt", label: "Date Mise à Jour", sortable: true },
+  { key: "createdAt", label: "Date Création", sortable: true, format: (value: string) => value ? formatDateTime(new Date(value), false): "" },
+  { key: "updatedAt", label: "Date Mise à Jour", sortable: true, format: (value: string) => value ? formatDateTime(new Date(value), false): "" },
 ];
 
 onMounted(async () => {
