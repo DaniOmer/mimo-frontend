@@ -16,13 +16,14 @@
       :class="{
         'border-red-500 focus:ring-red-500 focus:border-red-500': error,
       }"
+      v-bind="attrs"
     />
     <p v-if="error" class="mt-2 text-sm text-red-600">{{ error }}</p>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch } from "vue";
+import { ref, watch, useAttrs } from "vue";
 import { PropType } from "vue";
 
 const props = defineProps({
@@ -59,6 +60,7 @@ const emit = defineEmits<{
 }>();
 
 const internalValue = ref(props.modelValue);
+const attrs = useAttrs(); 
 
 watch(
   () => props.modelValue,

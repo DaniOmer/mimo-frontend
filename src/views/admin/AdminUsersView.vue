@@ -12,7 +12,7 @@
       v-if="userStore.error"
       class="mb-4 p-4 bg-red-100 text-red-700 rounded"
     >
-      {{ userStore.error.message || "An error occurred while fetching users." }}
+      {{ userStore.error || "Une erreurs est survenu lors d'un call API pour user" }}
     </div>
 
     <div

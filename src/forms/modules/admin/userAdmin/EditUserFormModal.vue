@@ -29,6 +29,7 @@
           type="email"
           placeholder="Saisir l'email"
           :error="errors.email"
+          disabled
         />
 
         <div class="w-full mt-3">
