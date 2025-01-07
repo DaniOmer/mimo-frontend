@@ -32,3 +32,15 @@ export interface IOrder {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface IAdminOrderItem {
+    productId: string;
+    productVariantId?: string;
+    quantity: number;
+    // priceEtx: number;
+    // priceVat: number;
+  }
+  
+  export interface IAdminCreateOrderPayload {
+    items: IAdminOrderItem[];
+  }

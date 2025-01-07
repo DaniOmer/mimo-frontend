@@ -99,6 +99,12 @@
           >
             <CheckCircleIcon class="w-4 h-4 mr-1" /> Activer
           </button>
+          <button
+            class="flex items-center text-indigo-500 hover:text-indigo-700"
+            @click.stop="openCreateOrderModal(item)"
+          >
+            <ShoppingCartIcon class="w-4 h-4 mr-1" /> + commande
+          </button>
         </div>
       </template>
 
@@ -176,6 +182,13 @@
       submitLabel="Mettre à jour"
       :loading="isLoadingEdit"
     />
+    <CreateOrderForUserModal
+      :visible="isCreateOrderModalVisible"
+      :userId="userForOrder?._id || ''"
+      :userFullName="userForOrder?.firstName + ' ' + userForOrder?.lastName"
+      @close="isCreateOrderModalVisible = false"
+      @orderCreated="handleOrderCreated"
+    />
 
     <InviteUserModal
       :visible="isInviteModalVisible"
@@ -206,12 +219,14 @@ import {
   NoSymbolIcon,
   CheckCircleIcon,
   UserIcon,
+  ShoppingCartIcon,
 } from "@heroicons/vue/24/solid";
 
 import { IRole, IUser } from "../../api";
 import { useToast } from "vue-toast-notification";
 import { formatDateTime } from "../../utils/date.ts";
 import BaseButton from "../../components/form/BaseButton.vue";
+import CreateOrderForUserModal from "../../forms/modules/admin/order/CreateOrderForUserModal.vue";
 
 interface Option {
   label: string;
@@ -226,6 +241,13 @@ const searchQuery = ref("");
 const selectedRole = ref<string | null>(null);
 const selectedStatus = ref<string | null>(null);
 
+const isCreateOrderModalVisible = ref(false);
+const userForOrder = ref<IUser | null>(null);
+
+function openCreateOrderModal(user: IUser) {
+  userForOrder.value = user;
+  isCreateOrderModalVisible.value = true;
+}
 
 const roleOptions = computed<Option[]>(() =>
   userStore.allRoles.map((role) => ({
@@ -373,6 +395,12 @@ async function handleUpdateUser(updatedData: {
 function openInviteModal() {
   isInviteModalVisible.value = true;
 }
+
+function handleOrderCreated() {
+  $toast.success("Commande créée avec succès !");
+  isCreateOrderModalVisible.value = false;
+}
+
 
 async function inviteUser(inviteData: {
   email: string;

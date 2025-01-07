@@ -1,5 +1,5 @@
 import { httpClientPrivate } from "../../pluggins";
-import { IOrder, OrderStatus } from "./order.types";
+import { IAdminCreateOrderPayload, IOrder, OrderStatus } from "./order.types";
 
 const ROUTE_PREFIX = "/orders";
 
@@ -78,3 +78,21 @@ export const fetchOders = async (signal: AbortSignal): Promise<IOrder[]> => {
     throw error;
   }
 };
+
+export const createOrderForUser = async (
+    userId: string,
+    payload: IAdminCreateOrderPayload,
+    signal?: AbortSignal
+  ): Promise<IOrder> => {
+    try {
+      const response = await httpClientPrivate.post(
+        `${ROUTE_PREFIX}/admin/users/${userId}/order`,
+        payload,
+        { signal }
+      );
+      return response.data.data;
+    } catch (error) {
+      console.log("ERROR ON CREATING ORDER FOR USER BY ADMIN : ", error);
+      throw error;
+    }
+  };

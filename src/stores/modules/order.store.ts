@@ -7,6 +7,8 @@ import {
   getOrdersByUserId,
   getOrderByNumber,
     fetchOders,
+    createOrderForUser,
+    IAdminCreateOrderPayload
 } from "../../api/";
 import { useApiRequest } from "../../composables/useApiRequest";
 
@@ -126,6 +128,26 @@ export const useOrderStore = defineStore("order", {
       this.error = error.value;
       this.status = status.value;
     },
+
+    async createOrderForUserAction(userId: string, payload: IAdminCreateOrderPayload) {
+        const { execute, status, error, data } = useApiRequest<IOrder>();
+        this.error = null;
+        this.initializeController();
+        this.status = "pending";
+  
+        await execute(() =>
+          createOrderForUser(userId, payload, this.controller!.signal)
+        );
+  
+        if (status.value === "success" && data.value) {
+          this.orders.push(data.value);
+        }
+  
+        this.error = error.value;
+        this.status = status.value;
+        return data.value; 
+      },
+  
 
     resetState() {
       this.orders = [];
