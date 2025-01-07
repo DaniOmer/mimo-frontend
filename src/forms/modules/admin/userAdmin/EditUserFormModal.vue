@@ -1,56 +1,62 @@
 <template>
-  <Modal :visible="visible" @close="onClose" :title="'Modifier l\'Utilisateur'">
-    <form @submit.prevent="handleSubmit" class="space-y-4">
-      <InputField
-        v-model="localUserData.firstName"
-        name="firstName"
-        label="Prénom"
-        placeholder="Saisir le prénom"
-        :error="errors.firstName"
-      />
+  <BaseModal :isOpen="visible" :close="onClose">
+    <template v-slot:header>
+      <h2 class="text-lg font-semibold">Modifier l'Utilisateur</h2>
+    </template>
 
-      <InputField
-        v-model="localUserData.lastName"
-        name="lastName"
-        label="Nom"
-        placeholder="Saisir le nom"
-        :error="errors.lastName"
-      />
-
-      <InputField
-        v-model="localUserData.email"
-        name="email"
-        label="Email"
-        type="email"
-        placeholder="Saisir l'email"
-        :error="errors.email"
-      />
-
-      <div class="w-full mt-3">
-        <label class="block text-sm font-medium text-primary"> Rôle </label>
-        <FilterSelect
-          v-model="localUserData.role"
-          :options="roles"
-          placeholder="Sélectionner un rôle"
-          :isMultiple="false"
+    <template v-slot:body>
+      <form @submit.prevent="handleSubmit" class="space-y-4">
+        <InputField
+          v-model="localUserData.firstName"
+          name="firstName"
+          label="Prénom"
+          placeholder="Saisir le prénom"
+          :error="errors.firstName"
         />
-        <p v-if="errors.role" class="mt-1 text-sm text-red-600">
-          {{ errors.role }}
-        </p>
-      </div>
 
-      <BaseButton :label="submitLabel" type="submit" :loading="loading" />
-    </form>
-  </Modal>
+        <InputField
+          v-model="localUserData.lastName"
+          name="lastName"
+          label="Nom"
+          placeholder="Saisir le nom"
+          :error="errors.lastName"
+        />
+
+        <InputField
+          v-model="localUserData.email"
+          name="email"
+          label="Email"
+          type="email"
+          placeholder="Saisir l'email"
+          :error="errors.email"
+        />
+
+        <div class="w-full mt-3">
+          <label class="block text-sm font-medium text-primary">Rôle</label>
+          <FilterSelect
+            v-model="localUserData.role"
+            :options="roles"
+            placeholder="Sélectionner un rôle"
+            :isMultiple="false"
+          />
+          <p v-if="errors.role" class="mt-1 text-sm text-red-600">
+            {{ errors.role }}
+          </p>
+        </div>
+
+        <BaseButton :label="submitLabel" type="submit" :loading="loading" />
+      </form>
+    </template>
+  </BaseModal>
 </template>
 
 <script setup lang="ts">
-import { reactive, watch } from "vue";
+import { reactive, watch, computed } from "vue";
 import { defineProps, defineEmits } from "vue";
 import { useFormValidation } from "../../../../composables/useFormValidation";
 import InputField from "../../../../components/form/InputField.vue";
 import BaseButton from "../../../../components/form/BaseButton.vue";
-import Modal from "../../../../components/Modal.vue";
+import BaseModal from "../../../../components/BaseModal.vue";
 import FilterSelect from "../../../../components/FilterSelect.vue";
 import { editUserSchema } from "../../../schema/editUserSchema";
 
@@ -81,8 +87,10 @@ const emit = defineEmits<{
 }>();
 
 const localUserData = reactive({
-  ...props.userData,
-  role: props.userData.role || props.roles[0]?.value || '', 
+  firstName: props.userData.firstName || "",
+  lastName: props.userData.lastName || "",
+  email: props.userData.email || "",
+  role: props.userData.role || props.roles[0]?.value || '',
 });
 
 const { errors, validate } = useFormValidation(editUserSchema);
@@ -96,11 +104,29 @@ function handleSubmit() {
 
 function onClose() {
   emit("close");
+  resetLocalUserData();
 }
 
-const submitLabel = props.submitLabel || "Enregistrer";
+const submitLabel = computed(
+  () => props.submitLabel || "Enregistrer"
+);
 
-watch(() => localUserData.role, (newValue) => {
-  console.log("Rôle sélectionné :", newValue);
-});
+watch(
+  () => props.userData,
+  (newUserData) => {
+    localUserData.firstName = newUserData.firstName || "";
+    localUserData.lastName = newUserData.lastName || "";
+    localUserData.email = newUserData.email || "";
+    localUserData.role = newUserData.role || props.roles[0]?.value || '';
+  },
+  { immediate: true }
+);
+
+function resetLocalUserData() {
+  localUserData.firstName = "";
+  localUserData.lastName = "";
+  localUserData.email = "";
+  localUserData.role = props.roles[0]?.value || '';
+}
 </script>
+

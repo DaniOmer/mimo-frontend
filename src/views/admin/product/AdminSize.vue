@@ -27,6 +27,7 @@
       :enablePagination="true"
       :pageSize="10"
       :enableActions="true"
+      @bulk-delete="deleteMultipleSizes"
       exportFileName="Export_tailles.csv"
     >
 
@@ -194,6 +195,20 @@ async function deleteSize() {
       isDeleteDialogVisible.value = false;
       sizeToDelete.value = null;
     }
+  }
+}
+
+async function deleteMultipleSizes(selectedKeys: string[]) {
+  isFormLoading.value = true;
+  try {
+    await sizeStore.deleteMultipleSizes(selectedKeys);
+    toast.success("Tailles supprimées avec succès!");
+    sizeStore.fetchSizes();
+  } catch (error) {
+    toast.error("Erreur lors de la suppression des tailles.");
+    console.error("Erreur lors de la suppression des tailles :", error);
+  } finally {
+    isFormLoading.value = false;
   }
 }
 

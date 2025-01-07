@@ -3,7 +3,7 @@ export interface IProduct {
   name: string;
   description: string;
   priceEtx: number;
-  priceVat: number;
+  priceVat?: number;
   priceRange?: string;
   stripeId: string;
   isActive: boolean;

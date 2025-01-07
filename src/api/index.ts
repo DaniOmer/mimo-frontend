@@ -13,6 +13,6 @@ export * from "./product/color.types";
 export * from "./product/productFeature.types";
 export * from "./product/productFeature.api";
 export * from "./product/product.api";
-export * from "./product/product.types";
 export * from "./product/productVariant.types";
-export * from "./product/productImage.types";
+export * from "./order/order.types";
+export * from "./order/order.api";

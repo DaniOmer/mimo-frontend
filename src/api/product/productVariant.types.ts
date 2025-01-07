@@ -1,8 +1,7 @@
 export interface IProductVariant {
   _id: string;
   priceEtx: number;
-  priceVat: number;
-  stripeId?: string;
+  priceVat?: number;
   productId: string;
   sizeId: string;
   colorId: string;

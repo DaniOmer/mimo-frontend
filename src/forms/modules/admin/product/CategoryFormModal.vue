@@ -1,46 +1,53 @@
 <template>
-  <Modal :visible="visible" @close="close" :title="modalTitle">
-    <form @submit.prevent="handleSubmit" class="space-y-4">
-      <InputField
-        v-model="form.name"
-        name="name"
-        label="Nom"
-        placeholder="Saisir le nom"
-        required
-        :error="errors.name"
-      />
+  <BaseModal :isOpen="visible" :close="close">
+    <template #header>
+      <h2 class="text-lg font-semibold">
+        {{ modalTitle }}
+      </h2>
+    </template>
 
-      <TextAreaField
-        v-model="form.description"
-        name="description"
-        label="Description"
-        placeholder="Saisir la description"
-        :rows="3"
-        :error="errors.description"
-      />
-
-      <div class="flex justify-end px-24 space-x-2">
-        <BaseButton
-          type="submit"
-          color="primary"
-          :loading="loading"
-          :label="isEditing ? 'Mettre à Jour' : 'Créer'"
+    <template #body>
+      <form @submit.prevent="handleSubmit" class="space-y-4">
+        <InputField
+          v-model="form.name"
+          name="name"
+          label="Nom"
+          placeholder="Saisir le nom"
+          required
+          :error="errors.name"
         />
-      </div>
-    </form>
-  </Modal>
-</template>
 
+        <TextAreaField
+          v-model="form.description"
+          name="description"
+          label="Description"
+          placeholder="Saisir la description"
+          :rows="3"
+          :error="errors.description"
+        />
+
+        <div class="flex justify-end px-24 space-x-2">
+          <BaseButton
+            type="submit"
+            color="primary"
+            :loading="loading"
+            :label="isEditing ? 'Mettre à Jour' : 'Créer'"
+          />
+        </div>
+      </form>
+    </template>
+  </BaseModal>
+</template>
 
 <script setup lang="ts">
 import { computed, watch, reactive } from "vue";
-import Modal from "../../../../components/Modal.vue"; 
+import BaseModal from "../../../../components/BaseModal.vue";
 import InputField from "../../../../components/form/InputField.vue";
 import TextAreaField from "../../../../components/form/TextAreaField.vue";
 import BaseButton from "../../../../components/form/BaseButton.vue";
 import type { ICategory } from "../../../../api";
-import { useFormValidation } from "../../../../composables/useFormValidation"; 
-import { categoryFormSchema } from "../../../schema/categoryFormSchema"; 
+import { useFormValidation } from "../../../../composables/useFormValidation";
+import { categoryFormSchema } from "../../../schema/categoryFormSchema";
 
 interface CategoryForm {
   name: string;
@@ -84,11 +91,8 @@ watch(
 
 const { errors, validate } = useFormValidation(categoryFormSchema);
 
-async function handleSubmit() {
-  if (!validate(form)) {
-    return;
-  }
-
+function handleSubmit() {
+  if (!validate(form)) return;
   emit("submit", { ...form });
 }
 
@@ -96,4 +100,3 @@ function close() {
   emit("close");
 }
 </script>
-

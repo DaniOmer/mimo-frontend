@@ -3,6 +3,7 @@ import AdminUsersView from "../../views/admin/AdminUsersView.vue";
 import AdminProductsView from "../../views/admin/product/AdminProductsView.vue";
 import AdminLayout from "../../components/layout/AdminLayout.vue";
 import UserPersonalInfosView from "../../views/main/UserPersonalInfosView.vue";
+import OrderAdmin from "../../views/admin/order/orderAdmin.vue";
 
 
 export const adminRoutes: RouteRecordRaw[] = [
@@ -23,7 +24,7 @@ export const adminRoutes: RouteRecordRaw[] = [
       {
         path: 'orders',
         name: 'adminOrders',
-        component: AdminUsersView,
+        component: OrderAdmin,
       },
       {
         path: 'reports',

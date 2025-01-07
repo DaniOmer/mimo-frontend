@@ -5,7 +5,7 @@
     </h1>
 
     <p class="mt-4 mb-4 text-sm">
-        Vous pouvez gérer les caractéristiques des produits.
+      Vous pouvez gérer les caractéristiques des produits.
     </p>
 
     <div
@@ -32,6 +32,7 @@
       :enablePagination="true"
       :enableActions="true"
       exportFileName="Export_caracteristiques_produits.csv"
+      @bulk-delete="deleteMultipleProductFeatures"
     >
       <template #table-title>
         <div class="flex justify-between items-center">
@@ -208,6 +209,23 @@ async function deleteProductFeature() {
   }
 }
 
+async function deleteMultipleProductFeatures(selectedKeys: string[]) {
+  if (selectedKeys.length === 0) return;
+  try {
+    isFormLoading.value = true;
+    await productFeatureStore.deleteMultipleProductFeatures(selectedKeys);
+    toast.success("Caractéristiques produits supprimées avec succès!");
+  } catch (error) {
+    toast.error("Erreur lors de la suppression des caractéristiques produits.");
+    console.error(
+      "Erreur lors de la suppression des caractéristiques produits :",
+      error
+    );
+  } finally {
+    isFormLoading.value = false;
+  }
+}
+
 async function handleFormSubmit(formData: Partial<IProductFeature>) {
   isFormLoading.value = true;
   try {
@@ -234,4 +252,3 @@ function handleSearch(query: string) {
   searchQuery.value = query;
 }
 </script>
-

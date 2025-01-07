@@ -6,6 +6,7 @@ import {
   createProductFeature as apiCreateProductFeature,
   updateProductFeature as apiUpdateProductFeature,
   deleteProductFeature as apiDeleteProductFeature,
+  deleteMultipleProductFeatures,
 } from "../../api/";
 import type { IProductFeature } from "../../api/";
 
@@ -99,6 +100,24 @@ export const useProductFeatureStore = defineStore("productFeature", {
       this.status = status.value;
       this.error = error.value;
     },
+
+    async deleteMultipleProductFeatures(ids: string[]) {
+      const { execute, status, error } = useApiRequest<void>();
+      this.error = null;
+      this.initController();
+
+      this.status = status.value;
+
+      const result = await execute(() => deleteMultipleProductFeatures(ids, this.controller!.signal));
+
+      if (result === null) {
+        this.productFeatures = this.productFeatures.filter((feature) => !ids.includes(feature._id));
+      }
+
+      this.status = status.value;
+      this.error = error.value;
+    },
+
 
     async getProductFeatureById(id: string): Promise<IProductFeature | null> {
       const { execute, status, error } = useApiRequest<IProductFeature>();

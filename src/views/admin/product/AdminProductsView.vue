@@ -9,6 +9,7 @@
     />
 
     <div class="mt-6">
+      <Product v-if="activeTab === 'product'" />
       <AdminCategory v-if="activeTab === 'category'" />
       <AdminSize v-if="activeTab === 'size'" />
       <AdminColor v-if="activeTab === 'color'" />
@@ -24,6 +25,7 @@ import AdminCategory from "./AdminCategory.vue";
 import AdminSize from "./AdminSize.vue";
 import AdminColor from "./AdminColor.vue";
 import ProductFeature from "./ProductFeature.vue";
+import Product from "./ProductAdmin.vue";
 
 const tabs = [
   { name: "product", label: "Product" },
@@ -33,5 +35,5 @@ const tabs = [
   { name: "productFeature", label: "Caractéristiques" },
 ];
 
-const activeTab = ref("category"); 
+const activeTab = ref("product"); 
 </script>

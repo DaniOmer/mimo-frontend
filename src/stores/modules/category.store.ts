@@ -5,7 +5,9 @@ import {
   fetchCategoryById, 
   createCategory as apiCreateCategory, 
   updateCategory as apiUpdateCategory, 
-  deleteCategory as apiDeleteCategory 
+  deleteCategory as apiDeleteCategory,
+  deleteMutipleCategories as apiDeleteMutipleCategories,
+
 } from '../../api/';
 import type { ICategory } from '../../api'; 
 
@@ -85,6 +87,21 @@ export const useCategoryStore = defineStore('category', {
 
       if (result === null) { 
         this.categories = this.categories.filter(cat => cat._id !== id);
+      }
+
+      this.status = status.value;
+      this.error = error.value;
+    },
+
+    async deleteMutipleCategories(ids: string[]) {
+      const { execute, status, error } = useApiRequest<void>();
+      this.initController();
+
+      this.status = status.value;
+      await execute(() => apiDeleteMutipleCategories(ids, this.controller!.signal));
+
+      if (status.value === 'success') {
+        this.categories = this.categories.filter(cat => !ids.includes(cat._id));
       }
 
       this.status = status.value;

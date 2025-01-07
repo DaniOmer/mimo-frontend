@@ -6,6 +6,7 @@ import {
   createSize as apiCreateSize,
   updateSize as apiUpdateSize,
   deleteSize as apiDeleteSize,
+  deleteMultipleSizes,
 } from "../../api/";
 import type { ISize } from "../../api";
 
@@ -94,6 +95,23 @@ export const useSizeStore = defineStore("size", {
 
       if (result === null) {
         this.sizes = this.sizes.filter((size) => size._id !== id);
+      }
+
+      this.status = status.value;
+      this.error = error.value;
+    },
+
+    async deleteMultipleSizes(ids: string[]) {
+      const { execute, status, error } = useApiRequest<void>();
+      this.error = null;
+      this.initController();
+
+      this.status = status.value;
+
+      const result = await execute(() => deleteMultipleSizes(ids, this.controller!.signal));
+
+      if (result === null) {
+        this.sizes = this.sizes.filter((size) => !ids.includes(size._id));
       }
 
       this.status = status.value;

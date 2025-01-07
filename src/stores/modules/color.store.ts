@@ -6,6 +6,7 @@ import {
   createColor as apiCreateColor,
   updateColor as apiUpdateColor,
   deleteColor as apiDeleteColor,
+  deleteMutipleColors,
 } from "../../api/";
 import type { IColor } from "../../api/";
 
@@ -99,6 +100,24 @@ export const useColorStore = defineStore("color", {
       this.status = status.value;
       this.error = error.value;
     },
+
+    async deleteMultipleColors(ids: string[]) {
+        const { execute, status, error } = useApiRequest<void>();
+        this.error = null;
+        this.initController();
+    
+        this.status = status.value;
+    
+        const result = await execute(() => deleteMutipleColors(ids, this.controller!.signal));
+    
+        if (result === null) {
+            this.colors = this.colors.filter((color) => !ids.includes(color._id));
+        }
+    
+        this.status = status.value;
+        this.error = error.value;
+    },
+    
 
     async getColorById(id: string): Promise<IColor | null> {
       const { execute, status, error } = useApiRequest<IColor>();

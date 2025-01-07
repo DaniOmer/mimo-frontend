@@ -173,7 +173,7 @@
       :roles="roleOptions"
       @submit="handleUpdateUser"
       @close="isEditModalVisible = false"
-      submitLabel="Update"
+      submitLabel="Mettre à jour"
       :loading="isLoadingEdit"
     />
 
@@ -226,7 +226,6 @@ const searchQuery = ref("");
 const selectedRole = ref<string | null>(null);
 const selectedStatus = ref<string | null>(null);
 
-const selectedUserIds = ref<string[]>([]);
 
 const roleOptions = computed<Option[]>(() =>
   userStore.allRoles.map((role) => ({
@@ -283,8 +282,6 @@ const isConfirmDeactivateVisible = ref(false);
 const isConfirmActivateVisible = ref(false);
 const isEditModalVisible = ref(false);
 const isInviteModalVisible = ref(false);
-// const isConfirmBulkDeleteVisible = ref(false); 
-
 
 const userToDelete = ref<IUser | null>(null);
 const userToDeactivate = ref<IUser | null>(null);
@@ -491,23 +488,21 @@ async function activateUser() {
 }
 
 
-async function bulkDeleteUsers() {
-  if (selectedUserIds.value.length > 0) {
+async function bulkDeleteUsers(selectedKeys: string[]) {
+  if (selectedKeys.length > 0) {
     try {
-      await userStore.deleteMultipleUsersAction(selectedUserIds.value);
-      $toast.success(`${selectedUserIds.value.length} utilisateur(s) supprimé(s) avec succès!`, {
+      await userStore.deleteMultipleUsersAction(selectedKeys);
+      $toast.success(`${selectedKeys.length} utilisateur(s) supprimé(s) avec succès!`, {
         position: "top",
         duration: 3000,
       });
-      selectedUserIds.value = [];
+      await userStore.fetchAllUsers();
     } catch (error) {
       $toast.error("Erreur lors de la suppression des utilisateurs.", {
         position: "top",
         duration: 3000,
       });
-    } 
+    }
   }
 }
-
-
 </script>

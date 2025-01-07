@@ -30,7 +30,9 @@
       :enablePagination="true"
       :pageSize="10"
       :enableActions="true"
+      :enableMultiSelect="true"
       exportFileName="Export_couleurs.csv"
+      @bulk-delete="deleteMultipleColors"
     >
       <template #table-title>
         <div class="flex justify-between items-center">
@@ -202,6 +204,7 @@ async function deleteColor() {
     try {
       await colorStore.deleteColor(colorToDelete.value._id);
       toast.success("Couleur supprimée avec succès!");
+      colorStore.fetchColors();
     } catch (error) {
       toast.error("Erreur lors de la suppression de la couleur.");
       console.error("Erreur lors de la suppression de la couleur :", error);
@@ -212,6 +215,24 @@ async function deleteColor() {
     }
   }
 }
+
+async function deleteMultipleColors(selectedKeys: string[]) {
+  console.log('Supprimer les couleurs avec les IDs:', selectedKeys); 
+  if (selectedKeys.length === 0) return;
+
+  isFormLoading.value = true;
+  try {
+    await colorStore.deleteMultipleColors(selectedKeys);
+    toast.success(`${selectedKeys.length} couleurs supprimées avec succès!`);
+    await colorStore.fetchColors(); 
+  } catch (error) {
+    toast.error("Erreur lors de la suppression des couleurs.");
+    console.error("Erreur lors de la suppression des couleurs :", error);
+  } finally {
+    isFormLoading.value = false;
+  }
+}
+
 
 async function handleFormSubmit(formData: Partial<IColor>) {
   isFormLoading.value = true;
@@ -228,6 +249,7 @@ async function handleFormSubmit(formData: Partial<IColor>) {
     console.error("Erreur lors de la soumission du formulaire :", error);
   } finally {
     isFormLoading.value = false;
+    colorStore.fetchColors();
     closeModal();
   }
 }

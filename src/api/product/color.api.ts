@@ -1,15 +1,15 @@
-import { httpClientPrivate } from "../../pluggins"; 
+import { httpClientPrivate, httpClientPublic } from "../../pluggins"; 
 import type { IColor } from "./color.types"; 
 
 const ROUTE_PREFIX = "/colors";
 
 export async function fetchAllColors(signal?: AbortSignal): Promise<IColor[]> {
-  const response = await httpClientPrivate.get(`${ROUTE_PREFIX}/`, { signal });
+  const response = await httpClientPublic.get(`${ROUTE_PREFIX}/`, { signal });
   return response.data.data; 
 }
 
 export async function fetchColorById(colorId: string, signal?: AbortSignal): Promise<IColor> {
-  const response = await httpClientPrivate.get(`${ROUTE_PREFIX}/${colorId}`, { signal });
+  const response = await httpClientPublic.get(`${ROUTE_PREFIX}/${colorId}`, { signal });
   return response.data.data;
 }
 
@@ -25,4 +25,8 @@ export async function updateColor(colorId: string, colorData: Partial<IColor>, s
 
 export async function deleteColor(colorId: string, signal?: AbortSignal): Promise<void> {
   await httpClientPrivate.delete(`${ROUTE_PREFIX}/${colorId}`, { signal });
+}
+
+export async function deleteMutipleColors(colorIds: string[], signal?: AbortSignal): Promise<void> {
+    await httpClientPrivate.delete(`${ROUTE_PREFIX}/multiple`, { data: { colorIds }, signal });
 }

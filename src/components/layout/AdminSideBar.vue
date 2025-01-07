@@ -1,4 +1,3 @@
-<!-- src/components/AdminSidebar.vue -->
 <template>
   <aside class="w-52 h-full xl:w-60 border-r border-gray-200">
     <nav class="flex flex-col gap-6 p-4">
@@ -28,7 +27,6 @@
         </ul>
       </div>
 
-      <!-- Section Paramètres -->
       <div>
         <h2 class="text-lg font-semibold text-primary mb-2">Paramètres</h2>
         <ul class="flex flex-col gap-y-2">

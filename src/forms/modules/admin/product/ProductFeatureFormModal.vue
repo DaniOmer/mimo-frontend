@@ -1,51 +1,52 @@
-<!-- src/components/modals/ProductFeatureFormModal.vue -->
 <template>
-  <Modal :visible="visible" @close="close" :title="modalTitle">
-    <form @submit.prevent="handleSubmit" class="space-y-4">
-      <!-- Champ Nom -->
-      <InputField
-        v-model="form.name"
-        name="name"
-        label="Nom"
-        placeholder="Saisir le nom"
-        required
-        :error="errors.name"
-      />
-
-      <!-- Champ Description (Optionnel) -->
-      <TextAreaField
-        v-model="form.description"
-        name="description"
-        label="Description"
-        placeholder="Saisir la description"
-        :rows="3"
-        :error="errors.description"
-      />
-
-      <!-- Boutons d'Action -->
-      <div class="flex justify-end space-x-2">
-        <BaseButton
-          v-if="isEditing"
-          type="button"
-          @click="onCancel"
-          color="secondary"
-          :loading="loading"
-          label="Annuler"
+  <BaseModal :isOpen="visible" :close="close">
+    <template #header>
+      <h2 class="text-lg font-semibold">
+        {{ modalTitle }}
+      </h2>
+    </template>
+    <template #body>
+      <form @submit.prevent="handleSubmit" class="space-y-4">
+        <InputField
+          v-model="form.name"
+          name="name"
+          label="Nom"
+          placeholder="Saisir le nom"
+          required
+          :error="errors.name"
         />
-        <BaseButton
-          type="submit"
-          color="primary"
-          :loading="loading"
-          :label="isEditing ? 'Mettre à Jour' : 'Créer'"
+        <TextAreaField
+          v-model="form.description"
+          name="description"
+          label="Description"
+          placeholder="Saisir la description"
+          :rows="3"
+          :error="errors.description"
         />
-      </div>
-    </form>
-  </Modal>
+        <div class="flex justify-end space-x-2">
+          <BaseButton
+            v-if="isEditing"
+            type="button"
+            @click="onCancel"
+            color="secondary"
+            :loading="loading"
+            label="Annuler"
+          />
+          <BaseButton
+            type="submit"
+            color="primary"
+            :loading="loading"
+            :label="isEditing ? 'Mettre à Jour' : 'Créer'"
+          />
+        </div>
+      </form>
+    </template>
+  </BaseModal>
 </template>
 
 <script setup lang="ts">
 import { computed, watch, reactive } from "vue";
-import Modal from "../../../../components/Modal.vue";
+import BaseModal from "../../../../components/BaseModal.vue";
 import InputField from "../../../../components/form/InputField.vue";
 import TextAreaField from "../../../../components/form/TextAreaField.vue";
 import BaseButton from "../../../../components/form/BaseButton.vue";
@@ -76,13 +77,11 @@ const modalTitle = computed(() =>
     : "Créer une Nouvelle Caractéristique Produit"
 );
 
-// Initialisation du formulaire
 const form = reactive<ProductFeatureForm>({
   name: "",
   description: "",
 });
 
-// Remplissage du formulaire si en mode édition
 watch(
   () => props.initialData,
   (newData) => {
@@ -97,30 +96,18 @@ watch(
   { immediate: true }
 );
 
-// Utilisation du composable de validation
 const { errors, validate } = useFormValidation(productFeatureFormSchema);
 
-// Fonction de soumission du formulaire
-async function handleSubmit() {
-  if (!validate(form)) {
-    // Validation échouée, les erreurs sont déjà affichées
-    return;
-  }
-
+function handleSubmit() {
+  if (!validate(form)) return;
   emit("submit", { ...form });
 }
 
-// Fonction d'annulation de l'édition
 function onCancel() {
   emit("close");
 }
 
-// Fonction de fermeture de la modal
 function close() {
   emit("close");
 }
 </script>
-
-<style scoped>
-/* Ajoutez des styles personnalisés si nécessaire */
-</style>

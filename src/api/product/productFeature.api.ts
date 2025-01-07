@@ -1,4 +1,4 @@
-import { httpClientPrivate } from "../../pluggins";
+import { httpClientPrivate, httpClientPublic } from "../../pluggins";
 import type { IProductFeature } from "./productFeature.types";
 
 const ROUTE_PREFIX = "/product-features";
@@ -7,7 +7,7 @@ const ROUTE_PREFIX = "/product-features";
 export async function fetchAllProductFeatures(
   signal?: AbortSignal
 ): Promise<IProductFeature[]> {
-  const response = await httpClientPrivate.get(`${ROUTE_PREFIX}/`, { signal });
+  const response = await httpClientPublic.get(`${ROUTE_PREFIX}/`, { signal });
   return response.data.data;
 }
 
@@ -16,7 +16,7 @@ export async function fetchProductFeatureById(
   featureId: string,
   signal?: AbortSignal
 ): Promise<IProductFeature> {
-  const response = await httpClientPrivate.get(`${ROUTE_PREFIX}/${featureId}`, { signal });
+  const response = await httpClientPublic.get(`${ROUTE_PREFIX}/${featureId}`, { signal });
   return response.data.data;
 }
 
@@ -44,4 +44,11 @@ export async function deleteProductFeature(
   signal?: AbortSignal
 ): Promise<void> {
   await httpClientPrivate.delete(`${ROUTE_PREFIX}/${featureId}`, { signal });
+}
+
+export async function deleteMultipleProductFeatures(
+  featureIds: string[],
+  signal?: AbortSignal
+): Promise<void> {
+  await httpClientPrivate.delete(`${ROUTE_PREFIX}/multiple`, { data: { featureIds }, signal });
 }

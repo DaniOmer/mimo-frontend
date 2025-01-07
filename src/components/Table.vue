@@ -356,7 +356,7 @@ export default defineComponent({
     }
 
     function confirmBulkDelete() {
-      emit("bulk-delete", selectedKeys);
+      emit("bulk-delete", selectedKeys.value);
       showBulkDeleteDialog.value = false;
     }
 

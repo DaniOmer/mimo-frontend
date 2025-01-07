@@ -29,7 +29,9 @@
       :enableSort="true"
       :enablePagination="true"
       :enableActions="true"
+      :enableMultiSelect="true"
       exportFileName="Export_categories.csv"
+      @bulk-delete="deleteMultipleCategories"
     >
 
       <template #table-controls>
@@ -188,6 +190,7 @@ async function deleteCategory() {
     try {
       await categoryStore.deleteCategory(categoryToDelete.value._id);
       toast.success("Catégorie supprimée avec succès!");
+      categoryStore.fetchCategories();
     } catch (error) {
       toast.error("Erreur lors de la suppression de la catégorie.");
       console.error("Erreur lors de la suppression de la catégorie :", error);
@@ -199,12 +202,26 @@ async function deleteCategory() {
   }
 }
 
+async function deleteMultipleCategories (selectedKeys: string[]) {
+   if (selectedKeys.length) {
+    try {
+      await categoryStore.deleteMutipleCategories(selectedKeys);
+      toast.success(`${selectedKeys.length} catégories supprimées avec succès!`)
+      categoryStore.fetchCategories();
+    } catch (error) {
+        toast.error("Erreur lors de la suppression des catégories.");
+       console.error("Erreur lors de la suppression de la catégorie :", error);
+    } 
+  }
+}
+
 async function handleFormSubmit(formData: Partial<ICategory>) {
   isFormLoading.value = true;
   try {
     if (selectedCategory.value) {
       await categoryStore.updateCategory(selectedCategory.value._id, formData);
       toast.success("Catégorie mise à jour avec succès!");
+      categoryStore.fetchCategories();
     } else {
       await categoryStore.createCategory(formData);
       toast.success("Catégorie créée avec succès!");
