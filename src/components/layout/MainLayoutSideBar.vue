@@ -9,7 +9,7 @@
             >Données personnelles</NavItem
           >
           <NavItem :to="{ name: 'userAddresses' }">Adresses</NavItem>
-          <NavItem :to="{ name: 'homepage' }">Newsletter</NavItem>
+          <!-- <NavItem :to="{ name: 'homepage' }">Newsletter</NavItem> -->
         </ul>
       </div>
 
@@ -19,9 +19,9 @@
           <NavItem :to="{ name: 'userPreferences' }"
             >Préférences et notifications</NavItem
           >
-          <NavItem :to="{ name: 'homepage' }"
+          <!-- <NavItem :to="{ name: 'homepage' }"
             >Demander ou supprimer des données</NavItem
-          >
+          > -->
         </ul>
       </div>
     </nav>
