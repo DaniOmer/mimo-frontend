@@ -14,7 +14,7 @@
             <p>{{ user?.firstName }} {{ user?.lastName }}</p>
           </div>
           <div>
-            <p class="font-semibold">Téléphone mobile</p>
+            <p class="font-semibold">Mail</p>
             <p>{{ user?.email }}</p>
           </div>
         </div>
