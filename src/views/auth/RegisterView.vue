@@ -54,14 +54,16 @@ const formData = ref({
   password: "",
   confirmPassword: "",
   isTermsOfSale: false,
+  isDefaultPreference: false,
 });
 
 const handleFormSubmit = async (data: IRegisterFormData) => {
+  console.log("REGISTER", data);
   const { confirmPassword, ...userData } = data;
   await authStore.register(userData);
   if (authStore.status === "success") {
     $toast.success("Votre compte a été crée avec succès!", {
-      position: "top",
+      position: "top-right",
       duration: 3000,
     });
     router.push({ name: "registerConfirmation" });

@@ -1,5 +1,5 @@
 import { httpClientPublic } from "../../pluggins";
-import { IUserCreate, IEmailVerify, AuthType, IUserLogin } from "./user.types";
+import { IUserCreate, IEmailVerify, AuthType, IUserLogin, IPasswordResetRequest, IPasswordReset } from "./user.types";
 
 const ROUTE_PREFIX = "/auth";
 export const registerUser = async (data: IUserCreate, signal: AbortSignal) => {
@@ -53,3 +53,37 @@ export const verifyEmail = async (data: IEmailVerify, signal: AbortSignal) => {
     throw error;
   }
 };
+
+
+export const resetPassword = async (data: IPasswordResetRequest, signal: AbortSignal) => {
+  try {
+    const response = await httpClientPublic.post(
+      `${ROUTE_PREFIX}/password/reset-request`,
+      data,
+      {
+        signal,
+      }
+    );
+    return response.data.data;
+  } catch (error) {
+    console.log("ERROR ON PASSWORD RESET : ", error);
+    throw error;
+  }
+}
+
+
+export const resetPasswordConfirm = async (data: IPasswordReset, signal: AbortSignal) => {
+  try {
+    const response = await httpClientPublic.post(
+      `${ROUTE_PREFIX}/password/reset-confirm`,
+      data,
+      {
+        signal,
+      }
+    );
+    return response.data.data;
+  } catch (error) {
+    console.log("ERROR ON PASSWORD RESET CONFIRMATION : ", error);
+    throw error;
+  }
+}
