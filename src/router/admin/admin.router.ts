@@ -10,6 +10,7 @@ import AdminReportView from "../../views/admin/report/AdminReportView.vue";
 export const adminRoutes: RouteRecordRaw[] = [
   {
     path: '/admin',
+    name: 'admin',
     component: AdminLayout,
     children: [
       {
