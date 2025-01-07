@@ -1,6 +1,6 @@
 <template>
   <div
-    class="space-y-4 rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-6"
+    class="space-y-10 rounded-lg border border-gray-200 bg-white p-4 shadow-sm sm:p-6"
   >
     <p class="text-xl font-semibold text-gray-900">Détail du panier</p>
     <div class="space-y-4">
@@ -25,16 +25,19 @@
         <div class="text-base font-bold text-gray-900">{{ total }} €</div>
       </div>
     </div>
+    <BaseButton type="submit" label="Commander" @click="handleOrderSubmit" />
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref, watch } from "vue";
+import BaseButton from "./form/BaseButton.vue";
 
 const props = defineProps<{
   totalHT: number;
   tva: number;
   total: number;
+  handleOrderSubmit: () => void;
 }>();
 
 const totalHT = ref(props.totalHT);

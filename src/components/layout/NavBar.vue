@@ -67,6 +67,7 @@ watch(
 
 const handleLogout = () => {
   authStore.logout();
+  cartStore.resetCartStore();
   router.push({ name: "homepage" });
 };
 </script>

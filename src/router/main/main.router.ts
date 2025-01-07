@@ -7,6 +7,7 @@ import UserAddressView from "../../views/main/UserAddressView.vue";
 import CatalogView from "../../views/main/CatalogView.vue";
 import ProductDetailsView from "../../views/main/ProductDetailsView.vue";
 import CartView from "../../views/main/CartView.vue";
+import PaymentMethodView from "../../views/main/PaymentMethodView.vue";
 import NotFoundView from "../../views/main/NotFoundView.vue";
 
 export const publicRoutes: RouteRecordRaw[] = [
@@ -43,6 +44,17 @@ export const publicRoutes: RouteRecordRaw[] = [
         path: "address",
         name: "userAddress",
         component: UserAddressView,
+      },
+    ],
+  },
+  {
+    path: "/checkout",
+    component: MainLayout,
+    children: [
+      {
+        path: "payment-method",
+        name: "paymentMethod",
+        component: PaymentMethodView,
       },
     ],
   },

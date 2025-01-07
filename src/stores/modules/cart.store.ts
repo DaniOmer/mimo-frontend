@@ -127,7 +127,7 @@ export const useCartStore = defineStore("cart", {
       cancel();
     },
 
-    resetStatus() {
+    resetCartStore() {
       this.items = [];
       this.status = "idle";
       this.error = null;

@@ -1,9 +1,6 @@
 <template>
   <div v-if="remainingTime > 0">
-    <p class="text-gray-600 text-sm">
-      Votre panier expire dans :
-      <span class="font-bold text-base">{{ formattedTime }}</span>
-    </p>
+    <span class="text-gray-600 font-bold text-base">{{ formattedTime }}</span>
   </div>
 </template>
 
@@ -12,7 +9,7 @@ import { ref, onMounted, computed, watch } from "vue";
 
 const props = defineProps({
   expireAt: {
-    type: String,
+    type: Date,
     required: true,
   },
 });

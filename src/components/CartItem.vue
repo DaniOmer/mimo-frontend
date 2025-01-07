@@ -2,13 +2,13 @@
   <div class="flex justify-between items-center border rounded-md shadow p-4">
     <div class="mr-20 border">
       <a href="#" class="w-20 md:order-1">
-        <img class="h-20 w-20" :src="item.image" alt="product image" />
+        <img class="h-20 w-20" :src="item?.image" alt="product image" />
       </a>
     </div>
 
     <div class="flex-1 flex flex-col gap-y-4">
       <a href="#" class="text-base font-medium text-gray-900 hover:underline">{{
-        item.product.name
+        item?.product.name
       }}</a>
 
       <button
@@ -30,7 +30,7 @@
             d="M6 18 17.94 6M18 18 6.06 6"
           />
         </svg>
-        Remove
+        Supprimer
       </button>
     </div>
 
@@ -79,24 +79,24 @@
     <div class="flex items-center ml-10">
       <div class="text-end">
         <p class="text-base font-bold text-gray-900">
-          {{ item.product.priceEtx * quantity }} €
+          {{ item?.product.priceEtx * quantity }} €
         </p>
       </div>
     </div>
   </div>
 </template>
 
-<script setup>
+<script setup lang="ts">
 import { ref, watch } from "vue";
 
 const props = defineProps({
   item: Object,
 });
 
-const quantity = ref(props.item.quantity);
+const quantity = ref(props.item?.quantity);
 
 watch(
-  () => props.item.quantity,
+  () => props.item?.quantity,
   (newQuantity) => {
     quantity.value = newQuantity;
   }
@@ -105,19 +105,19 @@ watch(
 const emit = defineEmits(["remove", "updateQuantity"]);
 
 const removeItem = () => {
-  emit("remove", props.item._id);
+  emit("remove", props.item?._id);
 };
 
 const decrementQuantity = () => {
   if (quantity.value > 1) {
     quantity.value--;
-    emit("updateQuantity", { id: props.item._id, quantity: quantity.value });
+    emit("updateQuantity", { id: props.item?._id, quantity: quantity.value });
   }
 };
 
 const incrementQuantity = () => {
   quantity.value++;
-  emit("updateQuantity", { id: props.item._id, quantity: quantity.value });
+  emit("updateQuantity", { id: props.item?._id, quantity: quantity.value });
 };
 </script>
 
